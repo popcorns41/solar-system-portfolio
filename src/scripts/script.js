@@ -157,19 +157,19 @@ function onMouseMove(event) {
 
     // Add name or info
     if (object === sun) {
-      card.innerText = "Sun";
+      card.innerText = "Contact me";
     } else if (object === mercury.planet) {
-      card.innerText = "Mercury";
+      card.innerText = "Resume";
     } else if (object === venus.planet) {
-      card.innerText = "Venus";
+      card.innerText = "Skill sets";
     } else if (object === earth.planet || object === earth.Atmosphere) {
-      card.innerText = "Earth";
+      card.innerText = "Robotics";
     } else if (object === mars.planet) {
-      card.innerText = "Mars";
+      card.innerText = "Extracurricular";
     } else if (object === jupiter.planet) {
-      card.innerText = "Jupiter";
+      card.innerText = "Childhood";
     } else if (object === saturn.planet) {
-      card.innerText = "Saturn";
+      card.innerText = "About me";
     } else {
       card.innerText = "";
       card.style.display = 'none';
@@ -747,7 +747,7 @@ sun.position.x=0;
 
 function solarStartSunrise() {
   const startY = sun.position.y;
-  const targetY = 40;
+  const targetY = 45;
   const duration = 8000;
   const startTime = performance.now();
 

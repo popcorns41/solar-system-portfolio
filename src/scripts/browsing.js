@@ -196,7 +196,7 @@ function revealInfoBoxes() {
 
   setTimeout(() => {
     uiFinished = true;
-  }, 2000);
+  }, 500);
 }
 
 function hideInfoBoxes(){
