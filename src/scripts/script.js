@@ -238,6 +238,28 @@ function getPlanetIndex(selectedPlanet) {
   return -1; // Return -1 if the planet isn't found
 }
 
+function fadeSunOpacity(targetOpacity, duration = 1000) {
+  if (!sunMat) return;
+
+  sunMat.transparent = true;
+  const startOpacity = sunMat.opacity;
+  const startTime = performance.now();
+
+  function fadeStep(currentTime) {
+    const elapsed = currentTime - startTime;
+    const t = Math.min(elapsed / duration, 1);
+    const easedT = t * t * (3 - 2 * t); // smoothstep easing
+
+    sunMat.opacity = startOpacity + (targetOpacity - startOpacity) * easedT;
+
+    if (t < 1) {
+      requestAnimationFrame(fadeStep);
+    }
+  }
+
+  requestAnimationFrame(fadeStep);
+}
+
 function onDocumentMouseDown(event) {
   event.preventDefault();
 
@@ -268,7 +290,7 @@ function onDocumentMouseDown(event) {
       if (selectedPlanet === sun) {
         pendingPlanetSelection = sun;
       } else {
-        sunMat.opacity = 0;
+        fadeSunOpacity(0,1000);
         pendingPlanetSelection = selectedPlanet;
         selectedPlanet.planet.getWorldPosition(planetPosition);
       }
@@ -875,7 +897,7 @@ window.addEventListener('zoomOutNeeded', async () => {
   isHomeButtonView = false;
   isZoomingOut = true;
   console.log("zoom out received!");
-  sunMat.opacity = 1;
+  fadeSunOpacity(1,2000);
   settings.accelerationOrbit = 1;
 
   setTimeout(() => {
