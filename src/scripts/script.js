@@ -593,11 +593,7 @@ const mars = new createPlanet('Mars', 7, 115, 0, thaiFlagTexture, marsBump)
 
 
 const jupiter = new createPlanet('Jupiter', 69/4, 170, 0, poolBallTexture, null, null, null);
-const saturn = new createPlanet('Saturn', 58/4, 240, 0, saturnTexture, null, {
-  innerRadius: 18, 
-  outerRadius: 29, 
-  texture: satRingTexture
-});
+const saturn = new createPlanet('Saturn', 58/4, 240, 0, saturnTexture, null,null);
 
 
 const indexOrderofPlanets = [
@@ -651,7 +647,6 @@ jupiter.planet.receiveShadow = true;
 
 saturn.planet.castShadow = true;
 saturn.planet.receiveShadow = true;
-saturn.Ring.receiveShadow = true;
 
 
 

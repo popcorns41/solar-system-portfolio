@@ -1,0 +1,84 @@
+#intro {
+  background: transparent;
+  z-index: 2;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+#intro-content {
+  height: 46vh;
+  width: 100%;
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  position: relative;
+  z-index: 5;
+  opacity: 1;
+  background-color: #121212;
+}
+
+#introText {
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 4s ease;
+  z-index: 6;
+  color: white;
+  text-align: center;
+  font-family: 'Orbitron', sans-serif;
+}
+
+#title {
+  pointer-events: none;
+  z-index: 10;
+  position: absolute;
+  width: 100vw;
+  top: 50%;
+}
+
+#instruction {
+  opacity: 0;
+  transition: opacity 4s ease;
+  user-select: none;
+  caret-color: transparent;
+  margin-top: 2rem;
+}
+
+#enterSystem {
+  opacity: 0;
+  pointer-events: none;
+  margin-top: 7rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 2px solid white;
+  border-radius: 30px;
+  padding: 0.8rem 2rem;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: opacity 4s ease;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+  font-family: 'Orbitron', sans-serif;
+  user-select: none;
+  caret-color: transparent;
+  font-weight: 500;
+}
+
+#enterSystem:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
+}
+
+#enterSystem:active {
+  transform: scale(0.98);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+}

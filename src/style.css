@@ -1,3 +1,21 @@
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Headings get Orbitron */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.button, #enterSystem {
+  font-family: 'Orbitron', sans-serif;
+  user-select: none;
+  caret-color: transparent;
+  font-weight: 500;
+}
+
 .planet-info {
     display: none;
     position: fixed;
@@ -7,34 +25,61 @@
     z-index: 1;
 }
 
-
-#introText,
-#instruction {
-  opacity: 0;
-  transition: opacity 2s ease;
+#title{
+  pointer-events: none;
+  z-index: 10;
+  position: absolute;
+  width: 100vw;
+  top:50%;
 }
 
 #introText {
-    position: absolute;
-    top: 50%;
-    left: 40%;
-    z-index: 6; /* Above the sun, below the overlay if needed */
-    opacity: 0;
-    color: white;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 4s ease;
+  z-index: 6;
+  opacity: 0;
+  color: white;
+  text-align: center;
+  font-family: 'Orbitron', sans-serif; /* optional: add new font */
 }
 
 #instruction{
-    margin-top: 2rem;
+  opacity: 0;
+  transition: opacity 4s ease;
+  user-select: none;
+  caret-color: transparent;
+  margin-top: 2rem;
 }
 
-#enterSystem{
-  display: none;
+#enterSystem {
+  opacity: 0;
+  pointer-events: none;
+  margin-top: 7rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 2px solid white;
+  border-radius: 30px;
+  padding: 0.8rem 2rem;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: opacity 4s ease;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
 }
 
-#enterSystem, #fadeInBtn, #fadeOutBtn {
-  margin-top: 1rem;
-  transition: opacity 2s ease;
+#enterSystem:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
 }
+
+#enterSystem:active {
+  transform: scale(0.98);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+}
+
 
 #intro-content {
   height: 46vh;                /* bottom half of the screen */

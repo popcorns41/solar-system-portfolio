@@ -1,0 +1,32 @@
+
+#solarSystem {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1; /* Behind the intro */
+  overflow: hidden;
+}
+
+#threeCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  transform-origin: center center;
+  transition: transform 1.2s ease-in-out, border-radius 1.2s ease-in-out;
+  z-index: 50;
+  border-radius: 0%;
+  pointer-events: none; /* Enable when clickable */
+}
+
+#gui-container {
+  background: transparent !important;
+  display: block;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+}

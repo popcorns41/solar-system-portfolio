@@ -1,0 +1,112 @@
+#overlay {
+  background: transparent;
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  opacity: 1;
+  transition: opacity 4s ease;
+  z-index: 9999; /* Make sure it's above everything */
+}
+
+#fade-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: black;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 4s ease;
+  z-index: 9999;
+}
+
+#overlayCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+}
+
+#hoverCard {
+  display: none;
+  position: absolute;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 10px;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* Tutorial Card */
+
+.tutorial-card {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  opacity: 0;
+  transition: opacity 1s ease-out;
+  width: 300px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  font-family: sans-serif;
+  border-radius: 12px;
+  padding: 1rem;
+  z-index: 999;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  pointer-events: auto;
+}
+
+.tutorial-card.show {
+  opacity: 1;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #555;
+  position: relative;
+}
+
+.card-header h2 {
+  font-size: 1.1rem;
+  margin: 0;
+  padding-top: 0.2rem;
+}
+
+.close-btn {
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #fff;
+  transition: color 0.3s;
+  line-height: 1;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.close-btn:hover {
+  color: #A9A9A9;
+}
+
+.tutorial-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tutorial-card li {
+  margin-bottom: 0.4rem;
+  font-size: 0.95rem;
+}

@@ -1,0 +1,31 @@
+#infoSection {
+  position: absolute;
+  top: 25px; /* adjust to push below any top UI */
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 60px; /* space between boxes */
+  padding: 0 1rem;
+  pointer-events: none;
+  z-index: 5; /* adjust if needed */
+  box-sizing: border-box;
+}
+
+.info-box {
+  pointer-events: none;
+  opacity: 0;
+  flex: 1 1 45%;
+  min-width: 280px;
+  max-width: 550px;
+  height: 600px;
+  background: rgba(255, 255, 255, 0.05); /* subtle background for mask visibility */
+  border: 3px solid white;
+  border-radius: 10px;
+  padding: 1rem;
+  color: white;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+  transition: opacity 4s;
+}

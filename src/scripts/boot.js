@@ -25,7 +25,8 @@ window.addEventListener('DOMContentLoaded', () => {
   window.addEventListener("sunRose", () => {
     console.log("sun has arisen B-)")
     const generateButton = document.getElementById("enterSystem");
-    generateButton.style.display = "block";
+    generateButton.style.opacity = "1";
+    generateButton.style.pointerEvents = "auto";
   });
   
 });

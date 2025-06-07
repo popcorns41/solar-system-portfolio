@@ -81,11 +81,37 @@ function updateArrows() {
     }
   }, 10); // Small timeout to ensure animation can retrigger
 }
+function updateInfoDisplay() {
+  const leftBox = document.getElementById("infoBoxLeft");
+  const rightBox = document.getElementById("infoBoxRight");
+  const infoSection = document.getElementById("infoSection");
+  const index = window.planetIndex;
+  // Always show left box
+  leftBox.style.display = "block";
+  leftBox.style.opacity = "1";
+  leftBox.style.pointerEvents = "auto";
+
+  if (index === 0) {
+    // Only show left box for index 0 (Sun)
+    rightBox.style.display = "none";
+    rightBox.style.opacity = "0";
+    rightBox.style.pointerEvents = "none";
+  } else {
+    // Show both for other planets
+    rightBox.style.display = "block";
+    rightBox.style.opacity = "1";
+    rightBox.style.pointerEvents = "auto";
+  }
+
+  // Reveal section (if hidden)
+  infoSection.style.display = "flex";
+}
 
 document.getElementById("leftArrow").addEventListener("click", () => {
   if (window.planetIndex < 6) {
     window.planetIndex++;
     dispatchPlanetChange();
+    updateInfoDisplay();
     updateArrows();
   }
 });
@@ -94,6 +120,7 @@ document.getElementById("rightArrow").addEventListener("click", () => {
   if (window.planetIndex > 0) { // 6 is Saturn's index
     window.planetIndex--;
     dispatchPlanetChange();
+    updateInfoDisplay();
     updateArrows();
   }
 });
@@ -150,13 +177,26 @@ function revealInfoBoxes() {
   const leftBox = document.getElementById("infoBoxLeft");
   const rightBox = document.getElementById("infoBoxRight");
 
+  // Always reveal the left box
   leftBox.style.pointerEvents = "auto";
-  rightBox.style.pointerEvents = "auto";
-
   leftBox.style.opacity = "1";
-  rightBox.style.opacity = "1";
+  leftBox.style.display = "block";
 
-  setTimeout(()=>{uiFinished=true},2000);
+  if (window.planetIndex === 0) {
+    // Hide the right box for the Sun
+    rightBox.style.pointerEvents = "none";
+    rightBox.style.opacity = "0";
+    rightBox.style.display = "none";
+  } else {
+    // Show and enable the right box
+    rightBox.style.pointerEvents = "auto";
+    rightBox.style.opacity = "1";
+    rightBox.style.display = "block";
+  }
+
+  setTimeout(() => {
+    uiFinished = true;
+  }, 2000);
 }
 
 function hideInfoBoxes(){
