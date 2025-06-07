@@ -155,6 +155,8 @@ function revealInfoBoxes() {
 
   leftBox.style.opacity = "1";
   rightBox.style.opacity = "1";
+
+  setTimeout(()=>{uiFinished=true},2000);
 }
 
 function hideInfoBoxes(){
@@ -172,6 +174,8 @@ function hideInfoBoxes(){
   rightBox.style.opacity = "0";
 }
 
+let uiFinished = false;
+
 window.addEventListener("circularBorder",() => {
     transformCanvasToHomeButton();
     setTimeout(()=>{
@@ -187,6 +191,8 @@ window.addEventListener("circularBorder",() => {
 
 document.getElementById("planetCenter").addEventListener("click",
   () => {
+    if (!uiFinished) return;
+    uiFinished = false;
     hideInfoBoxes();
     removeUI();
     setTimeout(()=>{
