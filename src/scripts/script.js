@@ -332,29 +332,36 @@ function onDocumentMouseDown(event) {
 }
 
 function identifyPlanet(clickedObject) {
-  // Logic to identify which planet was clicked based on the clicked object, different offset for camera distance
-        if (clickedObject.material === mercury.planet.material) {
-          offset = offsets[1];
-          return mercury;
-        } else if (clickedObject.material === sunMat){
-          offset = offsets[0];
-          return sun;
-        } else if (clickedObject.material === venus.planet.material) {
-          offset = offsets[2];
-          return venus;
-        } else if (clickedObject.material === earth.planet.material) {
-          offset = offsets[3];
-          return earth;
-        } else if (clickedObject.material === mars.planet.material) {
-          offset = offsets[4];
-          return mars;
-        } else if (clickedObject.material === jupiter.planet.material) {
-          offset = offsets[5];
-          return jupiter;
-        } else if (clickedObject.material === saturn.planet.material) {
-          offset = offsets[6];
-          return saturn;
-        } 
+  if (clickedObject.material === mercury.planet.material) {
+    offset = offsets[1];
+    return mercury;
+  } else if (clickedObject.material === sunMat) {
+    offset = offsets[0];
+    return sun;
+  } else if (clickedObject.material === venus.planet.material) {
+    offset = offsets[2];
+    return venus;
+  } else if (clickedObject.material === earth.planet.material) {
+    offset = offsets[3];
+    return earth;
+  } else if (clickedObject.material === mars.planet.material) {
+    offset = offsets[4];
+    return mars;
+  } else if (clickedObject.material === jupiter.planet.material) {
+    offset = offsets[5];
+    return jupiter;
+  } else if (saturn.planet && saturn.planet instanceof THREE.Object3D && saturn.planet.children.length > 0) {
+    // New logic: check if clickedObject is a child of saturn.planet (BB-8 model)
+    let parent = clickedObject;
+    while (parent) {
+      if (parent === saturn.planet) {
+        offset = offsets[6];
+        return saturn;
+      }
+      parent = parent.parent;
+    }
+  }
+
   return null;
 }
 
@@ -524,19 +531,20 @@ function createPlanet(planetName, size, position, tilt, texture, bump, ring, atm
 
 
 // ******  LOADING OBJECTS METHOD  ******
-function loadObject(path, position, scale, callback) {
-  const loader = new GLTFLoader();
-
-  loader.load(path, function (gltf) {
-      const obj = gltf.scene;
-      obj.position.set(position, 0, 0);
-      obj.scale.set(scale, scale, scale);
-      scene.add(obj);
-      if (callback) {
-        callback(obj);
-      }
-  }, undefined, function (error) {
-      console.error('An error happened', error);
+function loadGLB(path, scale) {
+  return new Promise((resolve, reject) => {
+    const loader = new GLTFLoader();
+    loader.load(
+      path,
+      (gltf) => {
+        const obj = gltf.scene;
+        obj.scale.set(scale, scale, scale);
+        scene.add(obj);
+        resolve(obj);
+      },
+      undefined,
+      reject
+    );
   });
 }
 
@@ -593,7 +601,46 @@ const mars = new createPlanet('Mars', 7, 115, 0, thaiFlagTexture, marsBump)
 
 
 const jupiter = new createPlanet('Jupiter', 69/4, 170, 0, poolBallTexture, null, null, null);
-const saturn = new createPlanet('Saturn', 58/4, 240, 0, saturnTexture, null,null);
+const saturn = await bb8Maker(240,0);
+
+async function bb8Maker(position,tilt){
+  const name = "saturn"
+  const planet = await loadGLB("./glbModels/bb8_droid.glb",5);
+
+  const orbitPath = new THREE.EllipseCurve(
+    0, 0,            // ax, aY
+    position, position, // xRadius, yRadius
+    0, 2 * Math.PI,   // aStartAngle, aEndAngle
+    false,            // aClockwise
+    0                 // aRotation
+  );
+
+  planet.position.y -= 15;
+  const planetSystem = new THREE.Group();
+  const planet3d = new THREE.Object3D;
+  planetSystem.add(planet);
+  planet.position.x = position;
+  planet.rotation.z = tilt * Math.PI / 180;
+
+  const pathPoints = orbitPath.getPoints(100);
+  const orbitGeometry = new THREE.BufferGeometry().setFromPoints(pathPoints);
+  const orbitMaterial = new THREE.LineBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.5 });
+  const orbit = new THREE.LineLoop(orbitGeometry, orbitMaterial);
+  orbit.rotation.x = Math.PI / 2;
+  planet.orbit = orbit;
+  planetSystem.add(orbit);
+
+  planet3d.add(planetSystem);
+  scene.add(planet3d);
+
+  console.log(earth.planet3d);
+
+
+  return {name,planet,planet3d,orbit};
+}
+
+
+//bb8Model.position.y -= 15;
 
 
 const indexOrderofPlanets = [
@@ -644,9 +691,6 @@ mars.planet.castShadow = true;
 mars.planet.receiveShadow = true;
 jupiter.planet.castShadow = true;
 jupiter.planet.receiveShadow = true;
-
-saturn.planet.castShadow = true;
-saturn.planet.receiveShadow = true;
 
 
 
