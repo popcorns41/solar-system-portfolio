@@ -519,43 +519,43 @@ function loadObject(path, position, scale, callback) {
 }
 
 // Earth day/night effect shader material
-const earthMaterial = new THREE.ShaderMaterial({
-  uniforms: {
-    dayTexture: { type: "t", value: loadTexture.load(earthTexture) },
-    nightTexture: { type: "t", value: loadTexture.load(earthNightTexture) },
-    sunPosition: { type: "v3", value: sun.position }
-  },
-  vertexShader: `
-    varying vec3 vNormal;
-    varying vec2 vUv;
-    varying vec3 vSunDirection;
+// const earthMaterial = new THREE.ShaderMaterial({
+//   uniforms: {
+//     dayTexture: { type: "t", value: loadTexture.load(earthTexture) },
+//     nightTexture: { type: "t", value: loadTexture.load(earthNightTexture) },
+//     sunPosition: { type: "v3", value: sun.position }
+//   },
+//   vertexShader: `
+//     varying vec3 vNormal;
+//     varying vec2 vUv;
+//     varying vec3 vSunDirection;
 
-    uniform vec3 sunPosition;
+//     uniform vec3 sunPosition;
 
-    void main() {
-      vUv = uv;
-      vec4 worldPosition = modelMatrix * vec4(position, 1.0);
-      vNormal = normalize(modelMatrix * vec4(normal, 0.0)).xyz;
-      vSunDirection = normalize(sunPosition - worldPosition.xyz);
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    }
-  `,
-  fragmentShader: `
-    uniform sampler2D dayTexture;
-    uniform sampler2D nightTexture;
+//     void main() {
+//       vUv = uv;
+//       vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+//       vNormal = normalize(modelMatrix * vec4(normal, 0.0)).xyz;
+//       vSunDirection = normalize(sunPosition - worldPosition.xyz);
+//       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+//     }
+//   `,
+//   fragmentShader: `
+//     uniform sampler2D dayTexture;
+//     uniform sampler2D nightTexture;
 
-    varying vec3 vNormal;
-    varying vec2 vUv;
-    varying vec3 vSunDirection;
+//     varying vec3 vNormal;
+//     varying vec2 vUv;
+//     varying vec3 vSunDirection;
 
-    void main() {
-      float intensity = max(dot(vNormal, vSunDirection), 0.0);
-      vec4 dayColor = texture2D(dayTexture, vUv);
-      vec4 nightColor = texture2D(nightTexture, vUv)* 0.2;
-      gl_FragColor = mix(nightColor, dayColor, intensity);
-    }
-  `
-});
+//     void main() {
+//       float intensity = max(dot(vNormal, vSunDirection), 0.0);
+//       vec4 dayColor = texture2D(dayTexture, vUv);
+//       vec4 nightColor = texture2D(nightTexture, vUv)* 0.2;
+//       gl_FragColor = mix(nightColor, dayColor, intensity);
+//     }
+//   `
+// });
 
 
 // ******  MOONS  ******
@@ -565,13 +565,13 @@ const earthMaterial = new THREE.ShaderMaterial({
 //mercury original size: 2.4
 const mercury = new createPlanet('Mercury', 5, 40, 0, mercuryTexture, mercuryBump);
 const venus = new createPlanet('Venus', 6.1, 65, 0, basketballTexture);
-const earth = new createPlanet('Earth', 6.4, 90, 0, earthMaterial, null, null);
+const earth = new createPlanet('Earth', 6.4, 90, 0, earthTexture, null, null);
 const mars = new createPlanet('Mars', 7, 115, 0, thaiFlagTexture, marsBump)
 // Load Mars moons
 
 
-const jupiter = new createPlanet('Jupiter', 69/4, 200, 0, poolBallTexture, null, null, null);
-const saturn = new createPlanet('Saturn', 58/4, 270, 0, saturnTexture, null, {
+const jupiter = new createPlanet('Jupiter', 69/4, 170, 0, poolBallTexture, null, null, null);
+const saturn = new createPlanet('Saturn', 58/4, 240, 0, saturnTexture, null, {
   innerRadius: 18, 
   outerRadius: 29, 
   texture: satRingTexture

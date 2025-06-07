@@ -43,61 +43,43 @@ function showPlanetSelector() {
   selector.style.pointerEvents = "auto";
 }
 
-let lastIndex = null; // Track previous index
-
 function updateArrows() {
   const leftArrow = document.getElementById("leftArrow");
   const rightArrow = document.getElementById("rightArrow");
   const index = window.planetIndex;
 
-  // Only animate if index has changed
-  if (index !== lastIndex) {
-    // Remove previous animation classes
-    leftArrow.classList.remove("sweep-left");
-    rightArrow.classList.remove("sweep-right");
+  // Reset classes to re-trigger animation if needed
+  leftArrow.classList.remove("sweep-left");
+  rightArrow.classList.remove("sweep-right");
 
-    // LEFT arrow
-    if (index === 6) {
-      // Hide left, show right
+  // Delay re-adding for animation retriggering
+  setTimeout(() => {
+    if (index === 0) {
+      // At Saturn (last planet)
+      leftArrow.style.opacity = "1";
+      leftArrow.style.pointerEvents = "auto";
+      rightArrow.style.opacity = "0";
+      rightArrow.style.pointerEvents = "none";
+      leftArrow.classList.add("sweep-left");
+
+    } else if (index === 6) {
+      // At Sun (first planet)
       leftArrow.style.opacity = "0";
       leftArrow.style.pointerEvents = "none";
       rightArrow.style.opacity = "1";
       rightArrow.style.pointerEvents = "auto";
-
-      // Add right sweep animation only if becoming visible
-      if (lastIndex !== 1) {
-        rightArrow.classList.add("sweep-right");
-      }
-
-    } else if (index === 0) {
-      // Hide right, show left
-      rightArrow.style.opacity = "0";
-      rightArrow.style.pointerEvents = "none";
-      leftArrow.style.opacity = "1";
-      leftArrow.style.pointerEvents = "auto";
-
-      if (lastIndex !== 5) {
-        leftArrow.classList.add("sweep-left");
-      }
+      rightArrow.classList.add("sweep-right");
 
     } else {
-      // Both visible
+      // Middle planets
       leftArrow.style.opacity = "1";
-      leftArrow.style.pointerEvents = "auto";
       rightArrow.style.opacity = "1";
+      leftArrow.style.pointerEvents = "auto";
       rightArrow.style.pointerEvents = "auto";
-
-      // Only re-add if coming from either edge
-      if (lastIndex === 0) {
-        leftArrow.classList.add("sweep-left");
-      }
-      if (lastIndex === 6) {
-        rightArrow.classList.add("sweep-right");
-      }
+      leftArrow.classList.add("sweep-left");
+      rightArrow.classList.add("sweep-right");
     }
-
-    lastIndex = index; // Update tracker
-  }
+  }, 10); // Small timeout to ensure animation can retrigger
 }
 
 document.getElementById("leftArrow").addEventListener("click", () => {
