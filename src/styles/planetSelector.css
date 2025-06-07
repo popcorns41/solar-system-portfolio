@@ -31,7 +31,7 @@
   transition: stroke-dashoffset 2s, stroke-width 0.2s;
 }
 
-svg:hover circle {
+#planetCenter:hover circle {
   stroke-width: 7px;
 }
 
