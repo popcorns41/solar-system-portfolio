@@ -150,6 +150,8 @@ function onMouseMove(event) {
   if (intersects.length > 0) {
     const object = intersects[0].object;
 
+    console.log(object==saturn.planet);
+
     // Position the card near the cursor
     card.style.left = `${event.clientX + 10}px`;
     card.style.top = `${event.clientY + 10}px`;
@@ -168,7 +170,7 @@ function onMouseMove(event) {
       card.innerText = "Extracurricular";
     } else if (object === jupiter.planet) {
       card.innerText = "Childhood";
-    } else if (object === saturn.planet) {
+    } else if (saturn.meshes.includes(object)) {
       card.innerText = "About me";
     } else {
       card.innerText = "";
@@ -332,31 +334,39 @@ function onDocumentMouseDown(event) {
 }
 
 function identifyPlanet(clickedObject) {
-  // Logic to identify which planet was clicked based on the clicked object, different offset for camera distance
-        if (clickedObject.material === mercury.planet.material) {
-          offset = offsets[1];
-          return mercury;
-        } else if (clickedObject.material === sunMat){
-          offset = offsets[0];
-          return sun;
-        } else if (clickedObject.material === venus.planet.material) {
-          offset = offsets[2];
-          return venus;
-        } else if (clickedObject.material === earth.planet.material) {
-          offset = offsets[3];
-          return earth;
-        } else if (clickedObject.material === mars.planet.material) {
-          offset = offsets[4];
-          return mars;
-        } else if (clickedObject.material === jupiter.planet.material) {
-          offset = offsets[5];
-          return jupiter;
-        } else if (clickedObject.material === saturn.planet.material) {
-          offset = offsets[6];
-          return saturn;
-        } 
+  if (clickedObject.material === mercury.planet.material) {
+    offset = offsets[1];
+    return mercury;
+  } else if (clickedObject.material === sunMat) {
+    offset = offsets[0];
+    return sun;
+  } else if (clickedObject.material === venus.planet.material) {
+    offset = offsets[2];
+    return venus;
+  } else if (clickedObject.material === earth.planet.material) {
+    offset = offsets[3];
+    return earth;
+  } else if (clickedObject.material === mars.planet.material) {
+    offset = offsets[4];
+    return mars;
+  } else if (clickedObject.material === jupiter.planet.material) {
+    offset = offsets[5];
+    return jupiter;
+  } else if (saturn.planet && saturn.planet instanceof THREE.Object3D && saturn.planet.children.length > 0) {
+    // New logic: check if clickedObject is a child of saturn.planet (BB-8 model)
+    let parent = clickedObject;
+    while (parent) {
+      if (parent === saturn.planet) {
+        offset = offsets[6];
+        return saturn;
+      }
+      parent = parent.parent;
+    }
+  }
+
   return null;
 }
+
 
 
 // ******  SHOW PLANET INFO AFTER SELECTION  ******
@@ -524,19 +534,21 @@ function createPlanet(planetName, size, position, tilt, texture, bump, ring, atm
 
 
 // ******  LOADING OBJECTS METHOD  ******
-function loadObject(path, position, scale, callback) {
-  const loader = new GLTFLoader();
 
-  loader.load(path, function (gltf) {
-      const obj = gltf.scene;
-      obj.position.set(position, 0, 0);
-      obj.scale.set(scale, scale, scale);
-      scene.add(obj);
-      if (callback) {
-        callback(obj);
-      }
-  }, undefined, function (error) {
-      console.error('An error happened', error);
+//async function for loading glb models :D
+function loadGLB(path) {
+  return new Promise((resolve, reject) => {
+    const loader = new GLTFLoader();
+    loader.load(
+      path,
+      (gltf) => {
+        const obj = gltf.scene;
+        scene.add(obj);
+        resolve(obj);
+      },
+      undefined,
+      reject
+    );
   });
 }
 
@@ -593,7 +605,63 @@ const mars = new createPlanet('Mars', 7, 115, 0, thaiFlagTexture, marsBump)
 
 
 const jupiter = new createPlanet('Jupiter', 69/4, 170, 0, poolBallTexture, null, null, null);
-const saturn = new createPlanet('Saturn', 58/4, 240, 0, saturnTexture, null,null);
+//const saturn = new createPlanet('Saturn', 58/4, 240, 0, saturnTexture, null,null);
+
+const saturn = await createWheatley(260,1);
+
+saturn.meshes = [];
+  saturn.planet.traverse(child => {
+    if (child.isMesh) saturn.meshes.push(child);
+  });
+
+console.log(saturn.meshes);
+
+async function createWheatley(position,scale){
+  const name = "Saturn";
+  const planet = await loadGLB("./glbModels/wheatley.glb");
+  
+  planet.traverse((child) => {
+    if (child.isMesh) {
+      child.material = new THREE.MeshStandardMaterial({
+        map: child.material.map,
+        color: child.material.color,
+      });
+      child.geometry.computeVertexNormals();
+    }
+  });
+
+  const planet3d = new THREE.Object3D;
+  const planetSystem = new THREE.Group();
+  planetSystem.add(planet);
+
+  planet.position.x = position;
+  planet.scale.set(scale,scale,scale);
+
+  const orbitPath = new THREE.EllipseCurve(
+    0, 0,            // ax, aY
+    position, position, // xRadius, yRadius
+    0, 2 * Math.PI,   // aStartAngle, aEndAngle
+    false,            // aClockwise
+    0                 // aRotation
+  );
+
+  const pathPoints = orbitPath.getPoints(100);
+  const orbitGeometry = new THREE.BufferGeometry().setFromPoints(pathPoints);
+  const orbitMaterial = new THREE.LineBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.5 });
+  const orbit = new THREE.LineLoop(orbitGeometry, orbitMaterial);
+  orbit.rotation.x = Math.PI / 2;
+  planet.orbit = orbit;
+
+  planetSystem.add(orbit);
+
+  planet3d.add(planetSystem);
+  scene.add(planet3d);
+
+  return {name,planet,planet3d,orbit};
+}
+
+
+
 
 
 const indexOrderofPlanets = [
@@ -613,7 +681,7 @@ const offsets = [
   25,    // earth
   30,    // mars
   65,    // jupiter
-  50     // saturn
+  65     // saturn
 ];
 
 // Array of planets and atmospheres for raycasting
@@ -668,26 +736,40 @@ function revealPlanet(planetGroup) {
 
   planetGroup.traverse(child => {
     if ((child.isMesh || child.isLine) && child.material) {
-      child.visible = true; // Ensure child is renderable
-      child.material.transparent = true;
-      child.material.opacity = 0;
+      child.visible = true;
 
       const duration = 1000;
       const startTime = performance.now();
 
-      function fade(currentTime) {
-        const elapsed = currentTime - startTime;
-        const t = Math.min(elapsed / duration, 1);
-        const easedT = t * t * (3 - 2 * t); // smoothstep easing
+      if (Array.isArray(child.material)) {
+        child.material.forEach(mat => {
+          mat.transparent = true;
+          mat.opacity = 0;
 
-        child.material.opacity = easedT;
+          function fade(currentTime) {
+            const elapsed = currentTime - startTime;
+            const t = Math.min(elapsed / duration, 1);
+            const easedT = t * t * (3 - 2 * t);
+            mat.opacity = easedT;
+            if (t < 1) requestAnimationFrame(fade);
+          }
 
-        if (t < 1) {
           requestAnimationFrame(fade);
-        }
-      }
+        });
+      } else {
+        child.material.transparent = true;
+        child.material.opacity = 0;
 
-      requestAnimationFrame(fade);
+        function fade(currentTime) {
+          const elapsed = currentTime - startTime;
+          const t = Math.min(elapsed / duration, 1);
+          const easedT = t * t * (3 - 2 * t);
+          child.material.opacity = easedT;
+          if (t < 1) requestAnimationFrame(fade);
+        }
+
+        requestAnimationFrame(fade);
+      }
     }
   });
 }
@@ -896,7 +978,7 @@ window.addEventListener('zoomOutNeeded', async () => {
   settings.accelerationOrbit = 1;
 
   setTimeout(() => {
-    sequentialReveal();
+    sequentialReveal(500);
   }, 500); // optional pause
 });
 
@@ -975,16 +1057,16 @@ canvas.addEventListener('resize', function(){
   composer.setSize(window.innerWidth,window.innerHeight);
 });
 
-window.addEventListener('resize', () => {
-  const canvas = document.getElementById('threeCanvas');
+// window.addEventListener('resize', () => {
+//   const canvas = document.getElementById('threeCanvas');
 
-  if (isHomeButtonView) {
-    const scale = 200 / window.innerWidth;
-    const translateY = window.innerHeight / 2 - 100;
-    canvas.style.transform = `translate(0px, ${translateY}px) scale(${scale})`;
-  } else {
-    canvas.style.width = '100vw';
-    canvas.style.height = '100vh';
-    canvas.style.transform = ''; // Reset to normal
-  }
-});
+//   if (isHomeButtonView) {
+//     const scale = 200 / window.innerWidth;
+//     const translateY = window.innerHeight / 2 - 100;
+//     canvas.style.transform = `translate(0px, ${translateY}px) scale(${scale})`;
+//   } else {
+//     canvas.style.width = '100vw';
+//     canvas.style.height = '100vh';
+//     canvas.style.transform = ''; // Reset to normal
+//   }
+// });
