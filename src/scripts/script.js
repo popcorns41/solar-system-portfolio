@@ -995,28 +995,23 @@ function hideAllExceptSelected(selectedIndex) {
 
     if (!mesh) return;
 
-    const isSun = planetObj.name === "Sun";
+    const isSelected = index === selectedIndex;
 
-    if (index !== selectedIndex) {
-      if (isSun) {
-        sunMat.opacity = 0; // Special handling for Sun
-      } else {
-        mesh.traverse(child => child.visible = false);
-      }
+    mesh.traverse(child => {
+      if ((child.isMesh || child.isLine) && child.material) {
+        const materials = Array.isArray(child.material) ? child.material : [child.material];
+        materials.forEach(mat => {
+          mat.transparent = true;
+          mat.opacity = isSelected ? 1 : 0;
+        });
 
-      if (planetObj.orbit) {
-        planetObj.orbit.visible = false;
+        child.visible = true; // Always keep children visible to prevent render bugs
       }
-    } else {
-      if (isSun) {
-        sunMat.opacity = 1; // Reveal the Sun
-      } else {
-        mesh.visible = true;
-      }
+    });
 
-      if (planetObj.orbit) {
-        planetObj.orbit.visible = true;
-      }
+    // Orbits are optional; show only for selected planet
+    if (planetObj.orbit) {
+      planetObj.orbit.visible = isSelected;
     }
   });
 }
