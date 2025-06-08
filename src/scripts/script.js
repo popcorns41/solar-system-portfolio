@@ -14,22 +14,7 @@ import mercuryBump from '/images/mercurybump.jpg';
 import thaiFlagTexture from '/images/Flag_of_Thailand.jpg'
 
 import earthTexture from '/images/earth_daymap.jpg';
-import earthNightTexture from '/images/earth_nightmap.jpg';
-import earthMoonTexture from '/images/moonmap.jpg';
-import earthMoonBump from '/images/moonbump.jpg';
-import marsTexture from '/images/marsmap.jpg';
-import marsBump from '/images/marsbump.jpg';
-import jupiterTexture from '/images/jupiter.jpg';
-import ioTexture from '/images/jupiterIo.jpg';
-import europaTexture from '/images/jupiterEuropa.jpg';
-import ganymedeTexture from '/images/jupiterGanymede.jpg';
-import callistoTexture from '/images/jupiterCallisto.jpg';
-import saturnTexture from '/images/saturnmap.jpg';
-import satRingTexture from '/images/saturn_ring.png';
-import uranusTexture from '/images/uranus.jpg';
-import uraRingTexture from '/images/uranus_ring.png';
-import neptuneTexture from '/images/neptune.jpg';
-import plutoTexture from '/images/plutomap.jpg';
+import pixarBall from '/images/pixar_ball.jpg';
 
 
 
@@ -150,8 +135,6 @@ function onMouseMove(event) {
   if (intersects.length > 0) {
     const object = intersects[0].object;
 
-    console.log(object==saturn.planet);
-
     // Position the card near the cursor
     card.style.left = `${event.clientX + 10}px`;
     card.style.top = `${event.clientY + 10}px`;
@@ -168,7 +151,7 @@ function onMouseMove(event) {
       card.innerText = "Robotics";
     } else if (mars.meshes.includes(object)) {
       card.innerText = "Extracurricular";
-    } else if (object === jupiter.planet) {
+    } else if (jupiter.meshes.includes(object)) {
       card.innerText = "Childhood";
     } else if (saturn.meshes.includes(object)) {
       card.innerText = "About me";
@@ -334,7 +317,17 @@ function onDocumentMouseDown(event) {
   }
 }
 
+function isDescendantOf(object, potentialAncestor) {
+  let current = object;
+  while (current) {
+    if (current === potentialAncestor) return true;
+    current = current.parent;
+  }
+  return false;
+}
+
 function identifyPlanet(clickedObject) {
+
   if (clickedObject.material === mercury.planet.material) {
     offset = offsets[1];
     return mercury;
@@ -347,27 +340,15 @@ function identifyPlanet(clickedObject) {
   } else if (clickedObject.material === earth.planet.material) {
     offset = offsets[3];
     return earth;
-  } else if (mars.planet && mars.planet instanceof THREE.Object3D && mars.planet.children.length > 0) {
-    let parent = clickedObject;
-    while (parent) {
-      if (parent === mars.planet) {
-        offset = offsets[4];
-        return mars;
-      }
-      parent = parent.parent;
-    }
-  } else if (clickedObject.material === jupiter.planet.material) {
+  } else if (mars.planet && isDescendantOf(clickedObject, mars.planet)) {
+    offset = offsets[4];
+    return mars;
+  } else if (jupiter.planet && isDescendantOf(clickedObject, jupiter.planet)) {
     offset = offsets[5];
     return jupiter;
-  } else if (saturn.planet && saturn.planet instanceof THREE.Object3D && saturn.planet.children.length > 0) {
-    let parent = clickedObject;
-    while (parent) {
-      if (parent === saturn.planet) {
-        offset = offsets[6];
-        return saturn;
-      }
-      parent = parent.parent;
-    }
+  } else if (saturn.planet && isDescendantOf(clickedObject, saturn.planet)) {
+    offset = offsets[6];
+    return saturn;
   }
 
   return null;
@@ -416,7 +397,7 @@ const sun = new THREE.Mesh(sunGeom, sunMat);
 scene.add(sun);
 
 //point light in the sun
-const pointLight = new THREE.PointLight(0xFDFFD3 , 1200, 400, 1.4);
+const pointLight = new THREE.PointLight(0xFDFFD3 , 2500, 400, 1.4);
 sun.add(pointLight);
 
 // Gentle ambient
@@ -605,13 +586,19 @@ function loadGLB(path) {
 //mercury original size: 2.4
 const mercury = new createPlanet('Mercury', 5, 40, 0, mercuryTexture, mercuryBump);
 const venus = new createPlanet('Venus', 6.1, 65, 0, basketballTexture);
-const earth = new createPlanet('Earth', 6.4, 90, 0, earthTexture, null, null);
+const earth = new createPlanet('Earth', 6.4, 90, 0, poolBallTexture, null, null);
 //const mars = new createPlanet('Mars', 7, 115, 0, thaiFlagTexture, marsBump);
 const mars = await createglbPlanet("Mars","./glbModels/basketball.glb",115,4);
 // Load Mars moons
 
+const jupiter = await createglbPlanet("Jupiter","./glbModels/pixar_luxo_ball.glb",170,15);
 
-const jupiter = new createPlanet('Jupiter', 69/4, 170, 0, poolBallTexture, null, null, null);
+console.log(jupiter.planet);
+console.log("jupiter meshes: ",jupiter.meshes);
+//jupiter.planet.rotation.z = 45 * Math.PI / 180;
+
+//const jupiter = new createPlanet('Jupiter', 69/4, 170, 0, poolBallTexture, null, null, null);
+
 //const saturn = new createPlanet('Saturn', 58/4, 240, 0, saturnTexture, null,null);
 
 const saturn = await createglbPlanet("Saturn","./glbModels/wheatley.glb",260,1);
@@ -701,6 +688,8 @@ const raycastTargets = [
 
 // ******  SHADOWS  ******
 renderer.shadowMap.enabled = true;
+
+renderer.toneMappingExposure = 1.5; 
 
 //properties for the point light
 pointLight.shadow.mapSize.width = 1024;
