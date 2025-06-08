@@ -191,6 +191,7 @@ let hoverEnabled = true;
 let offset;
 let isHomeButtonView = false;
 
+
 function sequentialHideUnselected(selectedPlanet, delay = 300) {
   for (let i = planets.length - 1; i >= 0; i--) {
     const planet3d = planets[i];
@@ -674,6 +675,8 @@ const indexOrderofPlanets = [
   { name: "Saturn", mesh: saturn.planet }
 ];
 
+console.log("is mesh defined",saturn.planet);
+
 const offsets = [
   70,    // sun
   20,  // mercury
@@ -727,6 +730,8 @@ const planets = [
   saturn.planet3d
 ];
 
+console.log("planets include saturn",planets.includes(saturn.planet3d));
+
 planets.forEach((planet, index) => {
 planet.visible = false; // Initially hide them all
 });
@@ -738,38 +743,36 @@ function revealPlanet(planetGroup) {
     if ((child.isMesh || child.isLine) && child.material) {
       child.visible = true;
 
+      const materials = Array.isArray(child.material) ? child.material : [child.material];
+      materials.forEach(mat => {
+        mat.transparent = true;
+
+        // Force reset opacity in case it’s stuck
+        mat.opacity = 0;
+
+        // Reset potential side-effects
+        if (mat.depthWrite === false) mat.depthWrite = true;
+        if (mat.color && mat.color.a !== undefined) mat.color.a = 1.0;
+      });
+
       const duration = 1000;
       const startTime = performance.now();
 
-      if (Array.isArray(child.material)) {
-        child.material.forEach(mat => {
-          mat.transparent = true;
-          mat.opacity = 0;
+      function fade(currentTime) {
+        const elapsed = currentTime - startTime;
+        const t = Math.min(elapsed / duration, 1);
+        const easedT = t * t * (3 - 2 * t); // smoothstep
 
-          function fade(currentTime) {
-            const elapsed = currentTime - startTime;
-            const t = Math.min(elapsed / duration, 1);
-            const easedT = t * t * (3 - 2 * t);
-            mat.opacity = easedT;
-            if (t < 1) requestAnimationFrame(fade);
-          }
-
-          requestAnimationFrame(fade);
+        materials.forEach(mat => {
+          mat.opacity = easedT;
         });
-      } else {
-        child.material.transparent = true;
-        child.material.opacity = 0;
 
-        function fade(currentTime) {
-          const elapsed = currentTime - startTime;
-          const t = Math.min(elapsed / duration, 1);
-          const easedT = t * t * (3 - 2 * t);
-          child.material.opacity = easedT;
-          if (t < 1) requestAnimationFrame(fade);
+        if (t < 1) {
+          requestAnimationFrame(fade);
         }
-
-        requestAnimationFrame(fade);
       }
+
+      requestAnimationFrame(fade);
     }
   });
 }
@@ -998,7 +1001,7 @@ function hideAllExceptSelected(selectedIndex) {
       if (isSun) {
         sunMat.opacity = 0; // Special handling for Sun
       } else {
-        mesh.visible = false;
+        mesh.traverse(child => child.visible = false);
       }
 
       if (planetObj.orbit) {
@@ -1027,6 +1030,7 @@ window.addEventListener("planetChange", (event) => {
 
   selected.mesh.visible = true;
   selected.mesh.traverse(child => {
+  child.visible = true; // <- make child renderable
   if (child.material) {
     child.material.transparent = true;
     child.material.opacity = 1;
