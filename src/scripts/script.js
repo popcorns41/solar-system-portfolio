@@ -645,7 +645,11 @@ async function createglbPlanet(name,path,position,scale){
 
   let meshes = [];
   planet.traverse(child => {
-    if (child.isMesh) meshes.push(child);
+    if (child.isMesh) {
+      child.material.emissive = new THREE.Color(0xffddaa); // white glow
+      child.material.emissiveIntensity = 0.05;
+      meshes.push(child);
+    } 
   });
 
 console.log(meshes);
@@ -688,8 +692,6 @@ const raycastTargets = [
 
 // ******  SHADOWS  ******
 renderer.shadowMap.enabled = true;
-
-renderer.toneMappingExposure = 1.5; 
 
 //properties for the point light
 pointLight.shadow.mapSize.width = 1024;
