@@ -145,7 +145,7 @@ function onMouseMove(event) {
       card.innerText = "Contact me";
     } else if (object === mercury.planet) {
       card.innerText = "Resume";
-    } else if (object === venus.planet) {
+    } else if (venus.meshes.includes(object)) {
       card.innerText = "Skill sets";
     } else if (object === earth.planet || object === earth.Atmosphere) {
       card.innerText = "Robotics";
@@ -334,7 +334,7 @@ function identifyPlanet(clickedObject) {
   } else if (clickedObject.material === sunMat) {
     offset = offsets[0];
     return sun;
-  } else if (clickedObject.material === venus.planet.material) {
+  } else if (jupiter.planet && isDescendantOf(clickedObject, venus.planet)) {
     offset = offsets[2];
     return venus;
   } else if (clickedObject.material === earth.planet.material) {
@@ -585,7 +585,8 @@ function loadGLB(path) {
 // ******  PLANET CREATIONS  ******
 //mercury original size: 2.4
 const mercury = new createPlanet('Mercury', 5, 40, 0, mercuryTexture, mercuryBump);
-const venus = new createPlanet('Venus', 6.1, 65, 0, basketballTexture);
+//const venus = new createPlanet('Venus', 6.1, 65, 0, basketballTexture);
+const venus = await createglbPlanet("Venus","./glbModels/macintosh.glb",65,6.1);
 const earth = new createPlanet('Earth', 6.4, 90, 0, poolBallTexture, null, null);
 //const mars = new createPlanet('Mars', 7, 115, 0, thaiFlagTexture, marsBump);
 const mars = await createglbPlanet("Mars","./glbModels/basketball.glb",115,4);
