@@ -166,7 +166,7 @@ function onMouseMove(event) {
       card.innerText = "Skill sets";
     } else if (object === earth.planet || object === earth.Atmosphere) {
       card.innerText = "Robotics";
-    } else if (object === mars.planet) {
+    } else if (mars.meshes.includes(object)) {
       card.innerText = "Extracurricular";
     } else if (object === jupiter.planet) {
       card.innerText = "Childhood";
@@ -347,14 +347,19 @@ function identifyPlanet(clickedObject) {
   } else if (clickedObject.material === earth.planet.material) {
     offset = offsets[3];
     return earth;
-  } else if (clickedObject.material === mars.planet.material) {
-    offset = offsets[4];
-    return mars;
+  } else if (mars.planet && mars.planet instanceof THREE.Object3D && mars.planet.children.length > 0) {
+    let parent = clickedObject;
+    while (parent) {
+      if (parent === mars.planet) {
+        offset = offsets[4];
+        return mars;
+      }
+      parent = parent.parent;
+    }
   } else if (clickedObject.material === jupiter.planet.material) {
     offset = offsets[5];
     return jupiter;
   } else if (saturn.planet && saturn.planet instanceof THREE.Object3D && saturn.planet.children.length > 0) {
-    // New logic: check if clickedObject is a child of saturn.planet (BB-8 model)
     let parent = clickedObject;
     while (parent) {
       if (parent === saturn.planet) {
@@ -601,25 +606,18 @@ function loadGLB(path) {
 const mercury = new createPlanet('Mercury', 5, 40, 0, mercuryTexture, mercuryBump);
 const venus = new createPlanet('Venus', 6.1, 65, 0, basketballTexture);
 const earth = new createPlanet('Earth', 6.4, 90, 0, earthTexture, null, null);
-const mars = new createPlanet('Mars', 7, 115, 0, thaiFlagTexture, marsBump)
+//const mars = new createPlanet('Mars', 7, 115, 0, thaiFlagTexture, marsBump);
+const mars = await createglbPlanet("Mars","./glbModels/basketball.glb",115,4);
 // Load Mars moons
 
 
 const jupiter = new createPlanet('Jupiter', 69/4, 170, 0, poolBallTexture, null, null, null);
 //const saturn = new createPlanet('Saturn', 58/4, 240, 0, saturnTexture, null,null);
 
-const saturn = await createWheatley(260,1);
+const saturn = await createglbPlanet("Saturn","./glbModels/wheatley.glb",260,1);
 
-saturn.meshes = [];
-  saturn.planet.traverse(child => {
-    if (child.isMesh) saturn.meshes.push(child);
-  });
-
-console.log(saturn.meshes);
-
-async function createWheatley(position,scale){
-  const name = "Saturn";
-  const planet = await loadGLB("./glbModels/wheatley.glb");
+async function createglbPlanet(name,path,position,scale){
+  const planet = await loadGLB(path);
   
   planet.traverse((child) => {
     if (child.isMesh) {
@@ -658,7 +656,15 @@ async function createWheatley(position,scale){
   planet3d.add(planetSystem);
   scene.add(planet3d);
 
-  return {name,planet,planet3d,orbit};
+  let meshes = [];
+  planet.traverse(child => {
+    if (child.isMesh) meshes.push(child);
+  });
+
+console.log(meshes);
+
+
+  return {name,planet,planet3d,orbit,meshes};
 }
 
 
@@ -900,7 +906,7 @@ function animate(){
     venus.planet3d.rotateY(0.0006 * settings.accelerationOrbit);
     earth.planet.rotateY(0.005 * settings.acceleration);
     earth.planet3d.rotateY(0.001 * settings.accelerationOrbit);
-    mars.planet.rotateY(0.001 * settings.acceleration);
+    mars.planet.rotateY(0.008 * settings.acceleration);
     mars.planet3d.rotateY(0.0015 * settings.accelerationOrbit);
     jupiter.planet.rotateY(0.005 * settings.acceleration);
     jupiter.planet3d.rotateY(0.0003 * settings.accelerationOrbit);
