@@ -143,7 +143,7 @@ function onMouseMove(event) {
     // Add name or info
     if (object === sun) {
       card.innerText = "Contact me";
-    } else if (object === mercury.planet) {
+    } else if (mercury.meshes.includes(object)) {
       card.innerText = "Resume";
     } else if (venus.meshes.includes(object)) {
       card.innerText = "Skill sets";
@@ -328,13 +328,13 @@ function isDescendantOf(object, potentialAncestor) {
 
 function identifyPlanet(clickedObject) {
 
-  if (clickedObject.material === mercury.planet.material) {
+  if (mercury.planet && isDescendantOf(clickedObject, mercury.planet)) {
     offset = offsets[1];
     return mercury;
   } else if (clickedObject.material === sunMat) {
     offset = offsets[0];
     return sun;
-  } else if (jupiter.planet && isDescendantOf(clickedObject, venus.planet)) {
+  } else if (venus.planet && isDescendantOf(clickedObject, venus.planet)) {
     offset = offsets[2];
     return venus;
   } else if (clickedObject.material === earth.planet.material) {
@@ -588,7 +588,11 @@ function loadGLB(path) {
 
 // ******  PLANET CREATIONS  ******
 //mercury original size: 2.4
-const mercury = new createPlanet('Mercury', 5, 40, 0, mercuryTexture, mercuryBump);
+const mercury = await createglbPlanet("Mercury","./glbModels/intelligence_briefcase.glb",40,0.25);
+mercury.planet.rotation.x = -90 * Math.PI / 180;
+
+
+//const mercury = new createPlanet('Mercury', 5, 40, 0, mercuryTexture, mercuryBump);
 //const venus = new createPlanet('Venus', 6.1, 65, 0, basketballTexture);
 const venus = await createglbPlanet("Venus","./glbModels/macintosh.glb",65,6.1);
 const earth = new createPlanet('Earth', 6.4, 90, 0, poolBallTexture, null, null);
@@ -685,8 +689,8 @@ const indexOrderofPlanets = [
 
 const offsets = [
   70,    // sun
-  20,  // mercury
-  25,  // venus
+  30,  // mercury
+  30,  // venus
   25,    // earth
   30,    // mars
   65,    // jupiter
@@ -701,9 +705,6 @@ const raycastTargets = [
 
 // ******  SHADOWS  ******
 renderer.shadowMap.enabled = true;
-
-// render lighting
-renderer.physicallyCorrectLights = true;
 
 //properties for the point light
 pointLight.shadow.mapSize.width = 1024;
@@ -903,7 +904,7 @@ function animate(){
   
 
 
-    mercury.planet.rotateY(0.001 * settings.acceleration);
+    mercury.planet.rotateZ(0.007 * settings.acceleration);
     mercury.planet3d.rotateY(0.004 * settings.accelerationOrbit);
     venus.planet.rotateY(0.005 * settings.acceleration);
     venus.planet3d.rotateY(0.0006 * settings.accelerationOrbit);
