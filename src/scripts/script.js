@@ -71,7 +71,7 @@ bloomPass.renderToScreen = true;
 bloomPass.clear = false;
 bloomPass.threshold = 1;
 bloomPass.radius = 0.9;
-//composer.addPass(bloomPass);
+composer.addPass(bloomPass);
 
 // ****** AMBIENT LIGHT ******
 console.log("Add the ambient light");
@@ -91,8 +91,8 @@ scene.background = cubeTextureLoader.load([
 ]);
 */
 
-
-//scene.background = color;
+const colour = new THREE.Color(0x121212);
+scene.background = colour;
 
 // ******  CONTROLS  ******
 // const gui = new dat.GUI({ autoPlace: false });
@@ -384,10 +384,14 @@ let sunMat;
 
 const sunSize = 697/40; // 40 times smaller scale than earth
 const sunGeom = new THREE.SphereGeometry(sunSize, 32, 20);
+// sunMat = new THREE.MeshPhongMaterial({
+//   map: loadTexture.load(sunTexture)
+// });
 sunMat = new THREE.MeshStandardMaterial({
   emissive: 0xFFF88F,
   emissiveMap: loadTexture.load(sunTexture),
-  emissiveIntensity: 1.2
+  emissiveIntensity: 1,
+  color: new THREE.Color(0xFFA500)
 });
 
 sunMat.transparent = true;
@@ -404,7 +408,7 @@ sun.add(pointLight);
 
 
 // Soft hemispheric fill
-const hemiLight = new THREE.HemisphereLight(0xffffff, 0x222222, 0.9);
+const hemiLight = new THREE.HemisphereLight(0xffffff, 0x222222, 0.2);
 scene.add(hemiLight);
 
 
@@ -604,6 +608,14 @@ console.log("jupiter meshes: ",jupiter.meshes);
 
 const saturn = await createglbPlanet("Saturn","./glbModels/wheatley.glb",260,1);
 
+
+
+
+  // List available animations
+  saturn.planet.animations.forEach((clip) => {
+    console.log("Available animation:", clip.name);
+  });
+
 async function createglbPlanet(name,path,position,scale){
   const planet = await loadGLB(path);
   
@@ -647,13 +659,11 @@ async function createglbPlanet(name,path,position,scale){
   let meshes = [];
   planet.traverse(child => {
     if (child.isMesh) {
-      child.material.emissive = new THREE.Color(0xffddaa); // white glow
-      child.material.emissiveIntensity = 0.05;
+      // child.material.emissive = new THREE.Color(0xffddaa); // white glow
+      // child.material.emissiveIntensity = 0.05;
       meshes.push(child);
     } 
   });
-
-console.log(meshes);
 
 
   return {name,planet,planet3d,orbit,meshes};
@@ -673,8 +683,6 @@ const indexOrderofPlanets = [
   { name: "Saturn", mesh: saturn.planet }
 ];
 
-console.log("is mesh defined",saturn.planet);
-
 const offsets = [
   70,    // sun
   20,  // mercury
@@ -693,6 +701,9 @@ const raycastTargets = [
 
 // ******  SHADOWS  ******
 renderer.shadowMap.enabled = true;
+
+// render lighting
+renderer.physicallyCorrectLights = true;
 
 //properties for the point light
 pointLight.shadow.mapSize.width = 1024;
@@ -1054,16 +1065,28 @@ canvas.addEventListener('resize', function(){
   composer.setSize(window.innerWidth,window.innerHeight);
 });
 
-// window.addEventListener('resize', () => {
-//   const canvas = document.getElementById('threeCanvas');
+function handleResize() {
+  const canvas = document.getElementById("threeCanvas");
 
-//   if (isHomeButtonView) {
-//     const scale = 200 / window.innerWidth;
-//     const translateY = window.innerHeight / 2 - 100;
-//     canvas.style.transform = `translate(0px, ${translateY}px) scale(${scale})`;
-//   } else {
-//     canvas.style.width = '100vw';
-//     canvas.style.height = '100vh';
-//     canvas.style.transform = ''; // Reset to normal
-//   }
-// });
+  // Get current transform (e.g. scale + translate from animation)
+  const currentTransform = window.getComputedStyle(canvas).transform;
+
+  // Temporarily clear transform so we can measure properly
+  canvas.style.transform = "none";
+  const rectBefore = canvas.getBoundingClientRect();
+
+  // Resize Three.js renderer and camera
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  renderer.setSize(width, height);
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+
+  // Reset and reapply original transform
+  canvas.style.transform = currentTransform;
+
+  // Optionally, re-calculate new position based on rectBefore if you want more precise adjustment
+}
+
+window.addEventListener('resize', handleResize);
+
