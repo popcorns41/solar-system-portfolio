@@ -8,13 +8,7 @@ import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 
 import sunTexture from '/images/sun.jpg';
 import poolBallTexture from '/images/8ball.jpg';
-import basketballTexture from '/images/ball.jpg'
-import mercuryTexture from '/images/mercurymap.jpg';
-import mercuryBump from '/images/mercurybump.jpg';
-import thaiFlagTexture from '/images/Flag_of_Thailand.jpg'
 
-import earthTexture from '/images/earth_daymap.jpg';
-import pixarBall from '/images/pixar_ball.jpg';
 
 
 

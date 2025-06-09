@@ -1,0 +1,2 @@
+#solarSystem{z-index:1;width:100vw;height:100vh;position:absolute;top:0;left:0;overflow:hidden}#threeCanvas{transform-origin:50%;z-index:50;pointer-events:none;border-radius:0%;width:100vw;height:100vh;transition:transform 1.2s ease-in-out,border-radius 1.2s ease-in-out;position:absolute;top:0;left:0}#gui-container{z-index:10;display:block;position:absolute;top:10px;right:10px;background:0 0!important}
+/*# sourceMappingURL=solar-system-portfolio.b2c2b79a.css.map */

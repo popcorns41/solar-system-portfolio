@@ -1,0 +1,2 @@
+window.fadeToBlack=function(e=1e3){let t=document.getElementById("fade-overlay");t.style.transition=`opacity ${e}ms ease`,t.style.opacity="1"},window.fadeFromBlack=function(e=1e3){let t=document.getElementById("fade-overlay");t.style.transition=`opacity ${e}ms ease`,t.style.opacity="0"},window.state={fadeBackground:!1,planetTilt:0,selectedPlanet:null,cameraMode:"orbiting",currentSection:null};var isDefined=!1;window.state&&(isDefined=!0),console.log("Is window.state defined?",isDefined);
+//# sourceMappingURL=solar-system-portfolio.3c220681.js.map

@@ -1,0 +1,2 @@
+window.addEventListener("fadeToBlack",e=>{let{key:t,value:d}=e.detail;!0===d&&window.fadeToBlack()}),window.addEventListener("fadeFromBlack",e=>{let{key:t,value:d}=e.detail;!1===d&&window.fadeFromBlack()}),window.addEventListener("beginTutorial",()=>{setTimeout(()=>{document.getElementById("tutorialCard").classList.add("show")},500)}),document.getElementById("closeTutorial").addEventListener("click",()=>{document.getElementById("tutorialCard").style.display="none"});
+//# sourceMappingURL=solar-system-portfolio.15a6f49e.js.map
