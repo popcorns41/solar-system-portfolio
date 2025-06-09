@@ -1,0 +1,74 @@
+/* ==========================
+   base.css — Global Styles
+   ========================== */
+
+/* Font Imports */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;600&display=swap');
+
+/* Global Reset & Box Sizing */
+* {
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  caret-color: transparent;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  background-color: #161616;
+  overflow: hidden;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: white;
+}
+
+p {
+  color: white;
+  line-height: 1.5;
+  user-select: none;
+  caret-color: transparent;
+}
+
+/* Buttons & Interactive */
+.button, #enterSystem, .arrow {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 500;
+  user-select: none;
+  caret-color: transparent;
+  cursor: pointer;
+}
+
+/* Section Defaults */
+.sections * {
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  box-sizing: border-box;
+}
+
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 8px; /* for horizontal scroll */
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: transparent;
+}
