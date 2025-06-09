@@ -401,7 +401,7 @@ const sun = new THREE.Mesh(sunGeom, sunMat);
 scene.add(sun);
 
 //point light in the sun
-const pointLight = new THREE.PointLight(0xFDFFD3 , 2500, 400, 1.4);
+const pointLight = new THREE.PointLight(0xFDFFD3 , 1200, 400, 1.4);
 sun.add(pointLight);
 
 // Gentle ambient
@@ -588,7 +588,7 @@ function loadGLB(path) {
 
 // ******  PLANET CREATIONS  ******
 //mercury original size: 2.4
-const mercury = await createglbPlanet("Mercury","./glbModels/intelligence_briefcase.glb",40,0.25);
+const mercury = await createglbPlanet("Mercury","./glbModels/intelligence_briefcase.glb",40,0.20);
 mercury.planet.rotation.x = -90 * Math.PI / 180;
 
 
@@ -694,7 +694,7 @@ const offsets = [
   25,    // earth
   30,    // mars
   65,    // jupiter
-  65     // saturn
+  70     // saturn
 ];
 
 // Array of planets and atmospheres for raycasting
@@ -904,8 +904,8 @@ function animate(){
   
 
 
-    mercury.planet.rotateZ(0.007 * settings.acceleration);
-    mercury.planet3d.rotateY(0.004 * settings.accelerationOrbit);
+    mercury.planet.rotateZ(0.003 * settings.acceleration);
+    mercury.planet3d.rotateY(0.002 * settings.accelerationOrbit);
     venus.planet.rotateY(0.005 * settings.acceleration);
     venus.planet3d.rotateY(0.0006 * settings.accelerationOrbit);
     earth.planet.rotateY(0.005 * settings.acceleration);

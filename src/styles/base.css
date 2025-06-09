@@ -52,3 +52,23 @@ p {
   display: block;
   box-sizing: border-box;
 }
+
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 8px; /* for horizontal scroll */
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: transparent;
+}

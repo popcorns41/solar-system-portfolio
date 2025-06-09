@@ -13,7 +13,8 @@
 }
 
 .info-box {
-  pointer-events: none;
+  overflow-y: auto;  
+  padding-right: 10px; 
   opacity: 0;
   flex: 1 1 45%;
   min-width: 280px;
@@ -22,10 +23,10 @@
   background: rgba(255, 255, 255, 0.05); /* subtle background for mask visibility */
   border: 3px solid white;
   border-radius: 10px;
-  padding: 1rem;
+  padding: 3rem;
   color: white;
   box-sizing: border-box;
-  overflow: hidden;
+  
   position: relative;
   transition: opacity 4s;
 }
