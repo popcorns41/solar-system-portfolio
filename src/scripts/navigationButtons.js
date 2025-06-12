@@ -21,13 +21,12 @@ window.addEventListener("DOMContentLoaded", () => {
     introText.style.display = 'none';
     intro_content.style.display = 'none';
 
-    //transformDownZoomOut();
-    solarTransformDownZoomOut();
+    window.dispatchEvent(new CustomEvent("solarTransformDownZoomOutCue"));
 
     window.addEventListener("sunZoomComplete", () => {
       console.log("Sun transform complete! Starting next sequence...");
       //intro.style.opacity='0';
-      setTimeout(()=>{sequentialReveal(1000);},500);
+      setTimeout(()=>{window.dispatchEvent(new CustomEvent("firstReveal"))},500);
 
       window.addEventListener("planetsInView", () => {
         document.getElementById('threeCanvas').style.pointerEvents = 'auto';

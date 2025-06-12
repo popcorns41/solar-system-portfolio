@@ -16,11 +16,10 @@
     <link rel="stylesheet" href="styles/solarSystem.css">
     <link rel="stylesheet" href="styles/tutorialCard.css">
     <meta name="font-display" content="swap">
-    <script src="./scripts/globals.js"></script>   <!-- Defines window.state -->
-  <script src="./scripts/navigationButtons.js"></script> 
+    <script type="module" src="/scripts/main.js"></script>
 </head>
 <body>
-    <script src="./scripts/boot.js"></script>
+    <!-- <script src="./scripts/boot.js"></script> -->
     
 
     <section id="intro">
@@ -35,7 +34,7 @@
         </div>
         <div id="solarSystem">
             <canvas id="threeCanvas"></canvas>
-            <script type="module" src="./scripts/script.js"></script>
+            <!-- <script type="module" src="./scripts/script.js"></script> -->
 
             <div id="hoverCard"></div>
         </div>
@@ -48,7 +47,7 @@
             
             <button id="rightArrow" class="arrow">&#8594;</button>
         </div>
-        <script src="./scripts/browsing.js"></script>
+        <!-- <script src="./scripts/browsing.js"></script> -->
         
     </section>
     
@@ -57,7 +56,7 @@
             <div class="info-box" id="infoBoxLeft"></div>
             <div class="info-box" id="infoBoxRight"></div>
         </div>
-        <script src="./scripts/dynamicInfoBox.js"></script>
+        <!-- <script src="./scripts/dynamicInfoBox.js"></script> -->
         <div id="tutorialCard" class="tutorial-card">
             <div class="card-header">
             <h2>How to Explore</h2>
@@ -72,7 +71,7 @@
         </div>
         <div id="fade-overlay"></div>
         <canvas id="overlayCanvas"></canvas>
-        <script type="module" src="./scripts/dom_overlay.js"></script>
+        <!-- <script type="module" src="./scripts/dom_overlay.js"></script> -->
     </section>
     
 </body>

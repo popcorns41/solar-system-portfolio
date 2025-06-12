@@ -289,24 +289,11 @@ function onDocumentMouseDown(event) {
          window.dispatchEvent(new CustomEvent("beginPlanetTransform"));
       },1000)
 
-       
-      
-
- 
-
       hoverEnabled = false;
       hasMouseMove = false;
       document.getElementById('hoverCard').style.display = 'none';
       outlinePass.selectedObjects = [];
       
-
-
-
-      // scrollToPlanetSection(selectedPlanet.name || selectedPlanet); // assume .name or string
-      // window.state.fadeBackground = true;
-      // window.dispatchEvent(new CustomEvent("fadeToBlack", {
-      //   detail: { key: "fadeBackground", value: true }
-      // }));
     }
   }
 }
@@ -537,46 +524,6 @@ function loadGLB(path) {
   });
 }
 
-// Earth day/night effect shader material
-// const earthMaterial = new THREE.ShaderMaterial({
-//   uniforms: {
-//     dayTexture: { type: "t", value: loadTexture.load(earthTexture) },
-//     nightTexture: { type: "t", value: loadTexture.load(earthNightTexture) },
-//     sunPosition: { type: "v3", value: sun.position }
-//   },
-//   vertexShader: `
-//     varying vec3 vNormal;
-//     varying vec2 vUv;
-//     varying vec3 vSunDirection;
-
-//     uniform vec3 sunPosition;
-
-//     void main() {
-//       vUv = uv;
-//       vec4 worldPosition = modelMatrix * vec4(position, 1.0);
-//       vNormal = normalize(modelMatrix * vec4(normal, 0.0)).xyz;
-//       vSunDirection = normalize(sunPosition - worldPosition.xyz);
-//       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-//     }
-//   `,
-//   fragmentShader: `
-//     uniform sampler2D dayTexture;
-//     uniform sampler2D nightTexture;
-
-//     varying vec3 vNormal;
-//     varying vec2 vUv;
-//     varying vec3 vSunDirection;
-
-//     void main() {
-//       float intensity = max(dot(vNormal, vSunDirection), 0.0);
-//       vec4 dayColor = texture2D(dayTexture, vUv);
-//       vec4 nightColor = texture2D(nightTexture, vUv)* 0.2;
-//       gl_FragColor = mix(nightColor, dayColor, intensity);
-//     }
-//   `
-// });
-
-
 // ******  MOONS  ******
 
 
@@ -759,7 +706,7 @@ function revealPlanet(planetGroup) {
         if (mat.color && mat.color.a !== undefined) mat.color.a = 1.0;
       });
 
-      const duration = 1000;
+      const duration = 800;
       const startTime = performance.now();
 
       function fade(currentTime) {
@@ -837,7 +784,7 @@ sun.position.x=0;
 function solarStartSunrise() {
   const startY = sun.position.y;
   const targetY = 45;
-  const duration = 8000;
+  const duration = 6000;
   const startTime = performance.now();
 
   function rise(currentTime) {
@@ -866,7 +813,7 @@ function solarTransformDownZoomOut() {
   const startScale = sun.scale.x; // assumed uniform scale
   const targetScale = 1;
 
-  const duration = 3000; // ms
+  const duration = 2500; // ms
   const startTime = performance.now();
 
   function animate(time) {
@@ -974,8 +921,14 @@ if (isMovingTowardsPlanet) {
 animate();
 
 window.solarStartSunrise = solarStartSunrise;
-window.sequentialReveal = sequentialReveal;
-window.solarTransformDownZoomOut = solarTransformDownZoomOut;
+
+window.addEventListener('solarTransformDownZoomOutCue',()=>{
+  solarTransformDownZoomOut();
+});
+
+window.addEventListener('firstReveal',()=>{
+  sequentialReveal(1000); 
+});
 
 window.addEventListener('zoomOutNeeded', async () => {
   isHomeButtonView = false;
