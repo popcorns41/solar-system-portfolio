@@ -8,3 +8,8 @@ import '/scripts/dynamicInfoBox.js';
 import '/scripts/globals.js';
 import '/scripts/navigationButtons.js';
 import '/scripts/script.js';
+
+
+
+
+

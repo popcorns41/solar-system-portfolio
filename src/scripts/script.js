@@ -36,14 +36,12 @@ controls.dampingFactor = 0.75;
 controls.screenSpacePanning = false;
 
 console.log("Set up texture loader");
-const cubeTextureLoader = new THREE.CubeTextureLoader();
 const loadTexture = new THREE.TextureLoader();
 
 // ******  POSTPROCESSING setup ******
 const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
   format: THREE.RGBAFormat,  
   type: THREE.UnsignedByteType,
-  encoding: THREE.sRGBEncoding,
   depthBuffer: true,
   stencilBuffer: false
 });
@@ -107,6 +105,8 @@ const settings = {
 // gui.add(settings, 'sunIntensity', 1, 10).onChange(value => {
 //   sunMat.emissiveIntensity = value;
 // });
+
+
 
 // mouse movement
 const raycaster = new THREE.Raycaster();
@@ -335,32 +335,12 @@ function identifyPlanet(clickedObject) {
   return null;
 }
 
-
-
-// ******  SHOW PLANET INFO AFTER SELECTION  ******
-
-function scrollToPlanetSection(planetName) {
-  const id = planetName.toLowerCase() + "-section"; // e.g., "earth-section"
-  const target = document.getElementById(id);
-
-  if (target) {
-    target.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-  } else{
-    console.log("planet not found! :(")
-  }
-}
-
 let isZoomingOut = false;
 let zoomOutTargetPosition = new THREE.Vector3(-175, 115, 5);
 
 
 // ******  SUN  ******
 
-
-const sunName = "Sun"
 let sunMat;
 
 const sunSize = 697/40; // 40 times smaller scale than earth
@@ -381,6 +361,35 @@ const sun = new THREE.Mesh(sunGeom, sunMat);
 
 scene.add(sun);
 
+function solarStartSunrise() {
+  const startY = sun.position.y;
+  const targetY = 45;
+  const duration = 6000;
+  const startTime = performance.now();
+
+  function rise(currentTime) {
+    const elapsed = currentTime - startTime;
+    const t = Math.min(elapsed / duration, 1);
+
+    // Eased movement (cubic ease-out)
+    const easedT = 1 - Math.pow(1 - t, 2);
+    
+    sun.position.y = startY + (targetY - startY) * easedT;
+    sun.rotateY(0.001);
+
+    if (t < 1) {
+      requestAnimationFrame(rise);
+    }else{
+      window.dispatchEvent(new CustomEvent("sunRose"));
+    }
+  }
+
+  requestAnimationFrame(rise);
+}
+
+window.solarStartSunrise = solarStartSunrise;
+
+
 //point light in the sun
 const pointLight = new THREE.PointLight(0xFDFFD3 , 1200, 400, 1.4);
 sun.add(pointLight);
@@ -393,6 +402,93 @@ const hemiLight = new THREE.HemisphereLight(0xffffff, 0x222222, 0.2);
 scene.add(hemiLight);
 
 
+
+// ******  PLANET CREATIONS  ******
+//mercury original size: 2.4
+const mercury = await createglbPlanet("Mercury","./glbModels/intelligence_briefcase.glb",40,0.20);
+mercury.planet.rotation.x = -90 * Math.PI / 180;
+
+
+//const mercury = new createPlanet('Mercury', 5, 40, 0, mercuryTexture, mercuryBump);
+//const venus = new createPlanet('Venus', 6.1, 65, 0, basketballTexture);
+const venus = await createglbPlanet("Venus","./glbModels/macintosh.glb",65,6.1);
+const earth = new createPlanet('Earth', 6.4, 90, 0, poolBallTexture, null, null);
+//const mars = new createPlanet('Mars', 7, 115, 0, thaiFlagTexture, marsBump);
+const mars = await createglbPlanet("Mars","./glbModels/basketball.glb",115,4);
+// Load Mars moons
+
+const jupiter = await createglbPlanet("Jupiter","./glbModels/pixar_luxo_ball.glb",170,15);
+
+console.log(jupiter.planet);
+console.log("jupiter meshes: ",jupiter.meshes);
+//jupiter.planet.rotation.z = 45 * Math.PI / 180;
+
+//const jupiter = new createPlanet('Jupiter', 69/4, 170, 0, poolBallTexture, null, null, null);
+
+//const saturn = new createPlanet('Saturn', 58/4, 240, 0, saturnTexture, null,null);
+
+const saturn = await createglbPlanet("Saturn","./glbModels/wheatley.glb",260,1);
+
+
+
+
+  // List available animations
+  saturn.planet.animations.forEach((clip) => {
+    console.log("Available animation:", clip.name);
+  });
+
+async function createglbPlanet(name,path,position,scale){
+  const planet = await loadGLB(path);
+  
+  planet.traverse((child) => {
+    if (child.isMesh) {
+      child.material = new THREE.MeshStandardMaterial({
+        map: child.material.map,
+        color: child.material.color,
+      });
+      child.geometry.computeVertexNormals();
+    }
+  });
+
+  const planet3d = new THREE.Object3D;
+  const planetSystem = new THREE.Group();
+  planetSystem.add(planet);
+
+  planet.position.x = position;
+  planet.scale.set(scale,scale,scale);
+
+  const orbitPath = new THREE.EllipseCurve(
+    0, 0,            // ax, aY
+    position, position, // xRadius, yRadius
+    0, 2 * Math.PI,   // aStartAngle, aEndAngle
+    false,            // aClockwise
+    0                 // aRotation
+  );
+
+  const pathPoints = orbitPath.getPoints(100);
+  const orbitGeometry = new THREE.BufferGeometry().setFromPoints(pathPoints);
+  const orbitMaterial = new THREE.LineBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.5 });
+  const orbit = new THREE.LineLoop(orbitGeometry, orbitMaterial);
+  orbit.rotation.x = Math.PI / 2;
+  planet.orbit = orbit;
+
+  planetSystem.add(orbit);
+
+  planet3d.add(planetSystem);
+  scene.add(planet3d);
+
+  let meshes = [];
+  planet.traverse(child => {
+    if (child.isMesh) {
+      // child.material.emissive = new THREE.Color(0xffddaa); // white glow
+      // child.material.emissiveIntensity = 0.05;
+      meshes.push(child);
+    } 
+  });
+
+
+  return {name,planet,planet3d,orbit,meshes};
+}
 
 
 // ******  PLANET CREATION FUNCTION  ******
@@ -526,98 +622,6 @@ function loadGLB(path) {
 
 // ******  MOONS  ******
 
-
-// ******  PLANET CREATIONS  ******
-//mercury original size: 2.4
-const mercury = await createglbPlanet("Mercury","./glbModels/intelligence_briefcase.glb",40,0.20);
-mercury.planet.rotation.x = -90 * Math.PI / 180;
-
-
-//const mercury = new createPlanet('Mercury', 5, 40, 0, mercuryTexture, mercuryBump);
-//const venus = new createPlanet('Venus', 6.1, 65, 0, basketballTexture);
-const venus = await createglbPlanet("Venus","./glbModels/macintosh.glb",65,6.1);
-const earth = new createPlanet('Earth', 6.4, 90, 0, poolBallTexture, null, null);
-//const mars = new createPlanet('Mars', 7, 115, 0, thaiFlagTexture, marsBump);
-const mars = await createglbPlanet("Mars","./glbModels/basketball.glb",115,4);
-// Load Mars moons
-
-const jupiter = await createglbPlanet("Jupiter","./glbModels/pixar_luxo_ball.glb",170,15);
-
-console.log(jupiter.planet);
-console.log("jupiter meshes: ",jupiter.meshes);
-//jupiter.planet.rotation.z = 45 * Math.PI / 180;
-
-//const jupiter = new createPlanet('Jupiter', 69/4, 170, 0, poolBallTexture, null, null, null);
-
-//const saturn = new createPlanet('Saturn', 58/4, 240, 0, saturnTexture, null,null);
-
-const saturn = await createglbPlanet("Saturn","./glbModels/wheatley.glb",260,1);
-
-
-
-
-  // List available animations
-  saturn.planet.animations.forEach((clip) => {
-    console.log("Available animation:", clip.name);
-  });
-
-async function createglbPlanet(name,path,position,scale){
-  const planet = await loadGLB(path);
-  
-  planet.traverse((child) => {
-    if (child.isMesh) {
-      child.material = new THREE.MeshStandardMaterial({
-        map: child.material.map,
-        color: child.material.color,
-      });
-      child.geometry.computeVertexNormals();
-    }
-  });
-
-  const planet3d = new THREE.Object3D;
-  const planetSystem = new THREE.Group();
-  planetSystem.add(planet);
-
-  planet.position.x = position;
-  planet.scale.set(scale,scale,scale);
-
-  const orbitPath = new THREE.EllipseCurve(
-    0, 0,            // ax, aY
-    position, position, // xRadius, yRadius
-    0, 2 * Math.PI,   // aStartAngle, aEndAngle
-    false,            // aClockwise
-    0                 // aRotation
-  );
-
-  const pathPoints = orbitPath.getPoints(100);
-  const orbitGeometry = new THREE.BufferGeometry().setFromPoints(pathPoints);
-  const orbitMaterial = new THREE.LineBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.5 });
-  const orbit = new THREE.LineLoop(orbitGeometry, orbitMaterial);
-  orbit.rotation.x = Math.PI / 2;
-  planet.orbit = orbit;
-
-  planetSystem.add(orbit);
-
-  planet3d.add(planetSystem);
-  scene.add(planet3d);
-
-  let meshes = [];
-  planet.traverse(child => {
-    if (child.isMesh) {
-      // child.material.emissive = new THREE.Color(0xffddaa); // white glow
-      // child.material.emissiveIntensity = 0.05;
-      meshes.push(child);
-    } 
-  });
-
-
-  return {name,planet,planet3d,orbit,meshes};
-}
-
-
-
-
-
 const indexOrderofPlanets = [
   { name: "Sun", mesh: sun },
   { name: "Mercury", mesh: mercury.planet },
@@ -646,7 +650,7 @@ const raycastTargets = [
 
 // ******  SHADOWS  ******
 renderer.shadowMap.enabled = true;
-
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 //properties for the point light
 pointLight.shadow.mapSize.width = 1024;
 pointLight.shadow.mapSize.height = 1024;
@@ -781,31 +785,6 @@ sun.position.y=-50;
 sun.position.z=0;
 sun.position.x=0;
 
-function solarStartSunrise() {
-  const startY = sun.position.y;
-  const targetY = 45;
-  const duration = 6000;
-  const startTime = performance.now();
-
-  function rise(currentTime) {
-    const elapsed = currentTime - startTime;
-    const t = Math.min(elapsed / duration, 1);
-
-    // Eased movement (cubic ease-out)
-    const easedT = 1 - Math.pow(1 - t, 2);
-    
-    sun.position.y = startY + (targetY - startY) * easedT;
-
-    if (t < 1) {
-      requestAnimationFrame(rise);
-    }else{
-      window.dispatchEvent(new CustomEvent("sunRose"));
-    }
-  }
-
-  requestAnimationFrame(rise);
-}
-
 function solarTransformDownZoomOut() {
   const startY = sun.position.y;
   const targetY = 0;
@@ -920,14 +899,13 @@ if (isMovingTowardsPlanet) {
 
 animate();
 
-window.solarStartSunrise = solarStartSunrise;
 
 window.addEventListener('solarTransformDownZoomOutCue',()=>{
   solarTransformDownZoomOut();
 });
 
 window.addEventListener('firstReveal',()=>{
-  sequentialReveal(1000); 
+  sequentialReveal(1500); 
 });
 
 window.addEventListener('zoomOutNeeded', async () => {
