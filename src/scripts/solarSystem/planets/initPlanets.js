@@ -1,11 +1,13 @@
-import {createPlanet} from './planetCreation/meshPlanet.js';
-import { createglbPlanet } from './planetCreation/glbPlanet';
-import {texturePaths,glbModelPaths} from './planets/texturePaths.js';
+import {createPlanet} from './meshPlanet.js';
+import { createglbPlanet } from './glbPlanet.js';
+import {texturePaths,glbModelPaths} from '../fixedValues/paths.js';
 
 
 
 
-export async function initglbPlanets(scene) {
+
+
+export async function initAllPlanets(scene,loadTexture) {
     const mercury = await createglbPlanet("Mercury",glbModelPaths.mercury,40,0.20);
     mercury.planet.rotation.x = -90 * Math.PI / 180;
     
@@ -13,7 +15,7 @@ export async function initglbPlanets(scene) {
     //const mercury = new createPlanet('Mercury', 5, 40, 0, mercuryTexture, mercuryBump);
     //const venus = new createPlanet('Venus', 6.1, 65, 0, basketballTexture);
     const venus = await createglbPlanet("Venus",glbModelPaths.venus,65,0.5);
-    const earth = new createPlanet('Earth', 6.4, 90, 0, texturePaths.earthTexture, null, null);
+    const earth = new createPlanet(loadTexture,'Earth', 6.4, 90, 0, texturePaths.earthTexture, null, null);
     //const mars = new createPlanet('Mars', 7, 115, 0, thaiFlagTexture, marsBump);
     const mars = await createglbPlanet("Mars",glbModelPaths.mars,115,4);
     // Load Mars moons

@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
-export function generateComposer(){
+export function generateComposer(renderer){
     const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
       format: THREE.RGBAFormat,  
       type: THREE.UnsignedByteType,

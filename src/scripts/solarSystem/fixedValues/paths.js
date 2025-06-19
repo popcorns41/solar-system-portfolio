@@ -4,10 +4,10 @@ export const texturePaths = {
 };
 
 export const glbModelPaths = {
-    mercury: './glbModels/intelligence_briefcase.glb',
-    venus: './glbModels/macintosh.glb',
-    earth: './glbModels/8ball.glb',
-    mars: './glbModels/basketball.glb',
-    jupiter: './glbModels/pixar_luxo_ball.glb',
-    saturn: './glbModels/wheatley.glb'
+    mercury: '/glbModels/intelligence_briefcase.glb',
+    venus: '/glbModels/macintosh.glb',
+    earth: '/glbModels/pool_ball.glb',
+    mars: '/glbModels/basketball.glb',
+    jupiter: '/glbModels/pixar_luxo_ball.glb',
+    saturn: '/glbModels/wheatley.glb'
 };

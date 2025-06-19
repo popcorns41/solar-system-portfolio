@@ -1,16 +1,15 @@
 import sunTexture from '/images/sun.jpg';
 import * as THREE from 'three';
-import { loadTexture } from '../core/textureLoader.js';
+import {texturePaths} from '../fixedValues/paths.js';
 
-export function initSun(){
+export function initSun(loadTexture){
     const sunSize = 697/40; // 40 times smaller scale than earth
     const sunGeom = new THREE.SphereGeometry(sunSize, 32, 20);
-    // sunMat = new THREE.MeshPhongMaterial({
-    //   map: loadTexture.load(sunTexture)
-    // });
+    let sunMat;
+
     sunMat = new THREE.MeshStandardMaterial({
     emissive: 0xFFF88F,
-    emissiveMap: loadTexture.load(sunTexture),
+    emissiveMap: loadTexture.load(texturePaths.sunTexture),
     emissiveIntensity: 1,
     color: new THREE.Color(0xFFA500)
     });

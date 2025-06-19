@@ -54,3 +54,8 @@ export function createLighting(){
     return {pointLight,hemiLight,lightAmbient};
 
 }
+
+export function createTextureLoader() {
+  const loadTexture = new THREE.TextureLoader();
+  return loadTexture;
+}

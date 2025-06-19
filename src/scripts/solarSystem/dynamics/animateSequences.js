@@ -185,3 +185,70 @@ export function planetChangeEventHandler(event,camera,indexOrderofPlanets){
       camera.position.copy(targetCameraPosition);
 
 }
+
+function hidePlanet(planetGroup) {
+  return new Promise((resolve) => {
+    planetGroup.traverse(child => {
+      if (child.isMesh || child.isLine) {
+        child.material.transparent = true;
+
+        const duration = 200;
+        const startTime = performance.now();
+
+        function fade(currentTime) {
+          const elapsed = currentTime - startTime;
+          const t = Math.min(elapsed / duration, 1);
+          const easedT = 1 - (t * t * (3 - 2 * t)); // smoothstep fade-out
+
+          child.material.opacity = easedT;
+
+          if (t < 1) {
+            requestAnimationFrame(fade);
+          } else {
+            child.visible = false;
+            resolve(); 
+          }
+        }
+
+        requestAnimationFrame(fade);
+      }
+    });
+  });
+}
+
+export function sequentialHideUnselected(selectedPlanet,planets, delay = 300) {
+  for (let i = planets.length - 1; i >= 0; i--) {
+    const planet3d = planets[i];
+    const isSelected = planet3d === selectedPlanet.planet3d;
+
+    setTimeout(() => {
+      if (isSelected) {
+        if (selectedPlanet.orbit && selectedPlanet.orbit.material) {
+          const orbitMaterial = selectedPlanet.orbit.material;
+          orbitMaterial.transparent = true;
+
+          const duration = 1000;
+          const startTime = performance.now();
+
+          function fadeOrbit(currentTime) {
+            const elapsed = currentTime - startTime;
+            const t = Math.min(elapsed / duration, 1);
+            const easedT = t * t * (3 - 2 * t);
+
+            orbitMaterial.opacity = 1 - easedT;
+
+            if (t < 1) {
+              requestAnimationFrame(fadeOrbit);
+            } else {
+              selectedPlanet.orbit.visible = false;
+            }
+          }
+
+          requestAnimationFrame(fadeOrbit);
+        }
+      } else {
+        hidePlanet(planet3d);
+      }
+    }, (planets.length - 1 - i) * delay); // reverse order
+  }
+}

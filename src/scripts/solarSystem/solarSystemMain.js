@@ -1,14 +1,18 @@
 //script imports
-import {createScene,createLighting} from './core/scene.js';
+import {createScene,createTextureLoader,createLighting} from './core/scene.js';
 import { generateComposer,generateComposerPasses } from './core/effects.js';
-import {preloadManyGLB} from './planets/glbLoader/modelCache.js';
+import {preloadManyGLB} from './planets/modelCache.js';
 import { createControls } from './core/controls.js';
-import {createRaycaster,onMouseMove,onDocumentMouseDown } from './dynamics/mouse.js';
 import {handleResize} from './core/resize.js';
-import {solarTransformDownZoomOut,planetChangeEventHandler,solarStartSunrise} from './dynamics/animateSequences.js';
+import {solarTransformDownZoomOut,
+  planetChangeEventHandler,
+  solarStartSunrise,
+  sequentialHideUnselected} from './dynamics/animateSequences.js';
 import {animate} from './dynamics/animate.js';
 import {initSun} from './planets/sun.js';
-import { initglbPlanets } from './planets/initPlanets.js';
+import { initAllPlanets } from './planets/initPlanets.js';
+import {MouseHandler} from './dynamics/mouse.js';
+import * as THREE from 'three';
 
 import { glbModelPaths } from './fixedValues/paths.js';
 
@@ -19,13 +23,15 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 
 const{scene,camera,renderer,canvas} = createScene();
 
+const loadTexture = createTextureLoader();
+
 const{pointLight,hemiLight,lightAmbient} = createLighting();
 
-const composer = generateComposer();
+const composer = generateComposer(renderer);
 
 const {outlinePass,bloomPass} = generateComposerPasses(scene,camera);
 
-const {controls} = createControls(camera);
+const {controls} = createControls(camera,renderer);
 
 // ****** Lighting setup *******
 
@@ -34,7 +40,7 @@ scene.add(hemiLight);
 
 // ****** Sun setup *******
 
-const sun = initSun(scene,pointLight);
+const sun = initSun(loadTexture);
 sun.add(pointLight);
 scene.add(sun);
 
@@ -49,40 +55,44 @@ composer.addPass(bloomPass);
 
 // ****** MOUSE setup *******
 
-const raycaster = createRaycaster();
-
 // ****** Animate EventListners *******
 
 window.addEventListener('solarTransformDownZoomOut', (event) => {
   solarTransformDownZoomOut(sun);
 }
 , false);
+
 window.addEventListener('solarStartSunrise', (event) => {
   solarStartSunrise(sun);
 }, false);
+
 // ****** Preload GLB models *******
 
 await preloadManyGLB(Object.values(glbModelPaths));
 
 // ****** Planets setup *******
 
-const planets = await initglbPlanets(scene);
+const planets = await initAllPlanets(scene,loadTexture);
 //include the sun at the start of raycastTargets
 const raycastTargets = Object.values(planets).map(planet => planet.planet3d);
 raycastTargets.unshift(sun);
-const animateTargets = Object.values(planets).map(planet => planet);
-animateTargets.unshift(sun);
 
 //TODO: identify planet yet to be implemented!
 
 // ****** core Animation *******
 
-animate(outlinePass,camera, scene, animateTargets, raycaster, raycastTargets,controls,composer);
+const mouse = new MouseHandler(camera,raycastTargets);
+animate(mouse,outlinePass,camera, scene, planets,sun,raycastTargets,controls,composer);
 
 
 // ****** EventListners *******
-canvas.addEventListener('mousemove', (e)=> onMouseMove(e,raycaster,camera,raycastTargets), false);
-canvas.addEventListener('mousedown', (e) =>onDocumentMouseDown(e,raycaster,camera,raycastTargets), false);
+canvas.addEventListener('mousemove', (e)=> mouse.onMouseMove(e,raycastTargets), false);
+canvas.addEventListener('mousedown', (e) =>mouse.onDocumentMouseDown(e), false);
+
+
+canvas.addEventListener('beginSequentialHide', (event) => {
+  sequentialHideUnselected(event.detail.selectedPlanet, planets);
+});
 
 window.addEventListener('resize', handleResize(camera,renderer));
 

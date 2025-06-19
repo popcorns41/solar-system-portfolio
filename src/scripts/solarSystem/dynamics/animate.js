@@ -1,13 +1,13 @@
-import { updatePlanetRotation } from './update/updatePlanetRotation.js';
-import { updateOutlines } from './update/updateOutlines.js';
-import { updateZoom } from './update/updateZoom.js';
-import { state } from './state.js';
+import { updatePlanetRotation } from './updateFunctions/updatePlanetRotation.js';
+import { updateOutlines } from './updateFunctions/updateOutlines.js';
+import { updateZoom } from './updateFunctions/updateZoom.js';
 
-export function animate(outlinePass,camera, scene, planets, raycaster, raycastTargets,controls,composer) {
-  requestAnimationFrame(() => animate(outlinePass,camera, scene, planets, raycaster, raycastTargets));
 
-  updatePlanetRotation(planets, state.settings);
-  updateOutlines(outlinePass,state.mouse, camera, raycaster, raycastTargets, state.hasMouseMove, planets);
+export function animate(mouse,outlinePass,camera, scene, planets,sun,raycastTargets,controls,composer) {
+  requestAnimationFrame(() => animate(mouse, outlinePass, camera, scene, planets, sun, raycastTargets, controls, composer));
+
+  updatePlanetRotation(planets,sun);
+  updateOutlines(outlinePass, mouse, camera, raycastTargets, mouse.hasMouseMove, planets);
   updateZoom(camera);
 
   controls.update();

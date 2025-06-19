@@ -1,3 +1,5 @@
+import path from 'path';
+
 export default {
     root: 'src/',
     publicDir: '../public/',
@@ -14,4 +16,9 @@ export default {
         emptyOutDir: true, // Empty the folder first
         sourcemap: true // Add sourcemap
     },
+    resolve: {
+        alias: {
+        src: path.resolve(__dirname, './src'),
+        },
+  },
 }
