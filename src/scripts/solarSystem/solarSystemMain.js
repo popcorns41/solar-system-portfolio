@@ -5,6 +5,7 @@ import {preloadManyGLB} from './planets/modelCache.js';
 import { createControls } from './core/controls.js';
 import {handleResize} from './core/resize.js';
 import {solarTransformDownZoomOut,
+  sequentialReveal,
   planetChangeEventHandler,
   solarStartSunrise,
   sequentialHideUnselected} from './dynamics/animateSequences.js';
@@ -12,7 +13,6 @@ import {animate} from './dynamics/animate.js';
 import {initSun} from './planets/sun.js';
 import { initAllPlanets } from './planets/initPlanets.js';
 import {MouseHandler} from './dynamics/mouse.js';
-import * as THREE from 'three';
 
 import { glbModelPaths } from './fixedValues/paths.js';
 
@@ -25,7 +25,7 @@ const{scene,camera,renderer,canvas} = createScene();
 
 const loadTexture = createTextureLoader();
 
-const{pointLight,hemiLight,lightAmbient} = createLighting();
+const{pointLight,hemiLight,lightAmbient} = createLighting(renderer);
 
 const composer = generateComposer(renderer);
 
@@ -57,7 +57,7 @@ composer.addPass(bloomPass);
 
 // ****** Animate EventListners *******
 
-window.addEventListener('solarTransformDownZoomOut', (event) => {
+window.addEventListener('solarTransformDownZoomOutCue', (event) => {
   solarTransformDownZoomOut(sun);
 }
 , false);
@@ -65,6 +65,10 @@ window.addEventListener('solarTransformDownZoomOut', (event) => {
 window.addEventListener('solarStartSunrise', (event) => {
   solarStartSunrise(sun);
 }, false);
+
+window.addEventListener('firstReveal',()=>{
+  sequentialReveal(1000,planets); 
+});
 
 // ****** Preload GLB models *******
 

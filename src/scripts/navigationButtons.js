@@ -29,6 +29,7 @@ window.addEventListener("DOMContentLoaded", () => {
       setTimeout(()=>{window.dispatchEvent(new CustomEvent("firstReveal"))},500);
 
       window.addEventListener("planetsInView", () => {
+        console.log("Planets are now in view! Show tutorial card!");
         document.getElementById('threeCanvas').style.pointerEvents = 'auto';
         window.dispatchEvent(new CustomEvent("beginTutorial"));
       });

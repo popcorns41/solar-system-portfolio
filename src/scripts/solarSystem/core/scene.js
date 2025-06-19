@@ -5,6 +5,8 @@ export function createScene() {
 
   // Create scene
   const scene = new THREE.Scene();
+  const colour = new THREE.Color(0x121212);
+  scene.background = colour;
 
   // Set up camera
   const camera = new THREE.PerspectiveCamera(
@@ -28,6 +30,7 @@ export function createScene() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(window.devicePixelRatio);
 
+
   // Optional: enable shadow maps if you're using lights/shadows
   // renderer.shadowMap.enabled = true;
   // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -36,7 +39,7 @@ export function createScene() {
   return { scene, camera, renderer, canvas };
 }
 
-export function createLighting(){
+export function createLighting(renderer){
     //point light in the sun
     const pointLight = new THREE.PointLight(0xFDFFD3 , 1200, 400, 1.4);
 
@@ -44,6 +47,9 @@ export function createLighting(){
     pointLight.shadow.mapSize.height = 1024;
     pointLight.shadow.camera.near = 10;
     pointLight.shadow.camera.far = 20;
+
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     //soft hemisphere lighting
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x222222, 0.2);

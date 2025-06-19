@@ -20,7 +20,7 @@ window.addEventListener('DOMContentLoaded', () => {
     introInstructions.style.transform = 'translateY(0)';
     
   }, 1500);
-  setTimeout(() => {solarStartSunrise();},3000);
+  setTimeout(() => {window.dispatchEvent(new Event("solarStartSunrise"));},3000);
 
   window.addEventListener("sunRose", () => {
     console.log("sun has arisen B-)")

@@ -49,14 +49,16 @@ function revealPlanet(planetGroup) {
   });
 }
 
-export function sequentialReveal(delay = 1000) {
-  planets.forEach((planet, index) => {
+export function sequentialReveal(delay = 1000,planets) {
+  const planet3ds = Object.values(planets).map(p => p.planet3d);
+  planet3ds.forEach((planet3d, index) => {
     setTimeout(() => {
-      revealPlanet(planet);
+      revealPlanet(planet3d);
 
       // After the last planet, fire the event
-      if (index === planets.length - 1) {
+      if (index === planet3ds.length - 1) {
         setTimeout(() => {
+          console.log("All planets revealed");
           window.dispatchEvent(new CustomEvent("planetsInView"));
           hoverEnabled = true;
         }, delay); // wait for the final reveal animation
@@ -80,7 +82,6 @@ export function solarStartSunrise(sun) {
     const easedT = 1 - Math.pow(1 - t, 2);
     
     sun.position.y = startY + (targetY - startY) * easedT;
-    sun.rotateY(0.001);
 
     if (t < 1) {
       requestAnimationFrame(rise);
