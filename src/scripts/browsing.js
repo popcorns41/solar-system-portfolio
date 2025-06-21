@@ -8,7 +8,7 @@ function transformCanvasToHomeButton() {
 
   // First: scale and round the canvas
   const scale = 200 / window.innerWidth; // target width is 150px
-  canvas.style.transition = "transform 7s ease, border-radius 7s ease";
+  canvas.style.transition = "transform 6s ease, border-radius 4s ease";
   canvas.style.transform = `scale(${scale})`;
   canvas.style.borderRadius = "50%";
   canvas.style.pointerEvents = "none";

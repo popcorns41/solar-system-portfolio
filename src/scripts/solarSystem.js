@@ -274,24 +274,11 @@ function onDocumentMouseClick(event) {
          window.dispatchEvent(new CustomEvent("beginPlanetTransform"));
       },1000)
 
-       
-      
-
- 
-
       hoverEnabled = false;
       hasMouseMove = false;
       document.getElementById('hoverCard').style.display = 'none';
       outlinePass.selectedObjects = [];
       
-
-
-
-      // scrollToPlanetSection(selectedPlanet.name || selectedPlanet); // assume .name or string
-      // window.state.fadeBackground = true;
-      // window.dispatchEvent(new CustomEvent("fadeToBlack", {
-      //   detail: { key: "fadeBackground", value: true }
-      // }));
     }
   }
 }
@@ -733,7 +720,7 @@ function revealPlanet(planetGroup) {
         if (mat.color && mat.color.a !== undefined) mat.color.a = 1.0;
       });
 
-      const duration = 1000;
+      const duration = 800;
       const startTime = performance.now();
 
       function fade(currentTime) {
@@ -809,7 +796,7 @@ function solarTransformDownZoomOut() {
   const startScale = sun.scale.x; // assumed uniform scale
   const targetScale = 1;
 
-  const duration = 3000; // ms
+  const duration = 2500; // ms
   const startTime = performance.now();
 
   function animate(time) {
