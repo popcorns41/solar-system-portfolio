@@ -8,12 +8,13 @@ import {solarTransformDownZoomOut,
   sequentialReveal,
   planetChangeEventHandler,
   solarStartSunrise,
-  sequentialHideUnselected} from './dynamics/animateSequences.js';
+  sequentialHideUnselected,
+  hidePlanet} from './dynamics/animateSequences.js';
 import {animate} from './dynamics/animate.js';
 import {initSun} from './planets/sun.js';
 import { initAllPlanets } from './planets/initPlanets.js';
 import {MouseHandler} from './dynamics/mouse.js';
-
+import { createPlanetRegistry } from './planets/planetRegistry.js';  
 import { glbModelPaths } from './fixedValues/paths.js';
 
 //util imports
@@ -70,6 +71,11 @@ window.addEventListener('firstReveal',()=>{
   sequentialReveal(1000,planets); 
 });
 
+window.addEventListener('fadeSunOpacity', (event) => {
+  const {duration} = event.detail;
+  hidePlanet(sun, duration);
+});
+
 // ****** Preload GLB models *******
 
 await preloadManyGLB(Object.values(glbModelPaths));
@@ -80,12 +86,16 @@ const planets = await initAllPlanets(scene,loadTexture);
 //include the sun at the start of raycastTargets
 const raycastTargets = Object.values(planets).map(planet => planet.planet3d);
 raycastTargets.unshift(sun);
+const planetRegistry = createPlanetRegistry(sun, planets);
+
+
+
 
 //TODO: identify planet yet to be implemented!
 
 // ****** core Animation *******
 
-const mouse = new MouseHandler(camera,raycastTargets);
+const mouse = new MouseHandler(camera,raycastTargets,planetRegistry,controls,outlinePass);
 animate(mouse,outlinePass,camera, scene, planets,sun,raycastTargets,controls,composer);
 
 
@@ -93,9 +103,8 @@ animate(mouse,outlinePass,camera, scene, planets,sun,raycastTargets,controls,com
 canvas.addEventListener('mousemove', (e)=> mouse.onMouseMove(e,raycastTargets), false);
 canvas.addEventListener('mousedown', (e) =>mouse.onDocumentMouseDown(e), false);
 
-
-canvas.addEventListener('beginSequentialHide', (event) => {
-  sequentialHideUnselected(event.detail.selectedPlanet, planets);
+window.addEventListener('beginSequentialHide', (event) => {
+  sequentialHideUnselected(event.detail.selectedPlanet, planetRegistry);
 });
 
 window.addEventListener('resize', handleResize(camera,renderer));

@@ -1,9 +1,9 @@
 export function updateOutlines(outlinePass,mouse, camera, hasMouseMove) {
-  if (!hasMouseMove) return;
+  if (!mouse.hasMouseMove) return;
 
   const raycaster = mouse.raycaster;
 
-  raycaster.setFromCamera(mouse, camera);
+  raycaster.setFromCamera(mouse.mousePosition, camera);
   const intersects = raycaster.intersectObjects(mouse.raycastTargets);
   outlinePass.selectedObjects = [];
 

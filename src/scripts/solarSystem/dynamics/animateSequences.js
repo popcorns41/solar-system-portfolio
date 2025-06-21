@@ -1,5 +1,5 @@
 import { offsets } from "../fixedValues/offsets";
-import { state } from "../core/state";
+import { state } from 'src/scripts/solarSystem/core/state.js';
 
 const animationSettings = {
     revealPlanetDuration: 800, // Duration for planet reveal animation in milliseconds
@@ -60,7 +60,7 @@ export function sequentialReveal(delay = 1000,planets) {
         setTimeout(() => {
           console.log("All planets revealed");
           window.dispatchEvent(new CustomEvent("planetsInView"));
-          hoverEnabled = true;
+          state.hoverEnabled = true;
         }, delay); // wait for the final reveal animation
       }
 
@@ -187,13 +187,12 @@ export function planetChangeEventHandler(event,camera,indexOrderofPlanets){
 
 }
 
-function hidePlanet(planetGroup) {
+export function hidePlanet(planetGroup,duration = 200) {
   return new Promise((resolve) => {
     planetGroup.traverse(child => {
       if (child.isMesh || child.isLine) {
         child.material.transparent = true;
-
-        const duration = 200;
+        
         const startTime = performance.now();
 
         function fade(currentTime) {
@@ -219,7 +218,7 @@ function hidePlanet(planetGroup) {
 
 export function sequentialHideUnselected(selectedPlanet,planets, delay = 300) {
   for (let i = planets.length - 1; i >= 0; i--) {
-    const planet3d = planets[i];
+    const planet3d = planets[i].object.planet3d;
     const isSelected = planet3d === selectedPlanet.planet3d;
 
     setTimeout(() => {
