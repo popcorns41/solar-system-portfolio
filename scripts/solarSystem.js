@@ -41,7 +41,6 @@ const loadTexture = new THREE.TextureLoader();
 const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
   format: THREE.RGBAFormat,  
   type: THREE.UnsignedByteType,
-  encoding: THREE.sRGBEncoding,
   depthBuffer: true,
   stencilBuffer: false
 });
@@ -539,7 +538,10 @@ function loadGLB(path) {
         resolve(obj);
       },
       undefined,
-      reject
+      (error) => {
+          console.error(`❌ Failed to load GLB: ${path}`);
+          reject(error);
+        }
     );
   });
 }
@@ -549,19 +551,19 @@ function loadGLB(path) {
 
 // ******  PLANET CREATIONS  ******
 //mercury original size: 2.4
-const mercury = await createglbPlanet("Mercury","./glbModels/intelligence_briefcase.glb",40,0.20);
+const mercury = await createglbPlanet("Mercury",'./glbModels/intelligence_briefcase.glb',40,0.20);
 mercury.planet.rotation.x = -90 * Math.PI / 180;
 
 
 //const mercury = new createPlanet('Mercury', 5, 40, 0, mercuryTexture, mercuryBump);
 //const venus = new createPlanet('Venus', 6.1, 65, 0, basketballTexture);
-const venus = await createglbPlanet("Venus","./glbModels/macintosh.glb",65,6.1);
+const venus = await createglbPlanet("Venus", './glbModels/macintosh.glb',65,6.1);
 const earth = new createPlanet('Earth', 6.4, 90, 0, poolBallTexture, null, null);
 //const mars = new createPlanet('Mars', 7, 115, 0, thaiFlagTexture, marsBump);
-const mars = await createglbPlanet("Mars","./glbModels/basketball.glb",115,4);
+const mars = await createglbPlanet("Mars",'./glbModels/basketball.glb',115,4);
 // Load Mars moons
 
-const jupiter = await createglbPlanet("Jupiter","./glbModels/pixar_luxo_ball.glb",170,15);
+const jupiter = await createglbPlanet("Jupiter",'./glbModels/pixar_luxo_ball.glb',170,15);
 
 console.log(jupiter.planet);
 console.log("jupiter meshes: ",jupiter.meshes);
@@ -571,7 +573,7 @@ console.log("jupiter meshes: ",jupiter.meshes);
 
 //const saturn = new createPlanet('Saturn', 58/4, 240, 0, saturnTexture, null,null);
 
-const saturn = await createglbPlanet("Saturn","./glbModels/wheatley.glb",260,1);
+const saturn = await createglbPlanet("Saturn",'./glbModels/wheatley.glb',260,1);
 
 window.dispatchEvent(new CustomEvent("planetsLoaded"));
 
