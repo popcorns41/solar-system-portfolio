@@ -7,4 +7,4 @@ import '/scripts/dom_overlay.js';
 import '/scripts/dynamicInfoBox.js';
 import '/scripts/globals.js';
 import '/scripts/navigationButtons.js';
-import '/scripts/script.js';// main.js
+import '/scripts/solarSystem.js';

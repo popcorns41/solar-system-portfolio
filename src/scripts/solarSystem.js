@@ -903,8 +903,11 @@ if (isMovingTowardsPlanet) {
 
 animate();
 
-window.sequentialReveal = sequentialReveal;
-window.solarTransformDownZoomOut = solarTransformDownZoomOut;
+//window.sequentialReveal = sequentialReveal;
+//window.solarTransformDownZoomOut = solarTransformDownZoomOut;
+
+window.addEventListener('solarTransformDownZoomOutCue', () => {solarTransformDownZoomOut();});
+window.addEventListener('firstReveal', () => {sequentialReveal(1000);});
 
 window.addEventListener('zoomOutNeeded', async () => {
   isHomeButtonView = false;
