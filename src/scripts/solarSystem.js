@@ -8,14 +8,6 @@ import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 
 import sunTexture from '/images/sun.jpg';
 import poolBallTexture from '/images/8ball.jpg';
-import basketballTexture from '/images/ball.jpg'
-import mercuryTexture from '/images/mercurymap.jpg';
-import mercuryBump from '/images/mercurybump.jpg';
-import thaiFlagTexture from '/images/Flag_of_Thailand.jpg'
-
-import earthTexture from '/images/earth_daymap.jpg';
-import pixarBall from '/images/pixar_ball.jpg';
-
 
 
 // ******  SETUP  ******
@@ -94,25 +86,12 @@ scene.background = cubeTextureLoader.load([
 const colour = new THREE.Color(0x121212);
 scene.background = colour;
 
-// ******  CONTROLS  ******
-// const gui = new dat.GUI({ autoPlace: false });
-// const customContainer = document.getElementById('gui-container');
-// customContainer.appendChild(gui.domElement);
-
 // ****** SETTINGS FOR INTERACTIVE CONTROLS  ******
 const settings = {
   accelerationOrbit: 1,
   acceleration: 1,
   sunIntensity: 0
 };
-
-// gui.add(settings, 'accelerationOrbit', 0, 10).onChange(value => {
-// });
-// gui.add(settings, 'acceleration', 0, 10).onChange(value => {
-// });
-// gui.add(settings, 'sunIntensity', 1, 10).onChange(value => {
-//   sunMat.emissiveIntensity = value;
-// });
 
 // mouse movement
 const raycaster = new THREE.Raycaster();
@@ -246,7 +225,7 @@ function fadeSunOpacity(targetOpacity, duration = 1000) {
   requestAnimationFrame(fadeStep);
 }
 
-function onDocumentMouseDown(event) {
+function onDocumentMouseClick(event) {
   event.preventDefault();
 
   isHomeButtonView = true;
@@ -400,6 +379,41 @@ const sun = new THREE.Mesh(sunGeom, sunMat);
 
 scene.add(sun);
 
+sun.scale.set(1.7, 1.7, 1.7);
+//initial y: -50
+//target y: 40
+sun.position.y=-50;
+sun.position.z=0;
+sun.position.x=0;
+
+function solarStartSunrise() {
+  const startY = sun.position.y;
+  const targetY = 45;
+  const duration = 8000;
+  const startTime = performance.now();
+
+  function rise(currentTime) {
+    const elapsed = currentTime - startTime;
+    const t = Math.min(elapsed / duration, 1);
+
+    // Eased movement (cubic ease-out)
+    const easedT = 1 - Math.pow(1 - t, 2);
+    
+    sun.position.y = startY + (targetY - startY) * easedT;
+
+    if (t < 1) {
+      requestAnimationFrame(rise);
+    }else{
+      window.dispatchEvent(new CustomEvent("sunRose"));
+    }
+  }
+
+  requestAnimationFrame(rise);
+}
+
+window.solarStartSunrise = solarStartSunrise;
+window.dispatchEvent(new CustomEvent("sunLoaded"));
+
 //point light in the sun
 const pointLight = new THREE.PointLight(0xFDFFD3 , 1200, 400, 1.4);
 sun.add(pointLight);
@@ -543,46 +557,6 @@ function loadGLB(path) {
   });
 }
 
-// Earth day/night effect shader material
-// const earthMaterial = new THREE.ShaderMaterial({
-//   uniforms: {
-//     dayTexture: { type: "t", value: loadTexture.load(earthTexture) },
-//     nightTexture: { type: "t", value: loadTexture.load(earthNightTexture) },
-//     sunPosition: { type: "v3", value: sun.position }
-//   },
-//   vertexShader: `
-//     varying vec3 vNormal;
-//     varying vec2 vUv;
-//     varying vec3 vSunDirection;
-
-//     uniform vec3 sunPosition;
-
-//     void main() {
-//       vUv = uv;
-//       vec4 worldPosition = modelMatrix * vec4(position, 1.0);
-//       vNormal = normalize(modelMatrix * vec4(normal, 0.0)).xyz;
-//       vSunDirection = normalize(sunPosition - worldPosition.xyz);
-//       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-//     }
-//   `,
-//   fragmentShader: `
-//     uniform sampler2D dayTexture;
-//     uniform sampler2D nightTexture;
-
-//     varying vec3 vNormal;
-//     varying vec2 vUv;
-//     varying vec3 vSunDirection;
-
-//     void main() {
-//       float intensity = max(dot(vNormal, vSunDirection), 0.0);
-//       vec4 dayColor = texture2D(dayTexture, vUv);
-//       vec4 nightColor = texture2D(nightTexture, vUv)* 0.2;
-//       gl_FragColor = mix(nightColor, dayColor, intensity);
-//     }
-//   `
-// });
-
-
 // ******  MOONS  ******
 
 
@@ -612,13 +586,7 @@ console.log("jupiter meshes: ",jupiter.meshes);
 
 const saturn = await createglbPlanet("Saturn","./glbModels/wheatley.glb",260,1);
 
-
-
-
-  // List available animations
-  saturn.planet.animations.forEach((clip) => {
-    console.log("Available animation:", clip.name);
-  });
+window.dispatchEvent(new CustomEvent("planetsLoaded"));
 
 async function createglbPlanet(name,path,position,scale){
   const planet = await loadGLB(path);
@@ -833,37 +801,6 @@ function sequentialReveal(delay = 1000) {
     }, index * delay);
   });
 }
-sun.scale.set(1.7, 1.7, 1.7);
-//initial y: -50
-//target y: 40
-sun.position.y=-50;
-sun.position.z=0;
-sun.position.x=0;
-
-function solarStartSunrise() {
-  const startY = sun.position.y;
-  const targetY = 45;
-  const duration = 8000;
-  const startTime = performance.now();
-
-  function rise(currentTime) {
-    const elapsed = currentTime - startTime;
-    const t = Math.min(elapsed / duration, 1);
-
-    // Eased movement (cubic ease-out)
-    const easedT = 1 - Math.pow(1 - t, 2);
-    
-    sun.position.y = startY + (targetY - startY) * easedT;
-
-    if (t < 1) {
-      requestAnimationFrame(rise);
-    }else{
-      window.dispatchEvent(new CustomEvent("sunRose"));
-    }
-  }
-
-  requestAnimationFrame(rise);
-}
 
 function solarTransformDownZoomOut() {
   const startY = sun.position.y;
@@ -979,7 +916,6 @@ if (isMovingTowardsPlanet) {
 
 animate();
 
-window.solarStartSunrise = solarStartSunrise;
 window.sequentialReveal = sequentialReveal;
 window.solarTransformDownZoomOut = solarTransformDownZoomOut;
 
@@ -1058,7 +994,7 @@ window.addEventListener("planetChange", (event) => {
 });
 
 canvas.addEventListener('mousemove', onMouseMove, false);
-canvas.addEventListener('mousedown', onDocumentMouseDown, false);
+canvas.addEventListener('click', onDocumentMouseClick, false);
 canvas.addEventListener('resize', function(){
   camera.aspect = window.innerWidth/window.innerHeight;
   camera.updateProjectionMatrix();

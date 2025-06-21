@@ -3,31 +3,33 @@ window.onbeforeunload = function () {
     };
 
 window.addEventListener('DOMContentLoaded', () => {
-  const introText = document.getElementById('introText');
-  const introInstructions = document.getElementById('instruction');
+    console.log("DOM fully loaded and parsed, starting boot process");
+    window.addEventListener('sunLoaded', () => {console.log("sun loaded, starting animation");});
 
-  document.getElementById('threeCanvas').style.pointerEvents = 'none';
+    const introText = document.getElementById('introText');
+    const introInstructions = document.getElementById('instruction');
 
-  // Step 1: Show title
-  setTimeout(() => {
-    introText.style.opacity = '1';
-    introText.style.transform = 'translateY(0)';
-  }, 200);
+    document.getElementById('threeCanvas').style.pointerEvents = 'none';
 
-  // Step 2: Show instructions later
-  setTimeout(() => {
-    introInstructions.style.opacity = '1';
-    introInstructions.style.transform = 'translateY(0)';
-    
-  }, 1500);
-  setTimeout(() => {solarStartSunrise();},3000);
+    // Step 1: Show title
+    setTimeout(() => {
+      introText.style.opacity = '1';
+      introText.style.transform = 'translateY(0)';
+    }, 200);
 
-  window.addEventListener("sunRose", () => {
-    console.log("sun has arisen B-)")
-    const generateButton = document.getElementById("enterSystem");
-    generateButton.style.opacity = "1";
-    generateButton.style.pointerEvents = "auto";
-  });
-  
+    // Step 2: Show instructions later
+    setTimeout(() => {
+      introInstructions.style.opacity = '1';
+      introInstructions.style.transform = 'translateY(0)';
+      
+    }, 1500);
+    setTimeout(() => {solarStartSunrise();},3000);
+
+    window.addEventListener("sunRose", () => {
+      console.log("sun has arisen B-)")
+      const generateButton = document.getElementById("enterSystem");
+      generateButton.style.opacity = "1";
+      generateButton.style.pointerEvents = "auto";
+    });
 });
 
