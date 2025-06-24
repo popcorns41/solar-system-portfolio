@@ -35,8 +35,8 @@ const planetData = [
   {
     title: "Robotics",
     paragraphs: [
-      "Earth is the third planet from the Sun and the only known planet to support life.",
-      "It has a diverse climate and a protective magnetic field."
+      "Utilising The University of Edinburgh's makerspace department and a great group of peers we tasked ourselves with the challenge of creating a pool playing robot on a half scale pool table. The project required research and application of mulitple engineering fields. With systems of the pool playing robot broken down into modules: eletrical systems, robotic systems, CV and camera system, structural support systems. It was my responsibility to design, test and assemble the robotic systems of our project. ",
+      "The robotic system can be divided into 2 subsystems: The gantry system and hitting mechancism. In order for our hitting mechancism to manuvear with great range of moment, I devised and created a Gantry System in the XY axis attached above the pool table. The gantry system relied on 3 stepper motors and timing belts to position our z-axis assembly. The Bresenham line algorithm was utilised to achieve diagonal movement to all coordinate points of our 'pool table plane'. "
     ],
     images: ["./info_images/poolpallRobot.jpeg", "./info_images/cv_model.jpeg"],
     imageDescription: ["Pool Pal in idle position","OpenCV Model utilised in tracking and determining cue ball position"],
@@ -87,6 +87,7 @@ function updateInfoBoxes(index) {
   // Update Left Box
   leftBox.innerHTML = `
     <h2>${info.title}</h2>
+    <hr style="border: none; border-top: 1px solid #ccc; margin-top: 1rem;" />
     <p>${info.paragraphs[0]}</p>
     <p>${info.paragraphs[1]}</p>
   `;
