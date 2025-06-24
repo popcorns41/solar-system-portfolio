@@ -2,7 +2,7 @@ window.onbeforeunload = function () {
         window.scrollTo(0, 0);
     };
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('solarSystemReady', () => {
     console.log("DOM fully loaded and parsed, starting boot process");
     window.addEventListener('sunLoaded', () => {console.log("sun loaded, starting animation");});
 
