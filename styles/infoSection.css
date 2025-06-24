@@ -1,4 +1,5 @@
 #infoSection {
+  display: none; /* hidden by default */
   position: absolute;
   top: 25px; /* adjust to push below any top UI */
   left: 0;

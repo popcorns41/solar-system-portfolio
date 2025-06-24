@@ -174,6 +174,8 @@ function removeUI(){
 }
 
 function revealInfoBoxes() {
+  const infoSection = document.getElementById("infoSection");
+  infoSection.style.display = "flex";
   const leftBox = document.getElementById("infoBoxLeft");
   const rightBox = document.getElementById("infoBoxRight");
 
