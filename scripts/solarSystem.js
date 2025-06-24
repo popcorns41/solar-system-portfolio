@@ -32,6 +32,14 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.75;
 controls.screenSpacePanning = false;
+controls.maxDistance = 600;  
+
+controls.mouseButtons = {
+  LEFT: THREE.MOUSE.ROTATE,
+  MIDDLE: THREE.MOUSE.DOLLY,
+  RIGHT: THREE.MOUSE.PAN,
+};
+
 
 console.log("Set up texture loader");
 const cubeTextureLoader = new THREE.CubeTextureLoader();
@@ -1018,4 +1026,14 @@ function handleResize() {
 }
 
 window.addEventListener('resize', handleResize);
+
+controls.screenSpacePanning = false; // Optional: restricts vertical panning
+
+controls.addEventListener('change', () => {
+  const t = controls.target;
+  const limit = 100;
+  t.x = Math.max(-limit, Math.min(limit, t.x));
+  t.y = Math.max(-limit, Math.min(limit, t.y));
+  t.z = Math.max(-limit, Math.min(limit, t.z));
+});
 
