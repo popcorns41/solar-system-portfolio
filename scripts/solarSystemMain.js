@@ -3,8 +3,7 @@ import * as THREE from 'three';
 //script imports
 import {initSetup,postProcessSetup,lightingSetup} from '/scripts/solarSystem/initCanvasSetup.js';
 import {initSun,initPlanetObjects} from '/scripts/solarSystem/initPlanetObjects.js';
-import {sequentialHideUnselected, sequentialReveal, solarStartSunrise,hideAllExceptSelected,fadeSunOpacity} from '/scripts/solarSystem/sequenceAnim.js';
-import { plane } from 'three/examples/jsm/Addons.js';
+import {sequentialHideUnselected, sequentialReveal, solarStartSunrise,solarTransformDownZoomOut,fadeSunOpacity} from '/scripts/solarSystem/sequenceAnim.js';
 
 export async function initSolarSystem(preloadedModels) {
   // ******  SETUP  ******
@@ -77,7 +76,6 @@ export async function initSolarSystem(preloadedModels) {
   let targetCameraPosition = new THREE.Vector3();
   let hoverEnabled = true;
   let offset;
- 
 
   function onDocumentMouseClick(event) {
     event.preventDefault();
@@ -134,7 +132,6 @@ export async function initSolarSystem(preloadedModels) {
         hasMouseMove = false;
         document.getElementById('hoverCard').style.display = 'none';
         outlinePass.selectedObjects = [];
-        
       }
     }
   }
@@ -186,37 +183,6 @@ export async function initSolarSystem(preloadedModels) {
   renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Use soft shadows
 
 
-  function solarTransformDownZoomOut() {
-    const startY = sun.position.y;
-    const targetY = 0;
-
-    const startScale = sun.scale.x; // assumed uniform scale
-    const targetScale = 1;
-
-    const duration = 2500; // ms
-    const startTime = performance.now();
-
-    function animate(time) {
-      const elapsed = time - startTime;
-      const t = Math.min(elapsed / duration, 1);
-      const easedT = t * t * (3 - 2 * t); // smoothstep easing
-
-      // Position
-      sun.position.y = startY + (targetY - startY) * easedT;
-
-      // Scale
-      const scale = startScale + (targetScale - startScale) * easedT;
-      sun.scale.set(scale, scale, scale);
-
-      if (t < 1) {
-        requestAnimationFrame(animate);
-      }else{
-        window.dispatchEvent(new CustomEvent("sunZoomComplete"));
-      }
-    }
-
-    requestAnimationFrame(animate);
-  }
 
   function animate() {
 
@@ -313,33 +279,24 @@ export async function initSolarSystem(preloadedModels) {
     console.log(`Camera updated to: ${selected.name}`);
   }
 
-  function handleResize(renderer,camera,fxaaPass) {
-    const canvas = document.getElementById("threeCanvas");
-    const pixelRatio = renderer.getPixelRatio();
+  function handleResize() {
+  const pixelRatio = window.devicePixelRatio || 1;
+  const width = window.innerWidth;
+  const height = window.innerHeight;
 
-    // Get current transform (e.g. scale + translate from animation)
-    const currentTransform = window.getComputedStyle(canvas).transform;
+  renderer.setSize(width, height, true);
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
 
-    // Temporarily clear transform so we can measure properly
-    canvas.style.transform = "none";
-
-    // Resize Three.js renderer and camera
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    renderer.setSize(width, height);
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-
-    // Reset and reapply original transform
-    canvas.style.transform = currentTransform;
-
+  if (fxaaPass) {
     fxaaPass.material.uniforms['resolution'].value.set(
-      1 / (window.innerWidth * pixelRatio),
-      1 / (window.innerHeight * pixelRatio)
+      1 / (width * pixelRatio),
+      1 / (height * pixelRatio)
     );
-
-    // Optionally, re-calculate new position based on rectBefore if you want more precise adjustment
   }
+
+  renderer.render(scene, camera);
+}
 
   async function handleZoomOut() {
     isZoomingOut = true;
@@ -366,7 +323,7 @@ export async function initSolarSystem(preloadedModels) {
     solarStartSunrise(sun);
   });
 
-  window.addEventListener('solarTransformDownZoomOutCue', () => {solarTransformDownZoomOut();});
+  window.addEventListener('solarTransformDownZoomOutCue', () => {solarTransformDownZoomOut(sun);});
   window.addEventListener('firstReveal', () => {sequentialReveal(planets, hoverEnabled, 1000);});
   window.addEventListener('resize', handleResize(renderer,camera,fxaaPass));
 }
