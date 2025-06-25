@@ -23,7 +23,9 @@ window.addEventListener('solarSystemReady', () => {
       introInstructions.style.transform = 'translateY(0)';
       
     }, 1500);
-    setTimeout(() => {solarStartSunrise();},3000);
+    setTimeout(() => {
+      window.dispatchEvent(new Event("beginSunrise"));
+    }, 3000);
 
     window.addEventListener("sunRose", () => {
       console.log("sun has arisen B-)")

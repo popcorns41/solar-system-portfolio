@@ -3,14 +3,14 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js';
 
+//script imports
 import {getCachedModel} from '/model_loader/modelCache.js';
+import {initSun} from '/scripts/solarSystem/initPlanetObjects.js';
 
-import sunTexture from '/images/sun.jpg';
 import poolBallTexture from '/images/8ball.jpg';
 
 export async function initSolarSystem(preloadedModels) {
@@ -281,70 +281,12 @@ export async function initSolarSystem(preloadedModels) {
   let isZoomingOut = false;
   let zoomOutTargetPosition = new THREE.Vector3(-175, 115, 5);
 
-
-  // ******  SUN  ******
-
-
-  const sunName = "Sun"
-  let sunMat;
-
   const sunSize = 697/40; // 40 times smaller scale than earth
-  const sunGeom = new THREE.SphereGeometry(sunSize, 64, 64);
-  // sunMat = new THREE.MeshPhongMaterial({
-  //   map: loadTexture.load(sunTexture)
-  // });
-  sunMat = new THREE.MeshStandardMaterial({
-    emissive: 0xFFF88F,
-    emissiveMap: loadTexture.load(sunTexture),
-    emissiveIntensity: 1,
-    color: new THREE.Color(0xFFA500)
-  });
-
-  sunMat.transparent = true;
-
-  const sun = new THREE.Mesh(sunGeom, sunMat);
+  // ******  SUN  ******
+  const { sun, sunMat } = initSun(sunSize);
 
   scene.add(sun);
-
-  sun.scale.set(1.7, 1.7, 1.7);
-  //initial y: -50
-  //target y: 40
-  sun.position.y=-50;
-  sun.position.z=0;
-  sun.position.x=0;
-
-  function solarStartSunrise() {
-    const startY = sun.position.y;
-    const targetY = 45;
-    const duration = 8000;
-    const startTime = performance.now();
-
-    function rise(currentTime) {
-      const elapsed = currentTime - startTime;
-      const t = Math.min(elapsed / duration, 1);
-
-      // Eased movement (cubic ease-out)
-      const easedT = 1 - Math.pow(1 - t, 2);
-      
-      sun.position.y = startY + (targetY - startY) * easedT;
-
-      if (t < 1) {
-        requestAnimationFrame(rise);
-      }else{
-        window.dispatchEvent(new CustomEvent("sunRose"));
-      }
-    }
-
-    requestAnimationFrame(rise);
-  }
-
-  window.solarStartSunrise = solarStartSunrise;
   window.dispatchEvent(new CustomEvent("sunLoaded"));
-
-  //point light in the sun
-  const pointLight = new THREE.PointLight(0xFDFFD3 , 1200, 400, 1.4);
-  sun.add(pointLight);
-
   // Gentle ambient
 
 
@@ -353,158 +295,26 @@ export async function initSolarSystem(preloadedModels) {
   scene.add(hemiLight);
 
 
-
-
-  // ******  PLANET CREATION FUNCTION  ******
-  function createPlanet(planetName, size, position, tilt, texture, bump, ring, atmosphere, moons){
-
-    let material;
-    if (texture instanceof THREE.Material){
-      material = texture;
-    } 
-    else if(bump){
-      material = new THREE.MeshPhongMaterial({
-      map: loadTexture.load(texture),
-      bumpMap: loadTexture.load(bump),
-      bumpScale: 0.7
-      });
-    }
-    else {
-      material = new THREE.MeshPhongMaterial({
-      map: loadTexture.load(texture)
-      });
-    } 
-
-    const name = planetName;
-    const geometry = new THREE.SphereGeometry(size, 32, 20);
-    const planet = new THREE.Mesh(geometry, material);
-    const planet3d = new THREE.Object3D;
-    const planetSystem = new THREE.Group();
-    planetSystem.add(planet);
-    let Atmosphere;
-    let Ring;
-    planet.position.x = position;
-    planet.rotation.z = tilt * Math.PI / 180;
-
-    // add orbit path
-    const orbitPath = new THREE.EllipseCurve(
-      0, 0,            // ax, aY
-      position, position, // xRadius, yRadius
-      0, 2 * Math.PI,   // aStartAngle, aEndAngle
-      false,            // aClockwise
-      0                 // aRotation
-  );
-
-    const pathPoints = orbitPath.getPoints(100);
-    const orbitGeometry = new THREE.BufferGeometry().setFromPoints(pathPoints);
-    const orbitMaterial = new THREE.LineBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.5 });
-    const orbit = new THREE.LineLoop(orbitGeometry, orbitMaterial);
-    orbit.rotation.x = Math.PI / 2;
-    planet.orbit = orbit;
-    planetSystem.add(orbit);
-
-    //add ring
-    if(ring)
-    {
-      const RingGeo = new THREE.RingGeometry(ring.innerRadius, ring.outerRadius,30);
-      const RingMat = new THREE.MeshStandardMaterial({
-        map: loadTexture.load(ring.texture),
-        side: THREE.DoubleSide
-      });
-      Ring = new THREE.Mesh(RingGeo, RingMat);
-      planetSystem.add(Ring);
-      Ring.position.x = position;
-      Ring.rotation.x = -0.5 *Math.PI;
-      Ring.rotation.y = -tilt * Math.PI / 180;
-    }
-    
-    //add atmosphere
-    if(atmosphere){
-      const atmosphereGeom = new THREE.SphereGeometry(size+0.1, 32, 20);
-      const atmosphereMaterial = new THREE.MeshPhongMaterial({
-        map:loadTexture.load(atmosphere),
-        transparent: true,
-        opacity: 0.4,
-        depthTest: true,
-        depthWrite: false
-      })
-      Atmosphere = new THREE.Mesh(atmosphereGeom, atmosphereMaterial)
-      
-      Atmosphere.rotation.z = 0.41;
-      planet.add(Atmosphere);
-    }
-
-    //add moons
-    if(moons){
-      moons.forEach(moon => {
-        let moonMaterial;
-        
-        if(moon.bump){
-          moonMaterial = new THREE.MeshStandardMaterial({
-            map: loadTexture.load(moon.texture),
-            bumpMap: loadTexture.load(moon.bump),
-            bumpScale: 0.5
-          });
-        } else{
-          moonMaterial = new THREE.MeshStandardMaterial({
-            map: loadTexture.load(moon.texture)
-          });
-        }
-        const moonGeometry = new THREE.SphereGeometry(moon.size, 32, 20);
-        const moonMesh = new THREE.Mesh(moonGeometry, moonMaterial);
-        const moonOrbitDistance = size * 1.5;
-        moonMesh.position.set(moonOrbitDistance, 0, 0);
-        planetSystem.add(moonMesh);
-        moon.mesh = moonMesh;
-      });
-    }
-    //add planet system to planet3d object and to the scene
-    planet3d.add(planetSystem);
-    scene.add(planet3d);
-    return {name, planet, planet3d, Atmosphere, moons, planetSystem, Ring, orbit};
-  }
-
-
-  // ******  LOADING OBJECTS METHOD  ******
-
-  //async function for loading glb models :D
-  function loadGLB(path) {
-    return new Promise((resolve, reject) => {
-      const loader = new GLTFLoader();
-      loader.load(
-        path,
-        (gltf) => {
-          const obj = gltf.scene;
-          scene.add(obj);
-          resolve(obj);
-        },
-        undefined,
-        (error) => {
-            console.error(`❌ Failed to load GLB: ${path}`);
-            reject(error);
-          }
-      );
-    });
-  }
-
-  // ******  MOONS  ******
-
-
   // ******  PLANET CREATIONS  ******
   //mercury original size: 2.4
   const mercury = await createglbPlanet("mercury",40,0.20);
+  scene.add(mercury.planet3d);
   mercury.planet.rotation.x = -90 * Math.PI / 180;
 
 
   //const mercury = new createPlanet('Mercury', 5, 40, 0, mercuryTexture, mercuryBump);
   //const venus = new createPlanet('Venus', 6.1, 65, 0, basketballTexture);
   const venus = await createglbPlanet("venus",65,6.1);
-  const earth = new createPlanet('Earth', 6.4, 90, 0, poolBallTexture, null, null);
+  scene.add(venus.planet3d);
+
+  const earth = new createPlanet(loadTexture, 'Earth', 6.4, 90, 0, poolBallTexture);
+  scene.add(earth.planet3d);
   const mars = await createglbPlanet("mars",115,4);
+  scene.add(mars.planet3d);
   // Load Mars moons
 
   const jupiter = await createglbPlanet("jupiter",170,15);
-
+  scene.add(jupiter.planet3d);
   //jupiter.planet.rotation.z = 45 * Math.PI / 180;
 
   //const jupiter = new createPlanet('Jupiter', 69/4, 170, 0, poolBallTexture, null, null, null);
@@ -512,64 +322,9 @@ export async function initSolarSystem(preloadedModels) {
   //const saturn = new createPlanet('Saturn', 58/4, 240, 0, saturnTexture, null,null);
 
   const saturn = await createglbPlanet("saturn",240,1);
+  scene.add(saturn.planet3d);
 
   window.dispatchEvent(new CustomEvent("planetsLoaded"));
-
-  async function createglbPlanet(name,position,scale){
-
-    const planet = await getCachedModel(name);
-    console.log("name: ",name);
-    console.log("planet: ",planet);
-    planet.traverse((child) => {
-      if (child.isMesh) {
-        child.material = new THREE.MeshStandardMaterial({
-          map: child.material.map,
-          color: child.material.color,
-        });
-        child.geometry.computeVertexNormals();
-      }
-    });
-
-    const planet3d = new THREE.Object3D;
-    const planetSystem = new THREE.Group();
-    planetSystem.add(planet);
-
-    planet.position.x = position;
-    planet.scale.set(scale,scale,scale);
-
-    const orbitPath = new THREE.EllipseCurve(
-      0, 0,            // ax, aY
-      position, position, // xRadius, yRadius
-      0, 2 * Math.PI,   // aStartAngle, aEndAngle
-      false,            // aClockwise
-      0                 // aRotation
-    );
-
-    const pathPoints = orbitPath.getPoints(100);
-    const orbitGeometry = new THREE.BufferGeometry().setFromPoints(pathPoints);
-    const orbitMaterial = new THREE.LineBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.5 });
-    const orbit = new THREE.LineLoop(orbitGeometry, orbitMaterial);
-    orbit.rotation.x = Math.PI / 2;
-    planet.orbit = orbit;
-
-    planetSystem.add(orbit);
-
-    planet3d.add(planetSystem);
-    scene.add(planet3d);
-
-    let meshes = [];
-    planet.traverse(child => {
-      if (child.isMesh) {
-        // child.material.emissive = new THREE.Color(0xffddaa); // white glow
-        // child.material.emissiveIntensity = 0.05;
-        meshes.push(child);
-      } 
-    });
-
-
-    return {name,planet,planet3d,orbit,meshes};
-  }
-
 
 
 
@@ -603,11 +358,6 @@ export async function initSolarSystem(preloadedModels) {
   // ******  SHADOWS  ******
   renderer.shadowMap.enabled = true;
 
-  //properties for the point light
-  pointLight.shadow.mapSize.width = 1024;
-  pointLight.shadow.mapSize.height = 1024;
-  pointLight.shadow.camera.near = 10;
-  pointLight.shadow.camera.far = 20;
 
 
   //casting and receiving shadows
@@ -837,39 +587,18 @@ export async function initSolarSystem(preloadedModels) {
   //   planets.forEach
   // }
 
-  function hideAllExceptSelected(selectedIndex) {
-    indexOrderofPlanets.forEach((planetObj, index) => {
-      const mesh = planetObj.mesh;
+  
 
-      if (!mesh) return;
-
-      const isSelected = index === selectedIndex;
-
-      mesh.traverse(child => {
-        if ((child.isMesh || child.isLine) && child.material) {
-          const materials = Array.isArray(child.material) ? child.material : [child.material];
-          materials.forEach(mat => {
-            mat.transparent = true;
-            mat.opacity = isSelected ? 1 : 0;
-          });
-
-          child.visible = true; // Always keep children visible to prevent render bugs
-        }
-      });
-
-      // Orbits are optional; show only for selected planet
-      if (planetObj.orbit) {
-        planetObj.orbit.visible = isSelected;
-      }
-    });
-  }
+  window.addEventListener('beginSunrise', () => { 
+    solarStartSunrise(sun);
+  });
 
   window.addEventListener("planetChange", (event) => {
     const index = event.detail.index;
     const selected = indexOrderofPlanets[index];
     const offset = offsets[index];
 
-    hideAllExceptSelected(index);
+    hideAllExceptSelected(index, indexOrderofPlanets);
 
     selected.mesh.visible = true;
     selected.mesh.traverse(child => {
@@ -1007,3 +736,153 @@ export async function initSolarSystem(preloadedModels) {
     }
   }
 
+    function solarStartSunrise(sun) {
+    const startY = sun.position.y;
+    const targetY = 45;
+    const duration = 8000;
+    const startTime = performance.now();
+
+    function rise(currentTime) {
+      const elapsed = currentTime - startTime;
+      const t = Math.min(elapsed / duration, 1);
+
+      // Eased movement (cubic ease-out)
+      const easedT = 1 - Math.pow(1 - t, 2);
+      
+      sun.position.y = startY + (targetY - startY) * easedT;
+
+      if (t < 1) {
+        requestAnimationFrame(rise);
+      }else{
+        window.dispatchEvent(new CustomEvent("sunRose"));
+      }
+    }
+
+    requestAnimationFrame(rise);
+  }
+
+
+function hideAllExceptSelected(selectedIndex,indexOrderofPlanets) {
+    indexOrderofPlanets.forEach((planetObj, index) => {
+      const mesh = planetObj.mesh;
+
+      if (!mesh) return;
+
+      const isSelected = index === selectedIndex;
+
+      mesh.traverse(child => {
+        if ((child.isMesh || child.isLine) && child.material) {
+          const materials = Array.isArray(child.material) ? child.material : [child.material];
+          materials.forEach(mat => {
+            mat.transparent = true;
+            mat.opacity = isSelected ? 1 : 0;
+          });
+
+          child.visible = true; // Always keep children visible to prevent render bugs
+        }
+      });
+
+      // Orbits are optional; show only for selected planet
+      if (planetObj.orbit) {
+        planetObj.orbit.visible = isSelected;
+      }
+    });
+  }
+
+  async function createglbPlanet(name,position,scale){
+
+    const planet = await getCachedModel(name);
+    console.log("name: ",name);
+    console.log("planet: ",planet);
+    planet.traverse((child) => {
+      if (child.isMesh) {
+        child.material = new THREE.MeshStandardMaterial({
+          map: child.material.map,
+          color: child.material.color,
+        });
+        child.geometry.computeVertexNormals();
+      }
+    });
+
+    const planet3d = new THREE.Object3D;
+    const planetSystem = new THREE.Group();
+    planetSystem.add(planet);
+
+    planet.position.x = position;
+    planet.scale.set(scale,scale,scale);
+
+    const orbitPath = new THREE.EllipseCurve(
+      0, 0,            // ax, aY
+      position, position, // xRadius, yRadius
+      0, 2 * Math.PI,   // aStartAngle, aEndAngle
+      false,            // aClockwise
+      0                 // aRotation
+    );
+
+    const pathPoints = orbitPath.getPoints(100);
+    const orbitGeometry = new THREE.BufferGeometry().setFromPoints(pathPoints);
+    const orbitMaterial = new THREE.LineBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.5 });
+    const orbit = new THREE.LineLoop(orbitGeometry, orbitMaterial);
+    orbit.rotation.x = Math.PI / 2;
+    planet.orbit = orbit;
+
+    planetSystem.add(orbit);
+
+    planet3d.add(planetSystem);
+
+
+    let meshes = [];
+    planet.traverse(child => {
+      if (child.isMesh) {
+        // child.material.emissive = new THREE.Color(0xffddaa); // white glow
+        // child.material.emissiveIntensity = 0.05;
+        meshes.push(child);
+      } 
+    });
+
+
+    return {name,planet,planet3d,orbit,meshes};
+  }
+
+  // ******  PLANET CREATION FUNCTION  ******
+  function createPlanet(loadTexture, planetName, size, position, tilt, texture){
+
+    let material;
+    if (texture instanceof THREE.Material){
+      material = texture;
+    }else {
+      material = new THREE.MeshPhongMaterial({
+      map: loadTexture.load(texture)
+      });
+    } 
+
+    const name = planetName;
+    const geometry = new THREE.SphereGeometry(size, 32, 20);
+    const planet = new THREE.Mesh(geometry, material);
+    const planet3d = new THREE.Object3D;
+    const planetSystem = new THREE.Group();
+    planetSystem.add(planet);
+    planet.position.x = position;
+    planet.rotation.z = tilt * Math.PI / 180;
+
+    // add orbit path
+    const orbitPath = new THREE.EllipseCurve(
+      0, 0,            // ax, aY
+      position, position, // xRadius, yRadius
+      0, 2 * Math.PI,   // aStartAngle, aEndAngle
+      false,            // aClockwise
+      0                 // aRotation
+  );
+
+    const pathPoints = orbitPath.getPoints(100);
+    const orbitGeometry = new THREE.BufferGeometry().setFromPoints(pathPoints);
+    const orbitMaterial = new THREE.LineBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.5 });
+    const orbit = new THREE.LineLoop(orbitGeometry, orbitMaterial);
+    orbit.rotation.x = Math.PI / 2;
+    planet.orbit = orbit;
+    planetSystem.add(orbit);
+
+    //add planet system to planet3d object and to the scene
+    planet3d.add(planetSystem);
+    return {name, planet, planet3d, orbit};
+  }
