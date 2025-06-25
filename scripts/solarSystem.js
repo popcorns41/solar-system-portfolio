@@ -1,93 +1,16 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
-import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
-import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js';
 
 //script imports
-import {getCachedModel} from '/model_loader/modelCache.js';
-import {initSun} from '/scripts/solarSystem/initPlanetObjects.js';
-
-import poolBallTexture from '/images/8ball.jpg';
+import {initSetup,postProcessSetup,lightingSetup} from '/scripts/solarSystem/initCanvasSetup.js';
+import {initSun,initPlanetObjects} from '/scripts/solarSystem/initPlanetObjects.js';
+import {sequentialHideUnselected, sequentialReveal, solarStartSunrise,hideAllExceptSelected,fadeSunOpacity} from '/scripts/solarSystem/sequenceAnim.js';
 
 export async function initSolarSystem(preloadedModels) {
   // ******  SETUP  ******
-  console.log("Create the scene");
-  const scene = new THREE.Scene();
-
-  console.log("Create a perspective projection camera");
-  var camera = new THREE.PerspectiveCamera( 45, window.innerWidth/window.innerHeight, 0.1, 1000 );
-  camera.position.set(-175, 115, 5);
-
-  const canvas = document.getElementById('threeCanvas');
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
-
-  console.log("Create the renderer");
-
-  renderer.setClearColor(0x000000, 0); 
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(window.devicePixelRatio);
-
-
-  console.log("Create an orbit control");
-  const controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.75;
-  controls.screenSpacePanning = false;
-  controls.maxDistance = 600;  
-
-
-  console.log("Set up texture loader");
-  const cubeTextureLoader = new THREE.CubeTextureLoader();
-  const loadTexture = new THREE.TextureLoader();
-
-  // ******  POSTPROCESSING setup ******
-  const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
-    format: THREE.RGBAFormat,  
-    type: THREE.UnsignedByteType,
-    depthBuffer: true,
-    stencilBuffer: false
-  });
-
-  const composer = new EffectComposer(renderer, renderTarget);
-  composer.addPass(new RenderPass(scene, camera));
-  const fxaaPass = new ShaderPass(FXAAShader);
-  const pixelRatio = renderer.getPixelRatio();
-
-  fxaaPass.material.uniforms['resolution'].value.set(
-    1 / (window.innerWidth * pixelRatio),
-    1 / (window.innerHeight * pixelRatio)
-  );
-
-  composer.addPass(fxaaPass);
-
-  // ******  OUTLINE PASS  ******
-  const outlinePass = new OutlinePass(new THREE.Vector2(window.innerWidth, window.innerHeight), scene, camera);
-  outlinePass.edgeStrength = 3;
-  outlinePass.edgeGlow = 1;
-  outlinePass.visibleEdgeColor.set(0xFFFFFF);
-  outlinePass.hiddenEdgeColor.set(0x190a05);
-  composer.addPass(outlinePass);
-
-  // ******  BLOOM PASS  ******
-  const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.0001, 0.4, 0.001);
-  bloomPass.renderToScreen = true;
-  bloomPass.clear = false;
-  bloomPass.threshold = 1;
-  bloomPass.radius = 0.9;
-  composer.addPass(bloomPass);
-
-  // ****** AMBIENT LIGHT ******
-  console.log("Add the ambient light");
-  var lightAmbient = new THREE.AmbientLight(0x222222, 6); 
-  scene.add(lightAmbient);
-
-  const colour = new THREE.Color(0x121212);
-  scene.background = colour;
-
+  const { scene, camera, renderer, controls, canvas } = initSetup();
+  const { composer,outlinePass,fxaaPass } = postProcessSetup(renderer, scene, camera);
+  lightingSetup(scene);
+  
   // ****** SETTINGS FOR INTERACTIVE CONTROLS  ******
   const settings = {
     accelerationOrbit: 1,
@@ -167,28 +90,6 @@ export async function initSolarSystem(preloadedModels) {
     return -1; // Return -1 if the planet isn't found
   }
 
-  function fadeSunOpacity(targetOpacity, duration = 1000) {
-    if (!sunMat) return;
-
-    sunMat.transparent = true;
-    const startOpacity = sunMat.opacity;
-    const startTime = performance.now();
-
-    function fadeStep(currentTime) {
-      const elapsed = currentTime - startTime;
-      const t = Math.min(elapsed / duration, 1);
-      const easedT = t * t * (3 - 2 * t); // smoothstep easing
-
-      sunMat.opacity = startOpacity + (targetOpacity - startOpacity) * easedT;
-
-      if (t < 1) {
-        requestAnimationFrame(fadeStep);
-      }
-    }
-
-    requestAnimationFrame(fadeStep);
-  }
-
   function onDocumentMouseClick(event) {
     event.preventDefault();
 
@@ -217,7 +118,7 @@ export async function initSolarSystem(preloadedModels) {
         if (selectedPlanet === sun) {
           pendingPlanetSelection = sun;
         } else {
-          fadeSunOpacity(0,1000);
+          fadeSunOpacity(sunMat, 0, 1000);
           pendingPlanetSelection = selectedPlanet;
           selectedPlanet.planet.getWorldPosition(planetPosition);
         }
@@ -281,48 +182,22 @@ export async function initSolarSystem(preloadedModels) {
   let isZoomingOut = false;
   let zoomOutTargetPosition = new THREE.Vector3(-175, 115, 5);
 
-  const sunSize = 697/40; // 40 times smaller scale than earth
   // ******  SUN  ******
-  const { sun, sunMat } = initSun(sunSize);
+  const { sun, sunMat } = initSun();
 
   scene.add(sun);
   window.dispatchEvent(new CustomEvent("sunLoaded"));
-  // Gentle ambient
+ 
 
 
-  // Soft hemispheric fill
-  const hemiLight = new THREE.HemisphereLight(0xffffff, 0x222222, 0.2);
-  scene.add(hemiLight);
+  const{mercury, venus, earth, mars, jupiter, saturn,planets} = await initPlanetObjects();
 
 
-  // ******  PLANET CREATIONS  ******
-  //mercury original size: 2.4
-  const mercury = await createglbPlanet("mercury",40,0.20);
-  scene.add(mercury.planet3d);
-  mercury.planet.rotation.x = -90 * Math.PI / 180;
+  planets.forEach((planet) => {
+  planet.planet3d.visible = false; // Initially hide them all
+  scene.add(planet.planet3d); // Add to the scene
+  });
 
-
-  //const mercury = new createPlanet('Mercury', 5, 40, 0, mercuryTexture, mercuryBump);
-  //const venus = new createPlanet('Venus', 6.1, 65, 0, basketballTexture);
-  const venus = await createglbPlanet("venus",65,6.1);
-  scene.add(venus.planet3d);
-
-  const earth = new createPlanet(loadTexture, 'Earth', 6.4, 90, 0, poolBallTexture);
-  scene.add(earth.planet3d);
-  const mars = await createglbPlanet("mars",115,4);
-  scene.add(mars.planet3d);
-  // Load Mars moons
-
-  const jupiter = await createglbPlanet("jupiter",170,15);
-  scene.add(jupiter.planet3d);
-  //jupiter.planet.rotation.z = 45 * Math.PI / 180;
-
-  //const jupiter = new createPlanet('Jupiter', 69/4, 170, 0, poolBallTexture, null, null, null);
-
-  //const saturn = new createPlanet('Saturn', 58/4, 240, 0, saturnTexture, null,null);
-
-  const saturn = await createglbPlanet("saturn",240,1);
-  scene.add(saturn.planet3d);
 
   window.dispatchEvent(new CustomEvent("planetsLoaded"));
 
@@ -357,100 +232,8 @@ export async function initSolarSystem(preloadedModels) {
 
   // ******  SHADOWS  ******
   renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Use soft shadows
 
-
-
-  //casting and receiving shadows
-  earth.planet.castShadow = true;
-  earth.planet.receiveShadow = true;
-
-  mercury.planet.castShadow = true;
-  mercury.planet.receiveShadow = true;
-  venus.planet.castShadow = true;
-  venus.planet.receiveShadow = true;
-  mars.planet.castShadow = true;
-  mars.planet.receiveShadow = true;
-  jupiter.planet.castShadow = true;
-  jupiter.planet.receiveShadow = true;
-
-  saturn.planet.castShadow = true;
-  saturn.planet.receiveShadow = true;
-
-
-
-  const planets = [
-    mercury.planet3d,
-    venus.planet3d,
-    earth.planet3d,
-    mars.planet3d,
-    jupiter.planet3d,
-    saturn.planet3d
-  ];
-
-  console.log("planets include saturn",planets.includes(saturn.planet3d));
-
-  planets.forEach((planet, index) => {
-  planet.visible = false; // Initially hide them all
-  });
-
-  function revealPlanet(planetGroup) {
-    planetGroup.visible = true;
-
-    planetGroup.traverse(child => {
-      if ((child.isMesh || child.isLine) && child.material) {
-        child.visible = true;
-
-        const materials = Array.isArray(child.material) ? child.material : [child.material];
-        materials.forEach(mat => {
-          mat.transparent = true;
-
-          // Force reset opacity in case it’s stuck
-          mat.opacity = 0;
-
-          // Reset potential side-effects
-          if (mat.depthWrite === false) mat.depthWrite = true;
-          if (mat.color && mat.color.a !== undefined) mat.color.a = 1.0;
-        });
-
-        const duration = 800;
-        const startTime = performance.now();
-
-        function fade(currentTime) {
-          const elapsed = currentTime - startTime;
-          const t = Math.min(elapsed / duration, 1);
-          const easedT = t * t * (3 - 2 * t); // smoothstep
-
-          materials.forEach(mat => {
-            mat.opacity = easedT;
-          });
-
-          if (t < 1) {
-            requestAnimationFrame(fade);
-          }
-        }
-
-        requestAnimationFrame(fade);
-      }
-    });
-  }
-
-
-  function sequentialReveal(delay = 1000) {
-    planets.forEach((planet, index) => {
-      setTimeout(() => {
-        revealPlanet(planet);
-
-        // After the last planet, fire the event
-        if (index === planets.length - 1) {
-          setTimeout(() => {
-            window.dispatchEvent(new CustomEvent("planetsInView"));
-            hoverEnabled = true;
-          }, delay); // wait for the final reveal animation
-        }
-
-      }, index * delay);
-    });
-  }
 
   function solarTransformDownZoomOut() {
     const startY = sun.position.y;
@@ -483,39 +266,17 @@ export async function initSolarSystem(preloadedModels) {
 
     requestAnimationFrame(animate);
   }
-    
-  function animate(){
+
+  function animate() {
 
     //rotating planets around the sun and itself
     sun.rotateY(0.0015);
-    
 
 
-      mercury.planet.rotateZ(0.003 * settings.acceleration);
-      mercury.planet3d.rotateY(0.002 * settings.accelerationOrbit);
-      venus.planet.rotateY(0.005 * settings.acceleration);
-      venus.planet3d.rotateY(0.0006 * settings.accelerationOrbit);
-      earth.planet.rotateY(0.005 * settings.acceleration);
-      earth.planet3d.rotateY(0.001 * settings.accelerationOrbit);
-      mars.planet.rotateY(0.008 * settings.acceleration);
-      mars.planet3d.rotateY(0.0015 * settings.accelerationOrbit);
-      jupiter.planet.rotateY(0.005 * settings.acceleration);
-      jupiter.planet3d.rotateY(0.0003 * settings.accelerationOrbit);
-      saturn.planet.rotateY(0.01 * settings.acceleration);
-      saturn.planet3d.rotateY(0.0002 * settings.accelerationOrbit);
-
-
-
-  // Rotate asteroids
-  /*
-  asteroids.forEach(asteroid => {
-    asteroid.rotation.y += 0.0001;
-    asteroid.position.x = asteroid.position.x * Math.cos(0.0001 * settings.accelerationOrbit) + asteroid.position.z * Math.sin(0.0001 * settings.accelerationOrbit);
-    asteroid.position.z = asteroid.position.z * Math.cos(0.0001 * settings.accelerationOrbit) - asteroid.position.x * Math.sin(0.0001 * settings.accelerationOrbit);
-  });
-  */
-
-  // ****** OUTLINES ON PLANETS ******
+    for (const p of planets) {
+      p.planet.rotateY(p.rotationSpeed * settings.acceleration);
+      p.planet3d.rotateY(p.orbitSpeed * settings.accelerationOrbit);
+    }
 
   if (hasMouseMove){
     raycaster.setFromCamera(mouse, camera);
@@ -563,33 +324,23 @@ export async function initSolarSystem(preloadedModels) {
     requestAnimationFrame(animate);
     composer.render();
   }
-
   animate();
 
-  //window.sequentialReveal = sequentialReveal;
-  //window.solarTransformDownZoomOut = solarTransformDownZoomOut;
-
   window.addEventListener('solarTransformDownZoomOutCue', () => {solarTransformDownZoomOut();});
-  window.addEventListener('firstReveal', () => {sequentialReveal(1000);});
+  window.addEventListener('firstReveal', () => {sequentialReveal(planets, hoverEnabled, 1000);});
 
   window.addEventListener('zoomOutNeeded', async () => {
     isZoomingOut = true;
     console.log("zoom out received!");
-    fadeSunOpacity(1,2000);
+    fadeSunOpacity(sunMat, 1, 2000);
     settings.accelerationOrbit = 1;
 
     setTimeout(() => {
-      sequentialReveal(500);
+      sequentialReveal(planets, hoverEnabled, 500);
     }, 500); // optional pause
   });
 
-  // function hideUnselectedPlanets(selectedIndex) {
-  //   planets.forEach
-  // }
-
-  
-
-  window.addEventListener('beginSunrise', () => { 
+  window.addEventListener('beginSunrise', () => {
     solarStartSunrise(sun);
   });
 
@@ -629,6 +380,7 @@ export async function initSolarSystem(preloadedModels) {
 
   function handleResize() {
     const canvas = document.getElementById("threeCanvas");
+    const pixelRatio = renderer.getPixelRatio();
 
     // Get current transform (e.g. scale + translate from animation)
     const currentTransform = window.getComputedStyle(canvas).transform;
@@ -669,220 +421,12 @@ export async function initSolarSystem(preloadedModels) {
     return false;
   }
 
-  function hidePlanet(planetGroup) {
-    return new Promise((resolve) => {
-      planetGroup.traverse(child => {
-        if (child.isMesh || child.isLine) {
-          child.material.transparent = true;
-
-          const duration = 200;
-          const startTime = performance.now();
-
-          function fade(currentTime) {
-            const elapsed = currentTime - startTime;
-            const t = Math.min(elapsed / duration, 1);
-            const easedT = 1 - (t * t * (3 - 2 * t)); // smoothstep fade-out
-
-            child.material.opacity = easedT;
-
-            if (t < 1) {
-              requestAnimationFrame(fade);
-            } else {
-              child.visible = false;
-              resolve(); 
-            }
-          }
-
-          requestAnimationFrame(fade);
-        }
-      });
-    });
-  }
-
- function sequentialHideUnselected(selectedPlanet, planets, delay = 300) {
-    for (let i = planets.length - 1; i >= 0; i--) {
-      const planet3d = planets[i];
-      const isSelected = planet3d === selectedPlanet.planet3d;
-
-      setTimeout(() => {
-        if (isSelected) {
-          if (selectedPlanet.orbit && selectedPlanet.orbit.material) {
-            const orbitMaterial = selectedPlanet.orbit.material;
-            orbitMaterial.transparent = true;
-
-            const duration = 1000;
-            const startTime = performance.now();
-
-            function fadeOrbit(currentTime) {
-              const elapsed = currentTime - startTime;
-              const t = Math.min(elapsed / duration, 1);
-              const easedT = t * t * (3 - 2 * t);
-
-              orbitMaterial.opacity = 1 - easedT;
-
-              if (t < 1) {
-                requestAnimationFrame(fadeOrbit);
-              } else {
-                selectedPlanet.orbit.visible = false;
-              }
-            }
-
-            requestAnimationFrame(fadeOrbit);
-          }
-        } else {
-          hidePlanet(planet3d);
-        }
-      }, (planets.length - 1 - i) * delay); // reverse order
-    }
-  }
-
-    function solarStartSunrise(sun) {
-    const startY = sun.position.y;
-    const targetY = 45;
-    const duration = 8000;
-    const startTime = performance.now();
-
-    function rise(currentTime) {
-      const elapsed = currentTime - startTime;
-      const t = Math.min(elapsed / duration, 1);
-
-      // Eased movement (cubic ease-out)
-      const easedT = 1 - Math.pow(1 - t, 2);
-      
-      sun.position.y = startY + (targetY - startY) * easedT;
-
-      if (t < 1) {
-        requestAnimationFrame(rise);
-      }else{
-        window.dispatchEvent(new CustomEvent("sunRose"));
-      }
-    }
-
-    requestAnimationFrame(rise);
-  }
 
 
-function hideAllExceptSelected(selectedIndex,indexOrderofPlanets) {
-    indexOrderofPlanets.forEach((planetObj, index) => {
-      const mesh = planetObj.mesh;
-
-      if (!mesh) return;
-
-      const isSelected = index === selectedIndex;
-
-      mesh.traverse(child => {
-        if ((child.isMesh || child.isLine) && child.material) {
-          const materials = Array.isArray(child.material) ? child.material : [child.material];
-          materials.forEach(mat => {
-            mat.transparent = true;
-            mat.opacity = isSelected ? 1 : 0;
-          });
-
-          child.visible = true; // Always keep children visible to prevent render bugs
-        }
-      });
-
-      // Orbits are optional; show only for selected planet
-      if (planetObj.orbit) {
-        planetObj.orbit.visible = isSelected;
-      }
-    });
-  }
-
-  async function createglbPlanet(name,position,scale){
-
-    const planet = await getCachedModel(name);
-    console.log("name: ",name);
-    console.log("planet: ",planet);
-    planet.traverse((child) => {
-      if (child.isMesh) {
-        child.material = new THREE.MeshStandardMaterial({
-          map: child.material.map,
-          color: child.material.color,
-        });
-        child.geometry.computeVertexNormals();
-      }
-    });
-
-    const planet3d = new THREE.Object3D;
-    const planetSystem = new THREE.Group();
-    planetSystem.add(planet);
-
-    planet.position.x = position;
-    planet.scale.set(scale,scale,scale);
-
-    const orbitPath = new THREE.EllipseCurve(
-      0, 0,            // ax, aY
-      position, position, // xRadius, yRadius
-      0, 2 * Math.PI,   // aStartAngle, aEndAngle
-      false,            // aClockwise
-      0                 // aRotation
-    );
-
-    const pathPoints = orbitPath.getPoints(100);
-    const orbitGeometry = new THREE.BufferGeometry().setFromPoints(pathPoints);
-    const orbitMaterial = new THREE.LineBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.5 });
-    const orbit = new THREE.LineLoop(orbitGeometry, orbitMaterial);
-    orbit.rotation.x = Math.PI / 2;
-    planet.orbit = orbit;
-
-    planetSystem.add(orbit);
-
-    planet3d.add(planetSystem);
 
 
-    let meshes = [];
-    planet.traverse(child => {
-      if (child.isMesh) {
-        // child.material.emissive = new THREE.Color(0xffddaa); // white glow
-        // child.material.emissiveIntensity = 0.05;
-        meshes.push(child);
-      } 
-    });
+
+  
 
 
-    return {name,planet,planet3d,orbit,meshes};
-  }
-
-  // ******  PLANET CREATION FUNCTION  ******
-  function createPlanet(loadTexture, planetName, size, position, tilt, texture){
-
-    let material;
-    if (texture instanceof THREE.Material){
-      material = texture;
-    }else {
-      material = new THREE.MeshPhongMaterial({
-      map: loadTexture.load(texture)
-      });
-    } 
-
-    const name = planetName;
-    const geometry = new THREE.SphereGeometry(size, 32, 20);
-    const planet = new THREE.Mesh(geometry, material);
-    const planet3d = new THREE.Object3D;
-    const planetSystem = new THREE.Group();
-    planetSystem.add(planet);
-    planet.position.x = position;
-    planet.rotation.z = tilt * Math.PI / 180;
-
-    // add orbit path
-    const orbitPath = new THREE.EllipseCurve(
-      0, 0,            // ax, aY
-      position, position, // xRadius, yRadius
-      0, 2 * Math.PI,   // aStartAngle, aEndAngle
-      false,            // aClockwise
-      0                 // aRotation
-  );
-
-    const pathPoints = orbitPath.getPoints(100);
-    const orbitGeometry = new THREE.BufferGeometry().setFromPoints(pathPoints);
-    const orbitMaterial = new THREE.LineBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.5 });
-    const orbit = new THREE.LineLoop(orbitGeometry, orbitMaterial);
-    orbit.rotation.x = Math.PI / 2;
-    planet.orbit = orbit;
-    planetSystem.add(orbit);
-
-    //add planet system to planet3d object and to the scene
-    planet3d.add(planetSystem);
-    return {name, planet, planet3d, orbit};
-  }
+ 

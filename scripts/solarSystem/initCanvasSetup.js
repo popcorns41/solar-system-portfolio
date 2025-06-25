@@ -1,0 +1,100 @@
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
+import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js';
+
+export function initSetup(){
+    console.log("Create the scene");
+    const scene = new THREE.Scene();
+
+
+    const colour = new THREE.Color(0x121212);
+    scene.background = colour;
+
+    console.log("Create a perspective projection camera");
+    var camera = new THREE.PerspectiveCamera( 45, window.innerWidth/window.innerHeight, 0.1, 1000 );
+    camera.position.set(-175, 115, 5);
+
+    const canvas = document.getElementById('threeCanvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
+
+    console.log("Create the renderer");
+
+    renderer.setClearColor(0x000000, 0); 
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+
+
+    console.log("Create an orbit control");
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.75;
+    controls.screenSpacePanning = false;
+    controls.maxDistance = 600;
+    
+    return {
+        scene,
+        camera,
+        renderer,
+        controls,
+        canvas
+    };
+}
+
+export function postProcessSetup(renderer,scene,camera){
+    const renderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
+        format: THREE.RGBAFormat,  
+        type: THREE.UnsignedByteType,
+        depthBuffer: true,
+        stencilBuffer: false
+    });
+
+    const composer = new EffectComposer(renderer, renderTarget);
+    composer.addPass(new RenderPass(scene, camera));
+    const fxaaPass = new ShaderPass(FXAAShader);
+    const pixelRatio = renderer.getPixelRatio();
+
+    fxaaPass.material.uniforms['resolution'].value.set(
+        1 / (window.innerWidth * pixelRatio),
+        1 / (window.innerHeight * pixelRatio)
+    );
+
+    composer.addPass(fxaaPass);
+
+    // ******  OUTLINE PASS  ******
+    const outlinePass = new OutlinePass(new THREE.Vector2(window.innerWidth, window.innerHeight), scene, camera);
+    outlinePass.edgeStrength = 3;
+    outlinePass.edgeGlow = 1;
+    outlinePass.visibleEdgeColor.set(0xFFFFFF);
+    outlinePass.hiddenEdgeColor.set(0x190a05);
+    composer.addPass(outlinePass);
+
+    // ******  BLOOM PASS  ******
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.0001, 0.4, 0.001);
+    bloomPass.renderToScreen = true;
+    bloomPass.clear = false;
+    bloomPass.threshold = 1;
+    bloomPass.radius = 0.9;
+    composer.addPass(bloomPass);
+
+    return {
+        composer,
+        outlinePass,
+        fxaaPass
+    };
+}
+
+export function lightingSetup(scene){
+    console.log("Add the ambient light");
+    var lightAmbient = new THREE.AmbientLight(0x222222, 6); 
+
+
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x222222, 0.2);
+
+    scene.add(lightAmbient);
+    scene.add(hemiLight);
+}
