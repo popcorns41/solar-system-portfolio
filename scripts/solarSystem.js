@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import {initSetup,postProcessSetup,lightingSetup} from '/scripts/solarSystem/initCanvasSetup.js';
 import {initSun,initPlanetObjects} from '/scripts/solarSystem/initPlanetObjects.js';
 import {sequentialHideUnselected, sequentialReveal, solarStartSunrise,hideAllExceptSelected,fadeSunOpacity} from '/scripts/solarSystem/sequenceAnim.js';
+import { plane } from 'three/examples/jsm/Addons.js';
 
 export async function initSolarSystem(preloadedModels) {
   // ******  SETUP  ******
@@ -71,24 +72,12 @@ export async function initSolarSystem(preloadedModels) {
   }
 
   // ******  Globals  ******
-  let pendingPlanetSelection = null;
+
   let isMovingTowardsPlanet = false;
   let targetCameraPosition = new THREE.Vector3();
   let hoverEnabled = true;
   let offset;
  
-
-  function getPlanetIndex(selectedPlanet) {
-    if (selectedPlanet === sun) return 0;
-    if (selectedPlanet === mercury) return 1;
-    if (selectedPlanet === venus) return 2;
-    if (selectedPlanet === earth) return 3;
-    if (selectedPlanet === mars) return 4;
-    if (selectedPlanet === jupiter) return 5;
-    if (selectedPlanet === saturn) return 6;
-    
-    return -1; // Return -1 if the planet isn't found
-  }
 
   function onDocumentMouseClick(event) {
     event.preventDefault();
@@ -101,10 +90,17 @@ export async function initSolarSystem(preloadedModels) {
 
     if (intersects.length > 0) {
       const clickedObject = intersects[0].object;
-      const selectedPlanet = identifyPlanet(clickedObject);
+      const selectedPlanetIndex = identifyPlanet(clickedObject,sun, planets);
+      let selectedPlanet = null;
+      if (selectedPlanetIndex === 0) {
+        selectedPlanet = sun;
+      } else if (selectedPlanetIndex > 0) {
+        selectedPlanet = planets[selectedPlanetIndex - 1];
+      }
 
       if (selectedPlanet) {
-        window.planetIndex = getPlanetIndex(selectedPlanet);
+        window.planetIndex = selectedPlanetIndex;
+        offset = offsets[selectedPlanetIndex];
         const indexAnnouncementEvent = new CustomEvent("solarSystemToInfoSection",
           {
             detail: {index: window.planetIndex}
@@ -115,11 +111,8 @@ export async function initSolarSystem(preloadedModels) {
 
         const planetPosition = new THREE.Vector3();
 
-        if (selectedPlanet === sun) {
-          pendingPlanetSelection = sun;
-        } else {
+        if (!(selectedPlanet === sun)) {
           fadeSunOpacity(sunMat, 0, 1000);
-          pendingPlanetSelection = selectedPlanet;
           selectedPlanet.planet.getWorldPosition(planetPosition);
         }
 
@@ -132,7 +125,7 @@ export async function initSolarSystem(preloadedModels) {
           camera.position.clone().sub(planetPosition).normalize().multiplyScalar(offset)
         );
         // Wait for sequential hide to complete before moving camera
-        sequentialHideUnselected(pendingPlanetSelection, planets);
+        sequentialHideUnselected(selectedPlanet, planets);
         setTimeout(()=>{
           window.dispatchEvent(new CustomEvent("beginPlanetTransform"));
         },1000)
@@ -144,35 +137,6 @@ export async function initSolarSystem(preloadedModels) {
         
       }
     }
-  }
-
-
-  function identifyPlanet(clickedObject) {
-
-    if (mercury.planet && isDescendantOf(clickedObject, mercury.planet)) {
-      offset = offsets[1];
-      return mercury;
-    } else if (clickedObject.material === sunMat) {
-      offset = offsets[0];
-      return sun;
-    } else if (venus.planet && isDescendantOf(clickedObject, venus.planet)) {
-      offset = offsets[2];
-      return venus;
-    } else if (clickedObject.material === earth.planet.material) {
-      offset = offsets[3];
-      return earth;
-    } else if (mars.planet && isDescendantOf(clickedObject, mars.planet)) {
-      offset = offsets[4];
-      return mars;
-    } else if (jupiter.planet && isDescendantOf(clickedObject, jupiter.planet)) {
-      offset = offsets[5];
-      return jupiter;
-    } else if (saturn.planet && isDescendantOf(clickedObject, saturn.planet)) {
-      offset = offsets[6];
-      return saturn;
-    }
-
-    return null;
   }
 
 
@@ -194,25 +158,12 @@ export async function initSolarSystem(preloadedModels) {
 
 
   planets.forEach((planet) => {
-  planet.planet3d.visible = false; // Initially hide them all
-  scene.add(planet.planet3d); // Add to the scene
+    planet.planet3d.visible = false; // Initially hide them all
+    scene.add(planet.planet3d); // Add to the scene
   });
 
 
   window.dispatchEvent(new CustomEvent("planetsLoaded"));
-
-
-
-
-  const indexOrderofPlanets = [
-    { name: "Sun", mesh: sun },
-    { name: "Mercury", mesh: mercury.planet },
-    { name: "Venus", mesh: venus.planet },
-    { name: "Earth", mesh: earth.planet },
-    { name: "Mars", mesh: mars.planet },
-    { name: "Jupiter", mesh: jupiter.planet },
-    { name: "Saturn", mesh: saturn.planet }
-  ];
 
   const offsets = [
     70,    // sun
@@ -274,7 +225,7 @@ export async function initSolarSystem(preloadedModels) {
 
 
     for (const p of planets) {
-      p.planet.rotateY(p.rotationSpeed * settings.acceleration);
+      p.rotateSelf(p.planet, p.rotationSpeed, settings.acceleration);
       p.planet3d.rotateY(p.orbitSpeed * settings.accelerationOrbit);
     }
 
@@ -307,10 +258,6 @@ export async function initSolarSystem(preloadedModels) {
     camera.position.lerp(targetCameraPosition, 0.03);
     if (camera.position.distanceTo(targetCameraPosition) < 1) {
       isMovingTowardsPlanet = false;
-
-      if (pendingPlanetSelection) {
-        pendingPlanetSelection = null;
-      }
     }
   } else if (isZoomingOut) {
     camera.position.lerp(zoomOutTargetPosition, 0.03);
@@ -326,33 +273,24 @@ export async function initSolarSystem(preloadedModels) {
   }
   animate();
 
-  window.addEventListener('solarTransformDownZoomOutCue', () => {solarTransformDownZoomOut();});
-  window.addEventListener('firstReveal', () => {sequentialReveal(planets, hoverEnabled, 1000);});
+  
 
-  window.addEventListener('zoomOutNeeded', async () => {
-    isZoomingOut = true;
-    console.log("zoom out received!");
-    fadeSunOpacity(sunMat, 1, 2000);
-    settings.accelerationOrbit = 1;
-
-    setTimeout(() => {
-      sequentialReveal(planets, hoverEnabled, 500);
-    }, 500); // optional pause
-  });
-
-  window.addEventListener('beginSunrise', () => {
-    solarStartSunrise(sun);
-  });
-
-  window.addEventListener("planetChange", (event) => {
+  
+  function planetChange(event){
     const index = event.detail.index;
-    const selected = indexOrderofPlanets[index];
+    let selected;
+    // Determine the selected planet based on the index
+    if (index == 0) {
+      selected = sun;
+    }else{
+      selected = planets[index - 1];
+    }
     const offset = offsets[index];
 
-    hideAllExceptSelected(index, indexOrderofPlanets);
+    sequentialHideUnselected(selected, planets,0);
 
-    selected.mesh.visible = true;
-    selected.mesh.traverse(child => {
+    selected.planet.visible = true;
+    selected.planet.traverse(child => {
     child.visible = true; // <- make child renderable
     if (child.material) {
       child.material.transparent = true;
@@ -360,7 +298,7 @@ export async function initSolarSystem(preloadedModels) {
     }
   });
     const planetPosition = new THREE.Vector3();
-    selected.mesh.getWorldPosition(planetPosition);
+    selected.planet.getWorldPosition(planetPosition);
 
     // Update camera target and position
 
@@ -373,12 +311,9 @@ export async function initSolarSystem(preloadedModels) {
     camera.position.copy(targetCameraPosition);
     
     console.log(`Camera updated to: ${selected.name}`);
-  });
+  }
 
-  canvas.addEventListener('mousemove', onMouseMove, false);
-  canvas.addEventListener('click', onDocumentMouseClick, false);
-
-  function handleResize() {
+  function handleResize(renderer,camera,fxaaPass) {
     const canvas = document.getElementById("threeCanvas");
     const pixelRatio = renderer.getPixelRatio();
 
@@ -387,7 +322,6 @@ export async function initSolarSystem(preloadedModels) {
 
     // Temporarily clear transform so we can measure properly
     canvas.style.transform = "none";
-    const rectBefore = canvas.getBoundingClientRect();
 
     // Resize Three.js renderer and camera
     const width = window.innerWidth;
@@ -407,7 +341,34 @@ export async function initSolarSystem(preloadedModels) {
     // Optionally, re-calculate new position based on rectBefore if you want more precise adjustment
   }
 
-  window.addEventListener('resize', handleResize);
+  async function handleZoomOut() {
+    isZoomingOut = true;
+    console.log("zoom out received!");
+
+    fadeSunOpacity(sunMat, 1, 2000);
+    settings.accelerationOrbit = 1;
+
+    setTimeout(() => {
+      sequentialReveal(planets, hoverEnabled, 500);
+    }, 500);
+  }
+
+  window.addEventListener("planetChange", (event) => {
+    planetChange(event);
+  });
+
+  canvas.addEventListener('mousemove', onMouseMove, false);
+  canvas.addEventListener('click', onDocumentMouseClick, false);
+
+  window.addEventListener('zoomOutNeeded', handleZoomOut);
+
+  window.addEventListener('beginSunrise', () => {
+    solarStartSunrise(sun);
+  });
+
+  window.addEventListener('solarTransformDownZoomOutCue', () => {solarTransformDownZoomOut();});
+  window.addEventListener('firstReveal', () => {sequentialReveal(planets, hoverEnabled, 1000);});
+  window.addEventListener('resize', handleResize(renderer,camera,fxaaPass));
 }
 
 // Helper functions
@@ -421,6 +382,20 @@ export async function initSolarSystem(preloadedModels) {
     return false;
   }
 
+  
+
+  function identifyPlanet(clickedObject, sunMat, planets) {
+    if (clickedObject.material === sunMat) {
+      return 0;
+    }
+
+    for (let i = 0; i < planets.length; i++) {
+      if (planets[i].planet && isDescendantOf(clickedObject, planets[i].planet)) {
+        return i+1;
+      }
+    }
+    return null;
+  }
 
 
 

@@ -74,8 +74,9 @@ export function hideAllExceptSelected(selectedIndex,indexOrderofPlanets) {
 
 export function sequentialHideUnselected(selectedPlanet, planets, delay = 300) {
     for (let i = planets.length - 1; i >= 0; i--) {
-      const planet3d = planets[i];
-      const isSelected = planet3d === selectedPlanet.planet3d;
+      const planet3d = planets[i].planet3d;
+      const planet = planets[i].planet;
+      const isSelected = planet === selectedPlanet.planet;
 
       setTimeout(() => {
         if (isSelected) {
@@ -112,7 +113,7 @@ export function sequentialHideUnselected(selectedPlanet, planets, delay = 300) {
   export function sequentialReveal(planets, hoverEnabled, delay = 1000) {
     planets.forEach((planet, index) => {
       setTimeout(() => {
-        revealPlanet(planet);
+        revealPlanet(planet.planet3d);
 
         // After the last planet, fire the event
         if (index === planets.length - 1) {

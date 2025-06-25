@@ -72,42 +72,54 @@ export async function initPlanetObjects() {
         planet: mercury.planet,
         planet3d: mercury.planet3d,
         rotationSpeed: 0.003,
-        orbitSpeed: 0.002
+        orbitSpeed: 0.002,
+        orbit: mercury.orbit,
+        rotateSelf: (mesh, speed, accel) => mesh.rotateZ(speed * accel),
       },
       {
         name: 'venus',
         planet: venus.planet,
         planet3d: venus.planet3d,
         rotationSpeed: 0.005,
-        orbitSpeed: 0.0006
+        orbitSpeed: 0.0006,
+        orbit: venus.orbit,
+        rotateSelf: (mesh, speed, accel) => mesh.rotateY(speed * accel),
       },
       {
         name: 'earth',
         planet: earth.planet,
         planet3d: earth.planet3d,
         rotationSpeed: 0.005,
-        orbitSpeed: 0.001
+        orbitSpeed: 0.001,
+        orbit: earth.orbit,
+        rotateSelf: (mesh, speed, accel) => mesh.rotateY(speed * accel),
       },
       {
         name: 'mars',
         planet: mars.planet,
         planet3d: mars.planet3d,
         rotationSpeed: 0.008,
-        orbitSpeed: 0.0015
+        orbitSpeed: 0.0015,
+        orbit: mars.orbit,
+        rotateSelf: (mesh, speed, accel) => mesh.rotateY(speed * accel),
       },
       {
         name: 'jupiter',
         planet: jupiter.planet,
         planet3d: jupiter.planet3d,
         rotationSpeed: 0.005,
-        orbitSpeed: 0.0003
+        orbitSpeed: 0.0003,
+        orbit: jupiter.orbit,
+        rotateSelf: (mesh, speed, accel) => mesh.rotateY(speed * accel),
       },
       {
         name: 'saturn',
         planet: saturn.planet,
         planet3d: saturn.planet3d,
         rotationSpeed: 0.01,
-        orbitSpeed: 0.0002
+        orbitSpeed: 0.0002,
+        orbit: saturn.orbit,
+        rotateSelf: (mesh, speed, accel) => mesh.rotateY(speed * accel),
       }
     ];
 
