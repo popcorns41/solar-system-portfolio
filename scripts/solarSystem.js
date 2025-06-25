@@ -5,6 +5,8 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
+import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js';
 
 import {getCachedModel} from '/model_loader/modelCache.js';
 
@@ -21,12 +23,13 @@ export async function initSolarSystem(preloadedModels) {
   camera.position.set(-175, 115, 5);
 
   const canvas = document.getElementById('threeCanvas');
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, preserveDrawingBuffer: true});
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
 
   console.log("Create the renderer");
 
   renderer.setClearColor(0x000000, 0); 
   renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
 
 
   console.log("Create an orbit control");
@@ -51,6 +54,15 @@ export async function initSolarSystem(preloadedModels) {
 
   const composer = new EffectComposer(renderer, renderTarget);
   composer.addPass(new RenderPass(scene, camera));
+  const fxaaPass = new ShaderPass(FXAAShader);
+  const pixelRatio = renderer.getPixelRatio();
+
+  fxaaPass.material.uniforms['resolution'].value.set(
+    1 / (window.innerWidth * pixelRatio),
+    1 / (window.innerHeight * pixelRatio)
+  );
+
+  composer.addPass(fxaaPass);
 
   // ******  OUTLINE PASS  ******
   const outlinePass = new OutlinePass(new THREE.Vector2(window.innerWidth, window.innerHeight), scene, camera);
@@ -72,19 +84,6 @@ export async function initSolarSystem(preloadedModels) {
   console.log("Add the ambient light");
   var lightAmbient = new THREE.AmbientLight(0x222222, 6); 
   scene.add(lightAmbient);
-
-  // ******  Star background  ******
-  /*
-  scene.background = cubeTextureLoader.load([
-
-    bgTextureWood,
-    bgTextureWood,
-    bgTextureWood,
-    bgTextureWood,
-    bgTextureWood,
-    bgTextureWood
-  ]);
-  */
 
   const colour = new THREE.Color(0x121212);
   scene.background = colour;
@@ -154,45 +153,7 @@ export async function initSolarSystem(preloadedModels) {
   let targetCameraPosition = new THREE.Vector3();
   let hoverEnabled = true;
   let offset;
-  let isHomeButtonView = false;
-
-
-  function sequentialHideUnselected(selectedPlanet, delay = 300) {
-    for (let i = planets.length - 1; i >= 0; i--) {
-      const planet3d = planets[i];
-      const isSelected = planet3d === selectedPlanet.planet3d;
-
-      setTimeout(() => {
-        if (isSelected) {
-          if (selectedPlanet.orbit && selectedPlanet.orbit.material) {
-            const orbitMaterial = selectedPlanet.orbit.material;
-            orbitMaterial.transparent = true;
-
-            const duration = 1000;
-            const startTime = performance.now();
-
-            function fadeOrbit(currentTime) {
-              const elapsed = currentTime - startTime;
-              const t = Math.min(elapsed / duration, 1);
-              const easedT = t * t * (3 - 2 * t);
-
-              orbitMaterial.opacity = 1 - easedT;
-
-              if (t < 1) {
-                requestAnimationFrame(fadeOrbit);
-              } else {
-                selectedPlanet.orbit.visible = false;
-              }
-            }
-
-            requestAnimationFrame(fadeOrbit);
-          }
-        } else {
-          hidePlanet(planet3d);
-        }
-      }, (planets.length - 1 - i) * delay); // reverse order
-    }
-  }
+ 
 
   function getPlanetIndex(selectedPlanet) {
     if (selectedPlanet === sun) return 0;
@@ -230,8 +191,6 @@ export async function initSolarSystem(preloadedModels) {
 
   function onDocumentMouseClick(event) {
     event.preventDefault();
-
-    isHomeButtonView = true;
 
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
@@ -272,7 +231,7 @@ export async function initSolarSystem(preloadedModels) {
           camera.position.clone().sub(planetPosition).normalize().multiplyScalar(offset)
         );
         // Wait for sequential hide to complete before moving camera
-        sequentialHideUnselected(pendingPlanetSelection);
+        sequentialHideUnselected(pendingPlanetSelection, planets);
         setTimeout(()=>{
           window.dispatchEvent(new CustomEvent("beginPlanetTransform"));
         },1000)
@@ -286,14 +245,6 @@ export async function initSolarSystem(preloadedModels) {
     }
   }
 
-  function isDescendantOf(object, potentialAncestor) {
-    let current = object;
-    while (current) {
-      if (current === potentialAncestor) return true;
-      current = current.parent;
-    }
-    return false;
-  }
 
   function identifyPlanet(clickedObject) {
 
@@ -327,20 +278,6 @@ export async function initSolarSystem(preloadedModels) {
 
   // ******  SHOW PLANET INFO AFTER SELECTION  ******
 
-  function scrollToPlanetSection(planetName) {
-    const id = planetName.toLowerCase() + "-section"; // e.g., "earth-section"
-    const target = document.getElementById(id);
-
-    if (target) {
-      target.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-    } else{
-      console.log("planet not found! :(")
-    }
-  }
-
   let isZoomingOut = false;
   let zoomOutTargetPosition = new THREE.Vector3(-175, 115, 5);
 
@@ -352,7 +289,7 @@ export async function initSolarSystem(preloadedModels) {
   let sunMat;
 
   const sunSize = 697/40; // 40 times smaller scale than earth
-  const sunGeom = new THREE.SphereGeometry(sunSize, 32, 20);
+  const sunGeom = new THREE.SphereGeometry(sunSize, 64, 64);
   // sunMat = new THREE.MeshPhongMaterial({
   //   map: loadTexture.load(sunTexture)
   // });
@@ -747,35 +684,6 @@ export async function initSolarSystem(preloadedModels) {
     });
   }
 
-  function hidePlanet(planetGroup) {
-    return new Promise((resolve) => {
-      planetGroup.traverse(child => {
-        if (child.isMesh || child.isLine) {
-          child.material.transparent = true;
-
-          const duration = 200;
-          const startTime = performance.now();
-
-          function fade(currentTime) {
-            const elapsed = currentTime - startTime;
-            const t = Math.min(elapsed / duration, 1);
-            const easedT = 1 - (t * t * (3 - 2 * t)); // smoothstep fade-out
-
-            child.material.opacity = easedT;
-
-            if (t < 1) {
-              requestAnimationFrame(fade);
-            } else {
-              child.visible = false;
-              resolve(); 
-            }
-          }
-
-          requestAnimationFrame(fade);
-        }
-      });
-    });
-  }
 
   function sequentialReveal(delay = 1000) {
     planets.forEach((planet, index) => {
@@ -915,7 +823,6 @@ export async function initSolarSystem(preloadedModels) {
   window.addEventListener('firstReveal', () => {sequentialReveal(1000);});
 
   window.addEventListener('zoomOutNeeded', async () => {
-    isHomeButtonView = false;
     isZoomingOut = true;
     console.log("zoom out received!");
     fadeSunOpacity(1,2000);
@@ -990,12 +897,6 @@ export async function initSolarSystem(preloadedModels) {
 
   canvas.addEventListener('mousemove', onMouseMove, false);
   canvas.addEventListener('click', onDocumentMouseClick, false);
-  canvas.addEventListener('resize', function(){
-    camera.aspect = window.innerWidth/window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth,window.innerHeight);
-    composer.setSize(window.innerWidth,window.innerHeight);
-  });
 
   function handleResize() {
     const canvas = document.getElementById("threeCanvas");
@@ -1017,8 +918,92 @@ export async function initSolarSystem(preloadedModels) {
     // Reset and reapply original transform
     canvas.style.transform = currentTransform;
 
+    fxaaPass.material.uniforms['resolution'].value.set(
+      1 / (window.innerWidth * pixelRatio),
+      1 / (window.innerHeight * pixelRatio)
+    );
+
     // Optionally, re-calculate new position based on rectBefore if you want more precise adjustment
   }
 
   window.addEventListener('resize', handleResize);
 }
+
+// Helper functions
+
+ function isDescendantOf(object, potentialAncestor) {
+    let current = object;
+    while (current) {
+      if (current === potentialAncestor) return true;
+      current = current.parent;
+    }
+    return false;
+  }
+
+  function hidePlanet(planetGroup) {
+    return new Promise((resolve) => {
+      planetGroup.traverse(child => {
+        if (child.isMesh || child.isLine) {
+          child.material.transparent = true;
+
+          const duration = 200;
+          const startTime = performance.now();
+
+          function fade(currentTime) {
+            const elapsed = currentTime - startTime;
+            const t = Math.min(elapsed / duration, 1);
+            const easedT = 1 - (t * t * (3 - 2 * t)); // smoothstep fade-out
+
+            child.material.opacity = easedT;
+
+            if (t < 1) {
+              requestAnimationFrame(fade);
+            } else {
+              child.visible = false;
+              resolve(); 
+            }
+          }
+
+          requestAnimationFrame(fade);
+        }
+      });
+    });
+  }
+
+ function sequentialHideUnselected(selectedPlanet, planets, delay = 300) {
+    for (let i = planets.length - 1; i >= 0; i--) {
+      const planet3d = planets[i];
+      const isSelected = planet3d === selectedPlanet.planet3d;
+
+      setTimeout(() => {
+        if (isSelected) {
+          if (selectedPlanet.orbit && selectedPlanet.orbit.material) {
+            const orbitMaterial = selectedPlanet.orbit.material;
+            orbitMaterial.transparent = true;
+
+            const duration = 1000;
+            const startTime = performance.now();
+
+            function fadeOrbit(currentTime) {
+              const elapsed = currentTime - startTime;
+              const t = Math.min(elapsed / duration, 1);
+              const easedT = t * t * (3 - 2 * t);
+
+              orbitMaterial.opacity = 1 - easedT;
+
+              if (t < 1) {
+                requestAnimationFrame(fadeOrbit);
+              } else {
+                selectedPlanet.orbit.visible = false;
+              }
+            }
+
+            requestAnimationFrame(fadeOrbit);
+          }
+        } else {
+          hidePlanet(planet3d);
+        }
+      }, (planets.length - 1 - i) * delay); // reverse order
+    }
+  }
+
