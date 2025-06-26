@@ -4,7 +4,6 @@ import {state,settings} from '/scripts/solarSystem/state.js';
 export class MouseHandler {
   constructor({
     sun,
-    sunMat,
     planets,
     camera,
     controls,
@@ -14,7 +13,7 @@ export class MouseHandler {
   }) {
     this.raycaster =  new THREE.Raycaster();
     this.sun = sun;
-    this.sunMat = sunMat;
+    this.sunMat = sun.material;
     this.planets = planets;
     this.camera = camera;
     this.controls = controls;

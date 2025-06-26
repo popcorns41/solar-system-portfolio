@@ -3,8 +3,8 @@ import {sequentialHideUnselected, sequentialReveal, solarStartSunrise,solarTrans
 import {state,settings} from '/scripts/solarSystem/state.js';
 import { offsets } from '/scripts/solarSystem/const.js';
 
-export function initEventListeners({canvas, renderer, camera, fxaaPass,sunMat,sun,planets,controls}){
-    canvas.addEventListener('changeSunOpacity',(e) =>fadeSunOpacity(sunMat,e.detail.opacity,e.detail.duration));
+export function initEventListeners({canvas, renderer, camera, fxaaPass,sun,planets,controls}){
+    canvas.addEventListener('changeSunOpacity',(e) =>fadeSunOpacity(sun.material,e.detail.opacity,e.detail.duration));
     canvas.addEventListener('hideOutofViewPlanets',(e)=>sequentialHideUnselected(e.detail.selectedPlanet,planets,e.detail.delay));
 
     window.addEventListener('zoomOutNeeded',()=>{ 
@@ -19,6 +19,6 @@ export function initEventListeners({canvas, renderer, camera, fxaaPass,sunMat,su
     window.addEventListener('revealPlanets', (e) => {sequentialReveal(planets, state.hoverEnabled, e.detail.delay);});
     window.addEventListener('resize', handleResize(renderer,camera,fxaaPass));
     window.addEventListener("planetChange", (event) => {
-    planetChange({event,sun,sunMat,planets,controls,camera,offsets,canvas});
+    planetChange({event,sun,planets,controls,camera,offsets,canvas});
     });
 }

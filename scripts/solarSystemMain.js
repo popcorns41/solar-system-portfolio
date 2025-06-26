@@ -22,7 +22,7 @@ async function initSolarSystem(isDev){
   lightingSetup(scene);
 
   // ******  SUN  ******
-  const { sun, sunMat } = initSun();
+  const sun = initSun();
 
 
   const planets = await initPlanetObjects();
@@ -33,13 +33,13 @@ async function initSolarSystem(isDev){
     bootupPlanetConditions(planets);
   }
      // mouse movement
-  const mouseHandler = new MouseHandler({sun,sunMat,planets,camera,controls,outlinePass,offsets,canvas});
+  const mouseHandler = new MouseHandler({sun,planets,camera,controls,outlinePass,offsets,canvas});
 
   //attach click events to canvas
   mouseHandler.attach(); 
   
   animate(sun,planets,mouseHandler,outlinePass,camera,controls,composer);
-  initEventListeners({canvas, renderer, camera, fxaaPass,sunMat,sun,planets,controls});
+  initEventListeners({canvas, renderer, camera, fxaaPass,sun,planets,controls});
 }
 
 

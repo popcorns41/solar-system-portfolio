@@ -49,17 +49,27 @@ export function initSun(){
 
     sun.planet = sun;
     window.dispatchEvent(new CustomEvent("sunLoaded"));
-    return {sun,sunMat};
+    return sun;
 }
 
+
 export async function initPlanetObjects() {
+  //orginal distances
+  // const mercury = await createglbPlanet("mercury",40,0.20);
+  //   mercury.planet.rotation.x = -90 * Math.PI / 180;
+  //   const venus = await createglbPlanet("venus",65,6.1);
+  //   const earth = new createPlanet('Earth', 6.4, 90, 0, poolBallTexture);
+  //   const mars = await createglbPlanet("mars",115,4);
+  //   const jupiter = await createglbPlanet("jupiter",170,15);
+  //   const saturn = await createglbPlanet("saturn",240,1);
+
     const mercury = await createglbPlanet("mercury",40,0.20);
     mercury.planet.rotation.x = -90 * Math.PI / 180;
-    const venus = await createglbPlanet("venus",65,6.1);
+    const venus = await createglbPlanet("venus",70,6.1);
     const earth = new createPlanet('Earth', 6.4, 90, 0, poolBallTexture);
-    const mars = await createglbPlanet("mars",115,4);
-    const jupiter = await createglbPlanet("jupiter",170,15);
-    const saturn = await createglbPlanet("saturn",240,1);
+    const mars = await createglbPlanet("mars",110,4);
+    const jupiter = await createglbPlanet("jupiter",140,15);
+    const saturn = await createglbPlanet("saturn",200,1);
 
     earth.planet.castShadow = true;
     earth.planet.receiveShadow = true;
@@ -144,6 +154,9 @@ export async function initPlanetObjects() {
         rotateSelf: (mesh, speed, accel) => mesh.rotateY(speed * accel),
       }
     ];
+
+    preparePlanetTransparency(planets);
+
     return planets;
 }
 
@@ -245,4 +258,14 @@ async function createglbPlanet(name,position,scale){
       return {name,planet,planet3d,orbit,meshes};
     }
 
+
+function preparePlanetTransparency(planets){
+  for (let i= 0;i<planets.length;i++){
+    const planetGroup = planets[i].planet3d;
+    planetGroup.traverse(child => {
+    if (child.isMesh || child.isLine) {
+        child.material.transparent = true;}
+      });
+  }
+}
 

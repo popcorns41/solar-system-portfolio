@@ -1,5 +1,3 @@
-import { select } from "three/tsl";
-
 export function solarStartSunrise(sun) {
     const startY = sun.position.y;
     const targetY = 45;
@@ -79,13 +77,17 @@ export  function fadeSunOpacity(sunMat,targetOpacity, duration = 1000) {
     requestAnimationFrame(fadeStep);
   }
 
-export function hideAllExceptSelected(selectedIndex,indexOrderofPlanets) {
-    indexOrderofPlanets.forEach((planetObj, index) => {
-      const mesh = planetObj.mesh;
+export function hideAllExceptSelected(selected,sun,planets) {
+    const isSunSelected = selected === sun;
+    sun.material.transparent = true;
+    sun.material.opacity = isSunSelected ? 1 : 0;
+
+    planets.forEach((planetObj, index) => {
+      const mesh = planetObj.planet;
 
       if (!mesh) return;
 
-      const isSelected = index === selectedIndex;
+      const isSelected = planetObj === selected;
 
       mesh.traverse(child => {
         if ((child.isMesh || child.isLine) && child.material) {
@@ -98,15 +100,10 @@ export function hideAllExceptSelected(selectedIndex,indexOrderofPlanets) {
           child.visible = true; // Always keep children visible to prevent render bugs
         }
       });
-
-      // Orbits are optional; show only for selected planet
-      if (planetObj.orbit) {
-        planetObj.orbit.visible = isSelected;
-      }
     });
   }
 
-export function sequentialHideUnselected(selectedPlanet, planets, delay = 300) {
+export function sequentialHideUnselected(selectedPlanet, planets, delay = 300,duration=1000) {
   console.log("selectedPlanet",selectedPlanet);
     for (let i = planets.length - 1; i >= 0; i--) {
       const planet3d = planets[i].planet3d;
@@ -119,7 +116,6 @@ export function sequentialHideUnselected(selectedPlanet, planets, delay = 300) {
             const orbitMaterial = selectedPlanet.orbit.material;
             orbitMaterial.transparent = true;
 
-            const duration = 1000;
             const startTime = performance.now();
 
             function fadeOrbit(currentTime) {
@@ -168,8 +164,6 @@ function hidePlanet(planetGroup) {
 return new Promise((resolve) => {
     planetGroup.traverse(child => {
     if (child.isMesh || child.isLine) {
-        child.material.transparent = true;
-
         const duration = 200;
         const startTime = performance.now();
 

@@ -1,17 +1,15 @@
 import * as THREE from 'three';
 import {state} from '/scripts/solarSystem/state.js';
-import {sequentialHideUnselected,fadeSunOpacity} from  '/scripts/solarSystem/sequenceAnim.js';
+import {hideAllExceptSelected} from  '/scripts/solarSystem/sequenceAnim.js';
 
 //sequenceAnim functions are called on directly due to poor eventDispatch performances at 0 delay time
-export function planetChange({event,sun,sunMat,planets,controls,camera,offsets,canvas}){
+export function planetChange({event,sun,planets,controls,camera,offsets,canvas}){
     const index = event.detail.index;
     let selected;
     // Determine the selected planet based on the index
     if (index == 0) {
-        fadeSunOpacity(sunMat,1,0);
         selected = sun;
     }else{
-        fadeSunOpacity(sunMat,0,0);
         selected = planets[index - 1];
     }
     state.offset = offsets[index];
@@ -25,7 +23,7 @@ export function planetChange({event,sun,sunMat,planets,controls,camera,offsets,c
         }
     });
 
-    sequentialHideUnselected(selected,planets,0)
+    hideAllExceptSelected(selected,sun,planets);
     const planetPosition = new THREE.Vector3();
     selected.planet.getWorldPosition(planetPosition);
 
