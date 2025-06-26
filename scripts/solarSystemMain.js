@@ -53,8 +53,8 @@ export async function initSolarSystem(preloadedModels) {
   const offsets = [
     70,    // sun
     30,  // mercury
-    30,  // venus
-    25,    // earth
+    40,  // venus
+    30,    // earth
     30,    // mars
     65,    // jupiter
     70     // saturn
@@ -69,8 +69,6 @@ export async function initSolarSystem(preloadedModels) {
   // ******  SHADOWS  ******
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Use soft shadows
-
-
 
   function animate() {
 
@@ -109,6 +107,7 @@ export async function initSolarSystem(preloadedModels) {
 
     if (camera.position.distanceTo(zoomOutTargetPosition) < 1) {
         state.isZoomingOut = false;
+        state.hoverEnabled = true;
     }
   }
 
@@ -116,10 +115,9 @@ export async function initSolarSystem(preloadedModels) {
     requestAnimationFrame(animate);
     composer.render();
   }
-  animate();
 
   
-
+  animate();
   
   function planetChange(event){
     const index = event.detail.index;
@@ -191,8 +189,8 @@ export async function initSolarSystem(preloadedModels) {
     planetChange(event);
   });
 
-  canvas.addEventListener('mousemove', (e)=>{onMouseMove(e,camera,sun,planets,raycaster,raycastTargets)}, false);
-  canvas.addEventListener('click', (e)=>onDocumentMouseClick(e,raycaster,raycastTargets,sun,sunMat,planets,camera,controls,outlinePass,offsets,settings,canvas), false);
+  canvas.addEventListener('mousemove', (e)=>{onMouseMove(e,camera,sun,planets,raycaster)}, false);
+  canvas.addEventListener('click', (e)=>onDocumentMouseClick(e,raycaster,sun,sunMat,planets,camera,controls,outlinePass,offsets,settings,canvas), false);
   canvas.addEventListener('beginSunFade',(e) =>fadeSunOpacity(sunMat,e.detail.opacity,e.detail.duration));
   canvas.addEventListener('hideOutofViewPlanets',(e)=>sequentialHideUnselected(e.detail.selectedPlanet,planets));
 
@@ -206,7 +204,6 @@ export async function initSolarSystem(preloadedModels) {
   window.addEventListener('firstReveal', () => {sequentialReveal(planets, state.hoverEnabled, 1000);});
   window.addEventListener('resize', handleResize(renderer,camera,fxaaPass));
 }
-
 
 
 

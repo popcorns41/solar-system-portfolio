@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import {state} from '/scripts/solarSystem/state.js';
 
-export function onMouseMove(event,camera,sun,planets,raycaster,raycastTargets) {
+export function onMouseMove(event,camera,sun,planets,raycaster) {
     if (!state.hoverEnabled) return;
 
     state.hasMouseMove = true;
@@ -10,56 +10,40 @@ export function onMouseMove(event,camera,sun,planets,raycaster,raycastTargets) {
     state.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
 
     raycaster.setFromCamera(state.mouse, camera);
+    const raycastTargets = planets.flatMap(p => p.meshes);
+    raycastTargets.unshift(sun);
+    
     const intersects = raycaster.intersectObjects(raycastTargets);
 
     const card = document.getElementById('hoverCard');
 
     if (intersects.length > 0) {
-      const object = intersects[0].object;
+        const object = intersects[0].object;
 
-      // Position the card near the cursor
-      card.style.left = `${event.clientX + 10}px`;
-      card.style.top = `${event.clientY + 10}px`;
-      card.style.display = 'block';
+        // Position the card near the cursor
+        card.style.left = `${event.clientX + 10}px`;
+        card.style.top = `${event.clientY + 10}px`;
+        card.style.display = 'block';
 
-      if (object) {
-        if (object === sun) {
-            card.innerText = "Contact me";
-            card.style.display = 'block';
-            return;
+        if (object) {
+            updateCardForHoveredObject(object,card,sun,planets);
         }
-
-        let matched = false;
-
-        for (const planet of planets) {
-            const { meshes = [], planet: planetMesh, atmosphere, label } = planet;
-
-            if (meshes.includes(object) || object === planetMesh || object === atmosphere) {
-            card.innerText = label;
-            card.style.display = 'block';
-            matched = true;
-            break;
-            }
-        }
-
-        if (!matched) {
-            card.innerText = "";
-            card.style.display = 'none';
-        }
-
-        } else {
-        card.style.display = 'none';
-        }
+    }else{
+        card.innerText = "";
+        card.style.display = "none";
     }
   }
 
-export function onDocumentMouseClick(event,raycaster,raycastTargets,sun,sunMat,planets,camera,controls,outlinePass,offsets,settings,canvas) {
+export function onDocumentMouseClick(event,raycaster,sun,sunMat,planets,camera,controls,outlinePass,offsets,settings,canvas) {
       event.preventDefault();
   
       state.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       state.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
   
       raycaster.setFromCamera(state.mouse, camera);
+      const raycastTargets = planets.flatMap(p => p.meshes);
+    raycastTargets.unshift(sun);
+    
       const intersects = raycaster.intersectObjects(raycastTargets);
   
       if (intersects.length > 0) {
@@ -150,3 +134,27 @@ export function onDocumentMouseClick(event,raycaster,raycastTargets,sun,sunMat,p
     }
     return null;
   }
+
+  function updateCardForHoveredObject(object,card,sun,planets) {
+
+  // Check sun first (not in planets array)
+  if (object === sun) {
+    card.innerText = "Contact me";
+    card.style.display = 'block';
+    return;
+  }
+
+  // Check planets array
+  for (const planet of planets) {
+    if (planet.meshes.includes(object)) {
+      card.innerText = planet.label;
+      card.style.display = "block";
+      return;
+    }
+  }
+
+  console.log(object,"not found!");
+  // Default fallback if nothing matches
+  card.innerText = "";
+  card.style.display = "none";
+}

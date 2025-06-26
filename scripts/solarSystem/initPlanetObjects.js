@@ -73,6 +73,7 @@ export async function initPlanetObjects() {
         name: 'mercury',
         planet: mercury.planet,
         planet3d: mercury.planet3d,
+        meshes: mercury.meshes,
         rotationSpeed: 0.003,
         orbitSpeed: 0.002,
         orbit: mercury.orbit,
@@ -83,6 +84,7 @@ export async function initPlanetObjects() {
         name: 'venus',
         planet: venus.planet,
         planet3d: venus.planet3d,
+        meshes: venus.meshes,
         rotationSpeed: 0.005,
         orbitSpeed: 0.0006,
         orbit: venus.orbit,
@@ -93,6 +95,7 @@ export async function initPlanetObjects() {
         name: 'earth',
         planet: earth.planet,
         planet3d: earth.planet3d,
+        meshes: earth.meshes,
         rotationSpeed: 0.005,
         orbitSpeed: 0.001,
         orbit: earth.orbit,
@@ -103,6 +106,7 @@ export async function initPlanetObjects() {
         name: 'mars',
         planet: mars.planet,
         planet3d: mars.planet3d,
+        meshes: mars.meshes,
         rotationSpeed: 0.008,
         orbitSpeed: 0.0015,
         orbit: mars.orbit,
@@ -113,6 +117,7 @@ export async function initPlanetObjects() {
         name: 'jupiter',
         planet: jupiter.planet,
         planet3d: jupiter.planet3d,
+        meshes: jupiter.meshes,
         rotationSpeed: 0.005,
         orbitSpeed: 0.0003,
         orbit: jupiter.orbit,
@@ -123,6 +128,7 @@ export async function initPlanetObjects() {
         name: 'saturn',
         planet: saturn.planet,
         planet3d: saturn.planet3d,
+        meshes: saturn.meshes,
         rotationSpeed: 0.01,
         orbitSpeed: 0.0002,
         orbit: saturn.orbit,
@@ -183,7 +189,8 @@ function createPlanet(planetName, size, position, tilt, texture){
 
     //add planet system to planet3d object and to the scene
     planet3d.add(planetSystem);
-    return {name, planet, planet3d, orbit};
+    const meshes = [planet];
+    return {name,planet,planet3d, orbit,meshes};
   }
 
 async function createglbPlanet(name,position,scale){
