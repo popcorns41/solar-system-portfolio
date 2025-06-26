@@ -23,8 +23,8 @@ window.addEventListener("modelLoaded", async () => {
     console.log('Models loaded, initializing solar system...');
     // const { initSolarSystem } = await import('/scripts/solarSystemMain.js');
     // initSolarSystem();
-    const { initDevSolarSystem } = await import('/scripts/solarSystemMain.js');
-    initDevSolarSystem();
+    const { initHomepageSolarSystem } = await import('/scripts/solarSystemMain.js');
+    initHomepageSolarSystem();
   }
 
   window.dispatchEvent(new CustomEvent('solarSystemReady'));

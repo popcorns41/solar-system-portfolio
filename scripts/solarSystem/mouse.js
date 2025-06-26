@@ -44,7 +44,7 @@ export class MouseHandler {
         const selectedPlanetIndex = identifyPlanet(clickedObject,this.sunMat, this.planets);
         let selectedPlanet = null;
         if (selectedPlanetIndex === 0) {
-          selectedPlanet = sun;
+          selectedPlanet = this.sun;
         } else if (selectedPlanetIndex > 0) {
           selectedPlanet = this.planets[selectedPlanetIndex - 1];
         }
@@ -85,7 +85,7 @@ export class MouseHandler {
           // Wait for sequential hide to complete before moving camera
           const sequentialHideEvent = new CustomEvent("hideOutofViewPlanets",
                 {
-                    detail: {selectedPlanet: selectedPlanet}
+                    detail: {selectedPlanet: selectedPlanet,delay:300}
                 }
             );
             this.canvas.dispatchEvent(sequentialHideEvent);

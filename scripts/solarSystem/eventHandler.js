@@ -1,24 +1,31 @@
-export function planetChange(event,planets,controls,camera,offsets){
+import * as THREE from 'three';
+import {state} from '/scripts/solarSystem/state.js';
+import {sequentialHideUnselected,fadeSunOpacity} from  '/scripts/solarSystem/sequenceAnim.js';
+
+//sequenceAnim functions are called on directly due to poor eventDispatch performances at 0 delay time
+export function planetChange({event,sun,sunMat,planets,controls,camera,offsets,canvas}){
     const index = event.detail.index;
     let selected;
     // Determine the selected planet based on the index
     if (index == 0) {
-      selected = sun;
+        fadeSunOpacity(sunMat,1,0);
+        selected = sun;
     }else{
-      selected = planets[index - 1];
+        fadeSunOpacity(sunMat,0,0);
+        selected = planets[index - 1];
     }
     state.offset = offsets[index];
 
-    sequentialHideUnselected(selected, planets,0);
-
     selected.planet.visible = true;
-    selected.planet.traverse(child => {
-    child.visible = true; // <- make child renderable
-    if (child.material) {
-      child.material.transparent = true;
-      child.material.opacity = 1;
-    }
-  });
+        selected.planet.traverse(child => {
+        child.visible = true; // <- make child renderable
+        if (child.material) {
+        child.material.transparent = true;
+        child.material.opacity = 1;
+        }
+    });
+
+    sequentialHideUnselected(selected,planets,0)
     const planetPosition = new THREE.Vector3();
     selected.planet.getWorldPosition(planetPosition);
 
@@ -27,7 +34,7 @@ export function planetChange(event,planets,controls,camera,offsets){
     controls.target.copy(planetPosition);
     camera.lookAt(planetPosition);
     state.targetCameraPosition.copy(planetPosition).add(
-      camera.position.clone().sub(planetPosition).normalize().multiplyScalar(state.offset)
+    camera.position.clone().sub(planetPosition).normalize().multiplyScalar(state.offset)
     );
     
     camera.position.copy(state.targetCameraPosition);
