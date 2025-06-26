@@ -28,6 +28,9 @@ export function initSetup(){
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
 
+    // ******  SHADOWS  ******
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Use soft shadows
 
     console.log("Create an orbit control");
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -97,4 +100,14 @@ export function lightingSetup(scene){
 
     scene.add(lightAmbient);
     scene.add(hemiLight);
+}
+
+
+export function initPlanetsToScene(scene,sun,planets){
+    scene.add(sun);
+    planets.forEach((planet) => {
+        planet.planet3d.visible = false; // Initially hide them all
+        scene.add(planet.planet3d); // Add to the scene
+    });
+    window.dispatchEvent(new CustomEvent("planetsLoaded"));
 }

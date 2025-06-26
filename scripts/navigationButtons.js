@@ -26,7 +26,10 @@ window.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("sunZoomComplete", () => {
       console.log("Sun transform complete! Starting next sequence...");
       //intro.style.opacity='0';
-      setTimeout(()=>{window.dispatchEvent(new CustomEvent("firstReveal"))},500);
+      const revealEvent = new  CustomEvent("revealPlanets",{
+        detail: {delay:1000}
+      });
+      setTimeout(()=>{window.dispatchEvent(revealEvent)},500);
 
       window.addEventListener("planetsInView", () => {
         document.getElementById('threeCanvas').style.pointerEvents = 'auto';

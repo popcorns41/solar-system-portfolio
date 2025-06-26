@@ -40,7 +40,7 @@ export function initSun(){
     sun.add(pointLight);
 
     sun.planet = sun;
-
+    window.dispatchEvent(new CustomEvent("sunLoaded"));
     return {sun,sunMat};
 }
 
@@ -136,16 +136,7 @@ export async function initPlanetObjects() {
         rotateSelf: (mesh, speed, accel) => mesh.rotateY(speed * accel),
       }
     ];
-
-    return {
-        mercury,
-        venus,
-        earth,
-        mars,
-        jupiter,
-        saturn,
-        planets
-    };
+    return planets;
 }
 
 //helper function to create a planet with GLB model
