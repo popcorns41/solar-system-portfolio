@@ -65,7 +65,7 @@ export async function initPlanetObjects() {
 
     const mercury = await createglbPlanet("mercury",40,0.20);
     mercury.planet.rotation.x = -90 * Math.PI / 180;
-    const venus = await createglbPlanet("venus",70,6.1);
+    const venus = await createglbPlanet("venus",65,6.1);
     const earth = new createPlanet('Earth', 6.4, 90, 0, poolBallTexture);
     const mars = await createglbPlanet("mars",110,4);
     const jupiter = await createglbPlanet("jupiter",140,15);
@@ -92,7 +92,7 @@ export async function initPlanetObjects() {
         planet: mercury.planet,
         planet3d: mercury.planet3d,
         meshes: mercury.meshes,
-        rotationSpeed: 0.003,
+        rotationSpeed: 0.005,
         orbitSpeed: 0.002,
         orbit: mercury.orbit,
         label: "Resume",
@@ -126,7 +126,7 @@ export async function initPlanetObjects() {
         planet3d: mars.planet3d,
         meshes: mars.meshes,
         rotationSpeed: 0.008,
-        orbitSpeed: 0.0015,
+        orbitSpeed: 0.0012,
         orbit: mars.orbit,
         label: "Extracurricular",
         rotateSelf: (mesh, speed, accel) => mesh.rotateY(speed * accel),
