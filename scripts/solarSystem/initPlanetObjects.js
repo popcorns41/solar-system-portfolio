@@ -39,6 +39,8 @@ export function initSun(){
     pointLight.shadow.camera.far = 20;
     sun.add(pointLight);
 
+    sun.planet = sun;
+
     return {sun,sunMat};
 }
 
@@ -74,6 +76,7 @@ export async function initPlanetObjects() {
         rotationSpeed: 0.003,
         orbitSpeed: 0.002,
         orbit: mercury.orbit,
+        label: "Resume",
         rotateSelf: (mesh, speed, accel) => mesh.rotateZ(speed * accel),
       },
       {
@@ -83,6 +86,7 @@ export async function initPlanetObjects() {
         rotationSpeed: 0.005,
         orbitSpeed: 0.0006,
         orbit: venus.orbit,
+        label: "Skill sets",
         rotateSelf: (mesh, speed, accel) => mesh.rotateY(speed * accel),
       },
       {
@@ -92,6 +96,7 @@ export async function initPlanetObjects() {
         rotationSpeed: 0.005,
         orbitSpeed: 0.001,
         orbit: earth.orbit,
+        label: "Robotics",
         rotateSelf: (mesh, speed, accel) => mesh.rotateY(speed * accel),
       },
       {
@@ -101,6 +106,7 @@ export async function initPlanetObjects() {
         rotationSpeed: 0.008,
         orbitSpeed: 0.0015,
         orbit: mars.orbit,
+        label: "Extracurricular",
         rotateSelf: (mesh, speed, accel) => mesh.rotateY(speed * accel),
       },
       {
@@ -110,6 +116,7 @@ export async function initPlanetObjects() {
         rotationSpeed: 0.005,
         orbitSpeed: 0.0003,
         orbit: jupiter.orbit,
+        label: "Childhood",
         rotateSelf: (mesh, speed, accel) => mesh.rotateY(speed * accel),
       },
       {
@@ -119,6 +126,7 @@ export async function initPlanetObjects() {
         rotationSpeed: 0.01,
         orbitSpeed: 0.0002,
         orbit: saturn.orbit,
+        label: "About me",
         rotateSelf: (mesh, speed, accel) => mesh.rotateY(speed * accel),
       }
     ];

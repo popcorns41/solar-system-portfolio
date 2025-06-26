@@ -4,6 +4,8 @@ import * as THREE from 'three';
 import {initSetup,postProcessSetup,lightingSetup} from '/scripts/solarSystem/initCanvasSetup.js';
 import {initSun,initPlanetObjects} from '/scripts/solarSystem/initPlanetObjects.js';
 import {sequentialHideUnselected, sequentialReveal, solarStartSunrise,solarTransformDownZoomOut,fadeSunOpacity} from '/scripts/solarSystem/sequenceAnim.js';
+import {onMouseMove,onDocumentMouseClick} from '/scripts/solarSystem/mouse.js';
+import {state} from '/scripts/solarSystem/state.js';
 
 export async function initSolarSystem(preloadedModels) {
   // ******  SETUP  ******
@@ -20,127 +22,13 @@ export async function initSolarSystem(preloadedModels) {
 
   // mouse movement
   const raycaster = new THREE.Raycaster();
-  const mouse = new THREE.Vector2();
-  let hasMouseMove = false;
-
-  function onMouseMove(event) {
-      if (!hoverEnabled) return;
-
-      hasMouseMove = true;
-      event.preventDefault();
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-
-      raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects(raycastTargets);
-
-    const card = document.getElementById('hoverCard');
-
-    if (intersects.length > 0) {
-      const object = intersects[0].object;
-
-      // Position the card near the cursor
-      card.style.left = `${event.clientX + 10}px`;
-      card.style.top = `${event.clientY + 10}px`;
-      card.style.display = 'block';
-
-      // Add name or info
-      if (object === sun) {
-        card.innerText = "Contact me";
-      } else if (mercury.meshes.includes(object)) {
-        card.innerText = "Resume";
-      } else if (venus.meshes.includes(object)) {
-        card.innerText = "Skill sets";
-      } else if (object === earth.planet || object === earth.Atmosphere) {
-        card.innerText = "Robotics";
-      } else if (mars.meshes.includes(object)) {
-        card.innerText = "Extracurricular";
-      } else if (jupiter.meshes.includes(object)) {
-        card.innerText = "Childhood";
-      } else if (saturn.meshes.includes(object)) {
-        card.innerText = "About me";
-      } else {
-        card.innerText = "";
-        card.style.display = 'none';
-      }
-
-    } else {
-      card.style.display = 'none';
-    }
-
-  }
 
   // ******  Globals  ******
-
-  let isMovingTowardsPlanet = false;
-  let targetCameraPosition = new THREE.Vector3();
-  let hoverEnabled = true;
-  let offset;
-
-  function onDocumentMouseClick(event) {
-    event.preventDefault();
-
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects(raycastTargets);
-
-    if (intersects.length > 0) {
-      const clickedObject = intersects[0].object;
-      const selectedPlanetIndex = identifyPlanet(clickedObject,sun, planets);
-      let selectedPlanet = null;
-      if (selectedPlanetIndex === 0) {
-        selectedPlanet = sun;
-      } else if (selectedPlanetIndex > 0) {
-        selectedPlanet = planets[selectedPlanetIndex - 1];
-      }
-
-      if (selectedPlanet) {
-        window.planetIndex = selectedPlanetIndex;
-        offset = offsets[selectedPlanetIndex];
-        const indexAnnouncementEvent = new CustomEvent("solarSystemToInfoSection",
-          {
-            detail: {index: window.planetIndex}
-          }
-        )
-        window.dispatchEvent(indexAnnouncementEvent);
-        settings.accelerationOrbit = 0;
-
-        const planetPosition = new THREE.Vector3();
-
-        if (!(selectedPlanet === sun)) {
-          fadeSunOpacity(sunMat, 0, 1000);
-          selectedPlanet.planet.getWorldPosition(planetPosition);
-        }
-
-        window.dispatchEvent(new CustomEvent("circularBorder"));
-        
-        isMovingTowardsPlanet = true;
-        controls.target.copy(planetPosition);
-        camera.lookAt(planetPosition);
-        targetCameraPosition.copy(planetPosition).add(
-          camera.position.clone().sub(planetPosition).normalize().multiplyScalar(offset)
-        );
-        // Wait for sequential hide to complete before moving camera
-        sequentialHideUnselected(selectedPlanet, planets);
-        setTimeout(()=>{
-          window.dispatchEvent(new CustomEvent("beginPlanetTransform"));
-        },1000)
-
-        hoverEnabled = false;
-        hasMouseMove = false;
-        document.getElementById('hoverCard').style.display = 'none';
-        outlinePass.selectedObjects = [];
-      }
-    }
-  }
-
 
 
   // ******  SHOW PLANET INFO AFTER SELECTION  ******
 
-  let isZoomingOut = false;
+
   let zoomOutTargetPosition = new THREE.Vector3(-175, 115, 5);
 
   // ******  SUN  ******
@@ -195,8 +83,8 @@ export async function initSolarSystem(preloadedModels) {
       p.planet3d.rotateY(p.orbitSpeed * settings.accelerationOrbit);
     }
 
-  if (hasMouseMove){
-    raycaster.setFromCamera(mouse, camera);
+  if (state.hasMouseMove){
+    raycaster.setFromCamera(state.mouse, camera);
 
     // Check for intersections
     var intersects = raycaster.intersectObjects(raycastTargets);
@@ -206,30 +94,21 @@ export async function initSolarSystem(preloadedModels) {
 
     if (intersects.length > 0) {
       const intersectedObject = intersects[0].object;
-
-      // If the intersected object is an atmosphere, find the corresponding planet
-      if (intersectedObject === earth) {
-        outlinePass.selectedObjects = [earth.planet];
-      } else if (intersectedObject === venus.Atmosphere) {
-        outlinePass.selectedObjects = [venus.planet];
-      } else {
-        // For other planets, outline the intersected object itself
-        outlinePass.selectedObjects = [intersectedObject];
-      }
+      outlinePass.selectedObjects = [intersectedObject];      
     }
   }
 
   // ******  ZOOM IN/OUT  ******
-  if (isMovingTowardsPlanet) {
-    camera.position.lerp(targetCameraPosition, 0.03);
-    if (camera.position.distanceTo(targetCameraPosition) < 1) {
-      isMovingTowardsPlanet = false;
+  if (state.isMovingTowardsPlanet) {
+    camera.position.lerp(state.targetCameraPosition, 0.03);
+    if (camera.position.distanceTo(state.targetCameraPosition) < 1) {
+      state.isMovingTowardsPlanet = false;
     }
-  } else if (isZoomingOut) {
+  } else if (state.isZoomingOut) {
     camera.position.lerp(zoomOutTargetPosition, 0.03);
 
     if (camera.position.distanceTo(zoomOutTargetPosition) < 1) {
-        isZoomingOut = false;
+        state.isZoomingOut = false;
     }
   }
 
@@ -270,13 +149,11 @@ export async function initSolarSystem(preloadedModels) {
 
     controls.target.copy(planetPosition);
     camera.lookAt(planetPosition);
-    targetCameraPosition.copy(planetPosition).add(
+    state.targetCameraPosition.copy(planetPosition).add(
       camera.position.clone().sub(planetPosition).normalize().multiplyScalar(offset)
     );
     
-    camera.position.copy(targetCameraPosition);
-    
-    console.log(`Camera updated to: ${selected.name}`);
+    camera.position.copy(state.targetCameraPosition);
   }
 
   function handleResize() {
@@ -299,14 +176,14 @@ export async function initSolarSystem(preloadedModels) {
 }
 
   async function handleZoomOut() {
-    isZoomingOut = true;
+    state.isZoomingOut = true;
     console.log("zoom out received!");
 
     fadeSunOpacity(sunMat, 1, 2000);
     settings.accelerationOrbit = 1;
 
     setTimeout(() => {
-      sequentialReveal(planets, hoverEnabled, 500);
+      sequentialReveal(planets, state.hoverEnabled, 500);
     }, 500);
   }
 
@@ -314,8 +191,10 @@ export async function initSolarSystem(preloadedModels) {
     planetChange(event);
   });
 
-  canvas.addEventListener('mousemove', onMouseMove, false);
-  canvas.addEventListener('click', onDocumentMouseClick, false);
+  canvas.addEventListener('mousemove', (e)=>{onMouseMove(e,camera,sun,planets,raycaster,raycastTargets)}, false);
+  canvas.addEventListener('click', (e)=>onDocumentMouseClick(e,raycaster,raycastTargets,sun,sunMat,planets,camera,controls,outlinePass,offsets,settings,canvas), false);
+  canvas.addEventListener('beginSunFade',(e) =>fadeSunOpacity(sunMat,e.detail.opacity,e.detail.duration));
+  canvas.addEventListener('hideOutofViewPlanets',(e)=>sequentialHideUnselected(e.detail.selectedPlanet,planets));
 
   window.addEventListener('zoomOutNeeded', handleZoomOut);
 
@@ -324,35 +203,10 @@ export async function initSolarSystem(preloadedModels) {
   });
 
   window.addEventListener('solarTransformDownZoomOutCue', () => {solarTransformDownZoomOut(sun);});
-  window.addEventListener('firstReveal', () => {sequentialReveal(planets, hoverEnabled, 1000);});
+  window.addEventListener('firstReveal', () => {sequentialReveal(planets, state.hoverEnabled, 1000);});
   window.addEventListener('resize', handleResize(renderer,camera,fxaaPass));
 }
 
-// Helper functions
-
- function isDescendantOf(object, potentialAncestor) {
-    let current = object;
-    while (current) {
-      if (current === potentialAncestor) return true;
-      current = current.parent;
-    }
-    return false;
-  }
-
-  
-
-  function identifyPlanet(clickedObject, sunMat, planets) {
-    if (clickedObject.material === sunMat) {
-      return 0;
-    }
-
-    for (let i = 0; i < planets.length; i++) {
-      if (planets[i].planet && isDescendantOf(clickedObject, planets[i].planet)) {
-        return i+1;
-      }
-    }
-    return null;
-  }
 
 
 

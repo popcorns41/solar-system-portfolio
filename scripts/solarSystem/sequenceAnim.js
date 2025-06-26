@@ -1,3 +1,5 @@
+import { select } from "three/tsl";
+
 export function solarStartSunrise(sun) {
     const startY = sun.position.y;
     const targetY = 45;
@@ -105,6 +107,7 @@ export function hideAllExceptSelected(selectedIndex,indexOrderofPlanets) {
   }
 
 export function sequentialHideUnselected(selectedPlanet, planets, delay = 300) {
+  console.log("selectedPlanet",selectedPlanet);
     for (let i = planets.length - 1; i >= 0; i--) {
       const planet3d = planets[i].planet3d;
       const planet = planets[i].planet;
