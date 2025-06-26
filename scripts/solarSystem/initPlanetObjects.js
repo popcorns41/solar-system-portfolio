@@ -6,6 +6,21 @@ import poolBallTexture from '/images/8ball.jpg';
 
 const loadTexture = new THREE.TextureLoader();
 
+export function bootupPlanetConditions(planets){
+    planets.forEach((planet) => {
+        planet.planet3d.visible = false; // Initially hide them all
+    });
+}
+
+export function rePositionSun(sun){
+    sun.scale.set(1.7, 1.7, 1.7);
+    //initial y: -50
+    //target y: 40
+    sun.position.y=-50;
+    sun.position.z=0;
+    sun.position.x=0;
+}
+
 export function initSun(){
     const sunSize = 697/40; // 40 is the scale factor to make it fit in the scene, 697 is the real diameter of the sun in km
     let sunMat;
@@ -21,13 +36,6 @@ export function initSun(){
     sunMat.transparent = true;
 
     const sun = new THREE.Mesh(sunGeom, sunMat);
-
-    sun.scale.set(1.7, 1.7, 1.7);
-    //initial y: -50
-    //target y: 40
-    sun.position.y=-50;
-    sun.position.z=0;
-    sun.position.x=0;
 
     window.dispatchEvent(new CustomEvent("sunLoaded"));
 
@@ -236,3 +244,5 @@ async function createglbPlanet(name,position,scale){
   
       return {name,planet,planet3d,orbit,meshes};
     }
+
+

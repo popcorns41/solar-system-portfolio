@@ -7,11 +7,29 @@ import './scripts/dynamicInfoBox.js';
 import './scripts/globals.js';
 import './scripts/navigationButtons.js';
 import './model_loader/loadingHandler.js';
-window.addEventListener('modelLoaded', async (e) => {
+
+
+const params = new URLSearchParams(window.location.search);
+const isDevMode = params.has('dev');
+
+window.addEventListener("modelLoaded", async () => {
+  console.log("dev mode?", isDevMode);
+
+  if (isDevMode) {
+    console.log('Models loaded, initializing dev solar system...');
+    const { initDevSolarSystem } = await import('/scripts/solarSystemMain.js');
+    initDevSolarSystem();
+  } else {
     console.log('Models loaded, initializing solar system...');
-  const { initSolarSystem } = await import('/scripts/solarSystemMain.js');
-  initSolarSystem(e.detail.modelCache);
+    // const { initSolarSystem } = await import('/scripts/solarSystemMain.js');
+    // initSolarSystem();
+    const { initDevSolarSystem } = await import('/scripts/solarSystemMain.js');
+    initDevSolarSystem();
+  }
+
   window.dispatchEvent(new CustomEvent('solarSystemReady'));
 });
+
+
 
 

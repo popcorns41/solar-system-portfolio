@@ -106,7 +106,6 @@ export function lightingSetup(scene){
 export function initPlanetsToScene(scene,sun,planets){
     scene.add(sun);
     planets.forEach((planet) => {
-        planet.planet3d.visible = false; // Initially hide them all
         scene.add(planet.planet3d); // Add to the scene
     });
     window.dispatchEvent(new CustomEvent("planetsLoaded"));

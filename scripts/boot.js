@@ -3,7 +3,25 @@ window.onbeforeunload = function () {
     };
 
 window.addEventListener('solarSystemReady', () => {
-    console.log("DOM fully loaded and parsed, starting boot process");
+  const params = new URLSearchParams(window.location.search);
+  const isDevMode = params.has('dev');
+  if (!(isDevMode)){
+    initHomePage();
+  }else{
+    initDevHomePage();
+  }
+});
+
+
+function initDevHomePage(){
+  const intro_content = document.getElementById('intro-content');
+  intro_content.style.display = 'none';
+  document.getElementById('threeCanvas').style.pointerEvents = 'auto';
+}
+
+function initHomePage(){
+  console.log("DOM fully loaded and parsed, starting boot process");
+
     window.addEventListener('sunLoaded', () => {console.log("sun loaded, starting animation");});
 
     const introText = document.getElementById('introText');
@@ -33,5 +51,5 @@ window.addEventListener('solarSystemReady', () => {
       generateButton.style.opacity = "1";
       generateButton.style.pointerEvents = "auto";
     });
-});
+}
 
