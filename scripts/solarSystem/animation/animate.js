@@ -1,5 +1,5 @@
-import {state,settings} from '/scripts/solarSystem/state.js';
-import {zoomOutTargetPosition} from '/scripts/solarSystem/const.js'
+import {state,settings} from '/scripts/solarSystem/core/state.js';
+import {zoomOutTargetPosition} from '/scripts/solarSystem/core/const.js'
 
 export const animate = (sun,planets,mouseHandler,outlinePass,camera,controls,composer) =>{
      //rotating planets around the sun and itself

@@ -1,6 +1,6 @@
-import * as THREE from 'three';
-import {state} from '/scripts/solarSystem/state.js';
-import {hideAllExceptSelected} from  '/scripts/solarSystem/sequenceAnim.js';
+import {Vector3} from 'three';
+import {state} from '/scripts/solarSystem/core/state.js';
+import {hideAllExceptSelected} from  '/scripts/solarSystem/animation/sequenceAnim.js';
 
 //sequenceAnim functions are called on directly due to poor eventDispatch performances at 0 delay time
 export function planetChange({event,sun,planets,controls,camera,offsets,canvas}){
@@ -24,7 +24,7 @@ export function planetChange({event,sun,planets,controls,camera,offsets,canvas})
     });
 
     hideAllExceptSelected(selected,sun,planets);
-    const planetPosition = new THREE.Vector3();
+    const planetPosition = new Vector3();
     selected.planet.getWorldPosition(planetPosition);
 
     // Update camera target and position
@@ -55,19 +55,19 @@ export function planetChange({event,sun,planets,controls,camera,offsets,canvas})
     }, 500);
   }
 
-  export function handleResize(renderer,camera,fxaaPass) {
-  const pixelRatio = window.devicePixelRatio || 1;
-  const width = window.innerWidth;
-  const height = window.innerHeight;
+  export function handleResize({renderer,camera,fxaaPass,composer}) {
+    console.log("resize triggered!")
+    const pixelRatio = window.devicePixelRatio || 1;
 
-  renderer.setSize(width, height, true);
-  camera.aspect = width / height;
-  camera.updateProjectionMatrix();
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth,window.innerHeight);
+    composer.setSize(window.innerWidth,window.innerHeight);
 
-  if (fxaaPass) {
-    fxaaPass.material.uniforms['resolution'].value.set(
-      1 / (width * pixelRatio),
-      1 / (height * pixelRatio)
-    );
-  }
+    if (fxaaPass) {
+      fxaaPass.material.uniforms['resolution'].value.set(
+        1 / (window.innerWidth * pixelRatio),
+        1 / (window.innerHeight * pixelRatio)
+      );
+    }
 }

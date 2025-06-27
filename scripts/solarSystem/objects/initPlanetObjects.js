@@ -1,6 +1,6 @@
 import sunTexture from '/images/sun.jpg';
 import * as THREE from 'three';
-import {getCachedModel} from '/model_loader/modelCache.js';
+import {getCachedModel} from '@model/modelCache.js';
 import poolBallTexture from '/images/8ball.jpg';
 
 
@@ -248,8 +248,6 @@ async function createglbPlanet(name,position,scale){
       let meshes = [];
       planet.traverse(child => {
         if (child.isMesh) {
-          // child.material.emissive = new THREE.Color(0xffddaa); // white glow
-          // child.material.emissiveIntensity = 0.05;
           meshes.push(child);
         } 
       });

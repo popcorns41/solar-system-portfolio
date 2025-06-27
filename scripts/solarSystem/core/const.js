@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import {Vector3} from 'three';
 
 export const offsets = [
     90,    // sun
@@ -10,4 +10,4 @@ export const offsets = [
     90     // saturn
   ];
 
-  export const zoomOutTargetPosition = new THREE.Vector3(-175, 115, 5);
+  export const zoomOutTargetPosition = new Vector3(-175, 115, 5);

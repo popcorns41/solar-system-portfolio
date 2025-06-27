@@ -1,6 +1,7 @@
 const planetData = [
   {
     title: "Contact me",
+    subtitles: [""],
     paragraphs: [
       "The Sun is the star at the center of our solar system.",
       "It provides the light and heat necessary for life on Earth."
@@ -12,6 +13,7 @@ const planetData = [
   },
   {
     title: "Resume",
+    subtitles: [""],
     paragraphs: [
       "Mercury is the closest planet to the Sun.",
       "It has a very thin atmosphere and extreme temperature fluctuations."
@@ -23,6 +25,7 @@ const planetData = [
   },
   {
     title: "Skill sets",
+    subtitles: [""],
     paragraphs: [
       "Venus is the second planet from the Sun and has a thick, toxic atmosphere.",
       "Its surface temperature is hotter than Mercury's despite being farther from the Sun."
@@ -34,9 +37,15 @@ const planetData = [
   },
   {
     title: "Robotics",
+    subtitles: ["Overview","Gantry System"],
     paragraphs: [
-      "Utilising The University of Edinburgh's makerspace department and a great group of peers we tasked ourselves with the challenge of creating a pool playing robot on a half scale pool table. The project required research and application of mulitple engineering fields. With systems of the pool playing robot broken down into modules: eletrical systems, robotic systems, CV and camera system, structural support systems. It was my responsibility to design, test and assemble the robotic systems of our project. ",
-      "The robotic system can be divided into 2 subsystems: The gantry system and hitting mechancism. In order for our hitting mechancism to manuvear with great range of moment, I devised and created a Gantry System in the XY axis attached above the pool table. The gantry system relied on 3 stepper motors and timing belts to position our z-axis assembly. The Bresenham line algorithm was utilised to achieve diagonal movement to all coordinate points of our 'pool table plane'. "
+      "Utilising The University of Edinburgh's makerspace department and a great group of peers we tasked ourselves with the challenge of creating a pool playing robot on a half scale pool table."+ 
+      "The project required research and application of mulitple engineering fields. With systems of the pool playing robot broken down into modules: eletrical systems, robotic systems, CV and camera system, structural support systems."+ 
+      "It was my responsibility to design, test and assemble the robotic systems of our project. ",
+      "The robotic system can be divided into 2 subsystems: The gantry system and hitting mechancism."+
+      " In order for our hitting mechancism to manuvear with great range of moment, I devised and created a Gantry System in the XY axis attached above the pool table."+
+      " The gantry system relied on 3 stepper motors and timing belts to position our z-axis assembly. The Bresenham line algorithm was utilised to "+
+      "achieve diagonal movement to all coordinate points of our 'pool table plane'."
     ],
     images: ["./info_images/poolpallRobot.jpeg", "./info_images/cv_model.jpeg"],
     imageDescription: ["Pool Pal in idle position","OpenCV Model utilised in tracking and determining cue ball position"],
@@ -45,6 +54,7 @@ const planetData = [
   },
   {
     title: "Extracurricular",
+    subtitles: [""],
     paragraphs: [
       "Mars is often called the Red Planet due to its reddish appearance.",
       "It has the tallest volcano and the deepest canyon in the solar system."
@@ -56,6 +66,7 @@ const planetData = [
   },
   {
     title: "Childhood",
+    subtitles: [""],
     paragraphs: [
       "Jupiter is the largest planet in the solar system.",
       "It has a strong magnetic field and dozens of moons."
@@ -67,6 +78,7 @@ const planetData = [
   },
   {
     title: "About me",
+    subtitles: [""],
     paragraphs: [
       "Saturn is known for its stunning ring system.",
       "It is a gas giant with a low density and many moons."
@@ -86,11 +98,14 @@ function updateInfoBoxes(index) {
 
   // Update Left Box
   leftBox.innerHTML = `
-    <h2>${info.title}</h2>
-    <hr style="border: none; border-top: 1px solid #ccc; margin-top: 1rem;" />
-    <p>${info.paragraphs[0]}</p>
-    <p>${info.paragraphs[1]}</p>
-  `;
+  <h2>${info.title}</h2>
+  <hr style="border: none; border-top: 1px solid #ccc; margin-top: 1rem;" />
+  ${info.paragraphs.map((text, index) => `
+    <h3 style="padding: 1rem 0 0.5rem 0;">${info.subtitles[index]}</h3>
+    <p>${text}</p>
+  `).join('')}
+`;
+
 
   rightBox.innerHTML = `
     ${info.images
@@ -99,10 +114,10 @@ function updateInfoBoxes(index) {
           <div id="image${index + 1}" style="margin-bottom: 1.5rem;">
             <img src="${img}" alt="${info.title} Image ${index + 1}" 
                 style="width: 100%; border-radius: 10px;" />
-            <p style="margin: 0.5rem 0; font-size: 0.9rem;">
+            <p style="margin: 2rem 0; font-size: 0.9rem;">
               Image ${index + 1}: ${info.imageDescription?.[index] || ''}
             </p>
-            <hr style="border: none; border-top: 1px solid #ccc; margin-top: 1rem;" />
+            <hr style="border: none; border-top: 1px solid #ccc; margin: 0.5rem 0;" />
           </div>
         `
       )

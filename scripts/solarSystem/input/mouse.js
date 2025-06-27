@@ -1,5 +1,5 @@
-import * as THREE from 'three';
-import {state,settings} from '/scripts/solarSystem/state.js';
+import {Raycaster,Vector3} from 'three';
+import {state,settings} from '/scripts/solarSystem/core/state.js';
 
 export class MouseHandler {
   constructor({
@@ -11,7 +11,7 @@ export class MouseHandler {
     offsets,
     canvas
   }) {
-    this.raycaster =  new THREE.Raycaster();
+    this.raycaster =  new Raycaster();
     this.sun = sun;
     this.sunMat = sun.material;
     this.planets = planets;
@@ -59,7 +59,7 @@ export class MouseHandler {
           window.dispatchEvent(indexAnnouncementEvent);
           settings.accelerationOrbit = 0;
   
-          const planetPosition = new THREE.Vector3();
+          const planetPosition = new Vector3();
   
           if (!(selectedPlanet === this.sun)) {
             const fadeSunRequiredAnnouncement = new CustomEvent("changeSunOpacity",

@@ -6,7 +6,7 @@ import './scripts/dom_overlay.js';
 import './scripts/dynamicInfoBox.js';
 import './scripts/globals.js';
 import './scripts/navigationButtons.js';
-import './model_loader/loadingHandler.js';
+import './modelLoader/loadingHandler.js';
 
 
 const params = new URLSearchParams(window.location.search);

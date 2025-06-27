@@ -1,13 +1,13 @@
-import * as THREE from 'three';
+import {Vector2,Vector3} from 'three';
 
 export const state = {
   isZoomingOut: false,
   isMovingTowardsPlanet: false,
-  targetCameraPosition: new THREE.Vector3(),
+  targetCameraPosition: new Vector3(),
   hoverEnabled: true,
   offset: 0,
   hasMouseMove: false,
-  mouse: new THREE.Vector2()
+  mouse: new Vector2()
   // you can add more shared flags here later
 };
 
