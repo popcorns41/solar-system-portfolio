@@ -231,6 +231,11 @@ window.addEventListener("circularBorder",() => {
 
 });
 
+window.addEventListener("updateArrows",(e)=>{
+  window.planetIndex = e.detail.index;
+  updateArrows();
+});
+
 document.getElementById("planetCenter").addEventListener("click",
   () => {
     if (!uiFinished) return;

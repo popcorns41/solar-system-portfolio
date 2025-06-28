@@ -20,7 +20,7 @@
   flex: 1 1 45%;
   min-width: 280px;
   max-width: 550px;
-  height: 600px;
+  height: 75vh;
   background: rgba(255, 255, 255, 0.05); /* subtle background for mask visibility */
   border: 3px solid white;
   border-radius: 10px;
@@ -30,4 +30,20 @@
   
   position: relative;
   transition: opacity 4s;
+}
+
+a {
+  color: rgba(255, 255, 255, 0.85);     /* Light but not pure white */
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  padding: 0.25em 0.2em;
+  border-radius: 6px;
+}
+
+a:hover,
+a:focus {
+  background-color: rgba(255, 255, 255, 0.15);  /* Slight highlight */
+  color: white;
+  text-decoration: underline;
 }

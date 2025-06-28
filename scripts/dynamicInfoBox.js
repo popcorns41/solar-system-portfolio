@@ -37,15 +37,10 @@ const planetData = [
   },
   {
     title: "Robotics",
-    subtitles: ["Overview","Gantry System"],
+    subtitles: ["Overview","Reflection"],
     paragraphs: [
-      "Utilising The University of Edinburgh's makerspace department and a great group of peers we tasked ourselves with the challenge of creating a pool playing robot on a half scale pool table."+ 
-      "The project required research and application of mulitple engineering fields. With systems of the pool playing robot broken down into modules: eletrical systems, robotic systems, CV and camera system, structural support systems."+ 
-      "It was my responsibility to design, test and assemble the robotic systems of our project. ",
-      "The robotic system can be divided into 2 subsystems: The gantry system and hitting mechancism."+
-      " In order for our hitting mechancism to manuvear with great range of moment, I devised and created a Gantry System in the XY axis attached above the pool table."+
-      " The gantry system relied on 3 stepper motors and timing belts to position our z-axis assembly. The Bresenham line algorithm was utilised to "+
-      "achieve diagonal movement to all coordinate points of our 'pool table plane'."
+      "Working with the University of Edinburgh's maker space and a strong team of peers, we built a robot that plays pool on a half-scale table. The semester-long project combined several engineering disciplines. We divided the robot's systems into key modules: electrical, robotic, computer vision and camera (see<a href='#image2'>Image 2</a>), structural support, and a mobile web app for user input. In a typical use case, the web app shows a real-time view of the pool balls and prompts the user—via a mobile game-style UI—to take a shot. The robot, which we called Pool Pal, then attempts to replicate that shot. It successfully made shots (see<a href='#video1'>Video 1</a>), proving the concept worked. I was responsible for designing, testing, and assembling the robotic system, which consisted of two main components: the gantry and the striking mechanism.",
+      "Our design was well-received by the judges: out of 16 teams, we won the <b>Best Technical Skills Project award</b> and placed <b>second overall</b> at a university-hosted competition. Teamwork was critical to our success. With members collaborating across multiple systems, clear and consistent communication was essential. One example was calibrating the gantry system's sensors, which helped manage the loss of timing belt tension over time. Solving this problem required close collaboration between the electrical lead and me, as we combined our efforts to tackle the issue effectively."
     ],
     images: ["./info_images/poolpallRobot.jpeg", "./info_images/cv_model.jpeg"],
     imageDescription: ["Pool Pal in idle position","OpenCV Model utilised in tracking and determining cue ball position"],
@@ -54,15 +49,15 @@ const planetData = [
   },
   {
     title: "Extracurricular",
-    subtitles: [""],
+    subtitles: ["Basketball","Hospitality"],
     paragraphs: [
-      "Mars is often called the Red Planet due to its reddish appearance.",
-      "It has the tallest volcano and the deepest canyon in the solar system."
+      "Outside of tech, I'm a player and coach with the Edinburgh University Basketball Club. Coaching has sharpened my leadership, communication, and planning skills, all of which apply to computer science, particularly when working in teams, thinking quickly on my feet, and delivering clear solutions under pressure.",
+      "Alongside my studies, I've worked part-time at Ka Pao Edinburgh for three years, training in both front-of-house and bartending. The role sharpened my ability to multitask, communicate clearly, and stay calm under pressure. These skills carry directly into computer science, from team collaboration to debugging under tight deadlines."
     ],
-    images: ["", ""],
-    imageDescription: ["",""],
-    videos: [""],
-    videoDescription: ["",""]
+    images: ["./info_images/floorGeneral.jpeg", "./info_images/kaPaoTeam.jpeg"],
+    imageDescription: ["Basketball scrimmage at Pleasance Gym, Edinburgh","Photo of the team at Ka Pao Edinburgh"],
+    videos: [],
+    videoDescription: []
   },
   {
     title: "Childhood",
@@ -71,26 +66,26 @@ const planetData = [
       "Jupiter is the largest planet in the solar system.",
       "It has a strong magnetic field and dozens of moons."
     ],
-    images: ["", ""],
-    imageDescription: ["",""],
-    videos: [""],
-    videoDescription: ["",""]
+    images: ["./info_images/childhoodRobot.jpeg", "./info_images/robotAssemblyChildhood.jpg"],
+    imageDescription: ["Home appliance robot for WRO competition","Assembly of Robot with peers"],
+    videos: [],
+    videoDescription: []
   },
   {
     title: "About me",
     subtitles: [""],
     paragraphs: [
-      "Saturn is known for its stunning ring system.",
-      "It is a gas giant with a low density and many moons."
+      "With over eight years of personal and academic experience in computer science, I'm eager to apply my skills in a real-world environment, learn from experienced engineers, and contribute to impactful projects. I'm a fast learner, naturally collaborative, and focused on delivering value wherever I can. My main interests lie in robotics and software systems design and development, areas where I've earned recognition and awards (see<a href='#image1'>Image 1</a>and<a href='#image2'>Image 2</a>)."
     ],
-    images: ["", ""],
-    imageDescription: ["",""],
-    videos: [""],
-    videoDescription: ["",""]
+    images: ["./info_images/stepHandShake.jpg", "./info_images/poolPalGroup.jpg"],
+    imageDescription: ["Award ceremony for internship programme (further details see<a href='#' class='planet-link' data-index='1'>here</a>)","Group photo during robotics fair (further details see <a href='#' class='planet-link' data-index='3'>here</a>)"],
+    videos: [],
+    videoDescription: []
   }
 ];
 
 function updateInfoBoxes(index) {
+
   const info = planetData[index];
   console.log(info.title);
   const leftBox = document.getElementById("infoBoxLeft");
@@ -143,6 +138,20 @@ function updateInfoBoxes(index) {
       )
       .join("")}
   `;
+
+  document.querySelectorAll(".planet-link").forEach(link => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const index = parseInt(e.currentTarget.dataset.index, 10);
+      console.log(index);
+      window.dispatchEvent(new CustomEvent("planetChange", {
+        detail: { index }
+      }));
+      window.dispatchEvent(new CustomEvent("updateArrows",{
+        detail: { index }
+      }));
+    });
+  });
 }
 
 window.addEventListener("solarSystemToInfoSection", (event) =>{
@@ -156,3 +165,4 @@ window.addEventListener("planetChange", (event) => {
   console.log("We in a planet!",index);
   updateInfoBoxes(index);
 });
+
