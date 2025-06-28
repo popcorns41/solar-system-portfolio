@@ -73,9 +73,10 @@ const planetData = [
   },
   {
     title: "About me",
-    subtitles: [""],
+    subtitles: ["Who am I?","What is this website?"],
     paragraphs: [
-      "With over eight years of personal and academic experience in computer science, I'm eager to apply my skills in a real-world environment, learn from experienced engineers, and contribute to impactful projects. I'm a fast learner, naturally collaborative, and focused on delivering value wherever I can. My main interests lie in robotics and software systems design and development, areas where I've earned recognition and awards (see<a href='#image1'>Image 1</a>and<a href='#image2'>Image 2</a>)."
+      "With over eight years of personal and academic experience in computer science, I'm eager to apply my skills in a real-world environment, learn from experienced engineers, and contribute to impactful projects. I'm a fast learner, naturally collaborative, and focused on delivering value wherever I can. My main interests lie in robotics and software systems design and development, areas where I've earned recognition and awards (see<a href='#image1'>Image 1</a>and<a href='#image2'>Image 2</a>).",
+      "This personal portfolio website was a personal project to reimagine site navigation through a fully interactive 3D solar system. Each planet acts as a portal to different sections of the portfolio. Built with Vite and Three.js, the project aims to showcase my web development skills, combined with a new area of technology for me in 3D modelling to create a visually engaging and unconventional user experience. The project showcases proficiency in JavaScript, modular design, event-driven interactions, and creative UI/UX thinking. I encourage you to explore the GitHub repository for this project:<a href='https://github.com/popcorns41/solar-system-portfolio'target='_blank' rel='noopener noreferrer'>here</a>to browse how this project's inspiration and current development stage."
     ],
     images: ["./info_images/stepHandShake.jpg", "./info_images/poolPalGroup.jpg"],
     imageDescription: ["Award ceremony for internship programme (further details see<a href='#' class='planet-link' data-index='1'>here</a>)","Group photo during robotics fair (further details see <a href='#' class='planet-link' data-index='3'>here</a>)"],
