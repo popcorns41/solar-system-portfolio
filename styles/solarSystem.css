@@ -13,11 +13,11 @@
 #threeCanvas {
   display: block;
   top: 0;
-  left: 0%;
-  /* transform: translateX(-50%); */
+  left: calc((50vw - 50%)*-1);
+  transform: translateX(calc(50vw - 50%));  
   width: 100%;
   height: 100%;
-  transition: transform 0.2s ease-in-out, border-radius 1.2s ease-in-out;
+  transition: border-radius 1.2s ease-in-out;
   z-index: 50;
   border-radius: 0%;
   pointer-events: none; /* Enable when clickable */

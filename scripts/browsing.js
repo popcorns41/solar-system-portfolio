@@ -18,8 +18,9 @@ function transformCanvasToHomeButton() {
     const translateY = window.innerHeight / 2 - 100;
 
     // New transform: scale + move
-    canvas.style.transition = "transform 4s ease";
-    canvas.style.transform = `translate(0px, ${translateY}px) scale(${scale})`;
+    canvas.style.transition = "transform 3s ease";
+    canvas.style.transform = `translate(calc(50vw - 50%), ${translateY}px) scale(${scale})`;
+    setTimeout(()=>{canvas.style.transition = "transform 0s ease";},3000);
   });
 }
 
@@ -215,6 +216,11 @@ function hideInfoBoxes(){
   leftBox.style.opacity = "0";
   rightBox.style.opacity = "0";
 }
+
+// window.addEventListener('resize', function(event) {
+//     const canvas = document.getElementById("threeCanvas");
+//     canvas.style.transform = `transform: translateX(calc(50vw - 50%));`;
+// }, true);
 
 let uiFinished = false;
 
