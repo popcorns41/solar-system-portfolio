@@ -1,16 +1,4 @@
-function fadeStateChange(eventName,bool){
-            window.state.fadeBackground = bool;
-            window.dispatchEvent(new CustomEvent(eventName, {
-            detail: { key: "fadeBackground", value: bool }
-            }));
-        }
-
-
 window.addEventListener("DOMContentLoaded", () => {
-  if (!window.state) {
-    console.error("window.state is not defined!");
-    return;
-  }
 
   document.getElementById("enterSystem").addEventListener("click", () => {
     console.log("button pressed!")

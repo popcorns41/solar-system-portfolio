@@ -1,6 +1,12 @@
+import {preloadAssets} from "./mediaHandler/mediaCache.js";
+
 window.onbeforeunload = function () {
         window.scrollTo(0, 0);
     };
+
+window.addEventListener("DOMContentLoaded", ()=>{
+  preloadAssets();
+});
 
 window.addEventListener('solarSystemReady', () => {
   const params = new URLSearchParams(window.location.search);
