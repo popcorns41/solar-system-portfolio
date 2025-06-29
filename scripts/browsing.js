@@ -82,28 +82,32 @@ function updateArrows() {
     }
   }, 10); // Small timeout to ensure animation can retrigger
 }
-function updateInfoDisplay() {
-  const leftBox = document.getElementById("infoBoxLeft");
-  const rightBox = document.getElementById("infoBoxRight");
-  const infoSection = document.getElementById("infoSection");
-  const index = window.planetIndex;
-  // Always show left box
-  leftBox.style.display = "block";
-  leftBox.style.opacity = "1";
-  leftBox.style.pointerEvents = "auto";
 
+function displayRightBoxManagement(rightBox,index){
   if (index === 0) {
     // Only show left box for index 0 (Sun)
     rightBox.style.display = "none";
     rightBox.style.opacity = "0";
     rightBox.style.pointerEvents = "none";
-  } else {
+  } else if (index == 2){
+    rightBox.style.display = "none";
+    rightBox.style.opacity = "0";
+    rightBox.style.pointerEvents = "none";
+  }else {
     // Show both for other planets
     rightBox.style.display = "block";
     rightBox.style.opacity = "1";
     rightBox.style.pointerEvents = "auto";
   }
+}
 
+function updateInfoDisplay() {
+  const leftBox = document.getElementById("infoBoxLeft");
+  const rightBox = document.getElementById("infoBoxRight");
+  const infoSection = document.getElementById("infoSection");
+  const index = window.planetIndex;
+
+  displayRightBoxManagement(rightBox,index);
   // Reveal section (if hidden)
   infoSection.style.display = "flex";
 }
@@ -180,22 +184,14 @@ function revealInfoBoxes() {
   const leftBox = document.getElementById("infoBoxLeft");
   const rightBox = document.getElementById("infoBoxRight");
 
+  const index = window.planetIndex;
+
   // Always reveal the left box
   leftBox.style.pointerEvents = "auto";
   leftBox.style.opacity = "1";
   leftBox.style.display = "block";
 
-  if (window.planetIndex === 0) {
-    // Hide the right box for the Sun
-    rightBox.style.pointerEvents = "none";
-    rightBox.style.opacity = "0";
-    rightBox.style.display = "none";
-  } else {
-    // Show and enable the right box
-    rightBox.style.pointerEvents = "auto";
-    rightBox.style.opacity = "1";
-    rightBox.style.display = "block";
-  }
+  displayRightBoxManagement(rightBox,index)
 
   setTimeout(() => {
     uiFinished = true;
