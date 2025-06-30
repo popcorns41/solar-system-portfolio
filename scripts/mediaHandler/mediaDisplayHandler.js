@@ -2,6 +2,7 @@ import { assetCache } from './mediaCache';
 import { languages,platforms,roboticsItems } from './iconDirectories';
 
 export function planetDataLeftBox(info,leftBox){
+  leftBox.style.overflowY = "auto";
   // Update Left Box
   leftBox.innerHTML = `
     <h2>${info.title}</h2>
@@ -14,8 +15,8 @@ export function planetDataLeftBox(info,leftBox){
 }
 
 export function planetDataRightBox(info,rightBox){
-
-   rightBox.innerHTML = ""; // Clear previous content
+  rightBox.style.overflowY = "auto";
+  rightBox.innerHTML = ""; // Clear previous content
 
   // IMAGES
     info.imageKeys.forEach((key, index) => {
@@ -110,7 +111,7 @@ export function planetLinkHandler(){
 }
 
 export function contactMeSection(box) {
-    
+  box.style.overflowY = "auto";
   box.innerHTML = `
     <h2>Contact Me</h2>
     <hr style="border: none; border-top: 1px solid #ccc; margin-top: 1rem; padding-bottom: 2rem" />
@@ -126,12 +127,6 @@ export function contactMeSection(box) {
           <i class="devicon-github-original" style="font-size: 2.5rem;"></i>
         </a>
         <p style="margin-top: 0.5rem;">GitHub</p>
-      </div>
-      <div style="text-align: center;">
-        <a href="#" target="_blank" rel="noopener noreferrer" style="color: white;">
-          <i class="fa-solid fa-file-pdf" style="font-size: 2.5rem;"></i>
-        </a>
-        <p style="margin-top: 0.5rem;">Resume</p>
       </div>
     </div>
 
@@ -156,6 +151,7 @@ export function contactMeSection(box) {
 }
 
 export function SkillSetList(box) {
+  box.style.overflowY = "auto";
   box.innerHTML = `
     <h2>Skill Sets</h2>
     <hr style="border: none; border-top: 1px solid #ccc; margin: 1rem 0;" />
@@ -197,5 +193,27 @@ export function SkillSetList(box) {
         )
         .join('')}
     </ul>
+  `;
+}
+
+export function pdfResumeSection(box) {
+  const pdfURL = assetCache.get('cvPDF');
+
+  if (!pdfURL) {
+    console.error("PDF not preloaded or missing from assetCache.");
+    box.innerHTML = `<p>Failed to load PDF resume. Please try again later.</p>`;
+    return;
+  }
+
+  box.style.overflowY = "hidden";
+  box.innerHTML = `
+    <h2>PDF Resume</h2>
+    <hr style="border: none; border-top: 1px solid #ccc; margin: 1rem 0;" />
+    <iframe 
+      src="${pdfURL}" 
+      width="100%" 
+      height="100%" 
+      style="border: none;">
+    </iframe>
   `;
 }

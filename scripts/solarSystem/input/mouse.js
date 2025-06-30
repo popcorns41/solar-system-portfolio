@@ -22,6 +22,8 @@ export class MouseHandler {
     this.canvas = canvas;
     this.raycastTargets = this.planets.flatMap(p => p.meshes);
     this.raycastTargets.unshift(this.sun);
+    this.intersects = [];
+    this.card = document.getElementById('hoverCard');
 
     // Bind event handlers
     this.onClick = this.onClick.bind(this);
@@ -35,11 +37,9 @@ export class MouseHandler {
       state.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
   
       this.raycaster.setFromCamera(state.mouse, this.camera);
-
-      const intersects = this.raycaster.intersectObjects(this.raycastTargets);
   
-      if (intersects.length > 0) {
-        const clickedObject = intersects[0].object;
+      if (this.intersects.length > 0) {
+        const clickedObject = this.intersects[0].object;
         const selectedPlanetIndex = identifyPlanet(clickedObject,this.sunMat, this.planets);
         let selectedPlanet = null;
         if (selectedPlanetIndex === 0) {
@@ -110,27 +110,42 @@ export class MouseHandler {
     state.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
 
     this.raycaster.setFromCamera(state.mouse, this.camera);
-    
-    const intersects = this.raycaster.intersectObjects(this.raycastTargets);
-
-    const card = document.getElementById('hoverCard');
-
-    if (intersects.length > 0) {
-        const object = intersects[0].object;
+    if (this.intersects.length > 0) {
+        const object = this.intersects[0].object;
 
         // Position the card near the cursor
-        card.style.left = `${event.clientX + 10}px`;
-        card.style.top = `${event.clientY + 10}px`;
-        card.style.display = 'block';
-
-        if (object) {
-            updateCardForHoveredObject(object,card,this.sun,this.planets);
-        }
+        this.card.style.left = `${event.clientX + 10}px`;
+        this.card.style.top = `${event.clientY + 10}px`;
+        this.card.style.display = 'block';
     }else{
-        card.innerText = "";
-        card.style.display = "none";
+        this.card.innerText = "";
+        this.card.style.display = "none";
     }
   }
+
+
+  updateCardForHoveredObject(object) {
+    // Check sun first (not in planets array)
+    if (object === this.sun) {
+      this.card.innerText = "Contact me";
+      this.card.style.display = 'block';
+      return;
+    }
+
+    // Check planets array
+    for (const planet of this.planets) {
+      if (planet.meshes.includes(object)) {
+        this.card.innerText = planet.label;
+        this.card.style.display = "block";
+        return;
+      }
+    }
+
+    console.log(object,"not found!");
+    // Default fallback if nothing matches
+    this.card.innerText = "";
+    this.card.style.display = "none";
+}
 
   attach() {
     this.canvas.addEventListener('click', this.onClick, false);
@@ -167,26 +182,3 @@ export class MouseHandler {
     return null;
   }
 
-  function updateCardForHoveredObject(object,card,sun,planets) {
-
-  // Check sun first (not in planets array)
-  if (object === sun) {
-    card.innerText = "Contact me";
-    card.style.display = 'block';
-    return;
-  }
-
-  // Check planets array
-  for (const planet of planets) {
-    if (planet.meshes.includes(object)) {
-      card.innerText = planet.label;
-      card.style.display = "block";
-      return;
-    }
-  }
-
-  console.log(object,"not found!");
-  // Default fallback if nothing matches
-  card.innerText = "";
-  card.style.display = "none";
-}

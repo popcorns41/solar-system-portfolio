@@ -83,17 +83,15 @@ function updateArrows() {
   }, 10); // Small timeout to ensure animation can retrigger
 }
 
+
 function displayRightBoxManagement(rightBox,index){
   if (index === 0) {
     // Only show left box for index 0 (Sun)
     rightBox.style.display = "none";
     rightBox.style.opacity = "0";
     rightBox.style.pointerEvents = "none";
-  } else if (index == 2){
-    rightBox.style.display = "none";
-    rightBox.style.opacity = "0";
-    rightBox.style.pointerEvents = "none";
-  }else {
+  } else {
+    rightBox.scrollTop = 0;
     // Show both for other planets
     rightBox.style.display = "block";
     rightBox.style.opacity = "1";

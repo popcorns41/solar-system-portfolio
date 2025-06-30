@@ -12,6 +12,7 @@ function updateInfoBoxes(index) {
     HANDLER.contactMeSection(leftBox);
   }else if (index == 2){
     HANDLER.SkillSetList(leftBox);
+    HANDLER.pdfResumeSection(rightBox);
   }else{
     HANDLER.planetDataLeftBox(info,leftBox);
     HANDLER.planetDataRightBox(info,rightBox);

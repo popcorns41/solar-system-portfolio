@@ -16,13 +16,16 @@ export const animate = (sun,planets,mouseHandler,outlinePass,camera,controls,com
 
     // Check for intersections
     var intersects = mouseHandler.raycaster.intersectObjects(mouseHandler.raycastTargets);
-
+    mouseHandler.intersects = intersects;
     // Reset all outlines
     outlinePass.selectedObjects = [];
 
     if (intersects.length > 0) {
       const intersectedObject = intersects[0].object;
+      mouseHandler.updateCardForHoveredObject(intersectedObject);
       outlinePass.selectedObjects = [intersectedObject];      
+    }else{
+      document.getElementById('hoverCard').style.display = 'none';
     }
   }
 

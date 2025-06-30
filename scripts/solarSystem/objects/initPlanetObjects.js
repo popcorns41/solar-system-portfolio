@@ -95,7 +95,7 @@ export async function initPlanetObjects() {
         rotationSpeed: 0.005,
         orbitSpeed: 0.002,
         orbit: mercury.orbit,
-        label: "Resume",
+        label: "Experience",
         rotateSelf: (mesh, speed, accel) => mesh.rotateZ(speed * accel),
       },
       {
@@ -106,7 +106,7 @@ export async function initPlanetObjects() {
         rotationSpeed: 0.005,
         orbitSpeed: 0.0006,
         orbit: venus.orbit,
-        label: "Skill sets",
+        label: "Skill sets/Resume",
         rotateSelf: (mesh, speed, accel) => mesh.rotateY(speed * accel),
       },
       {
