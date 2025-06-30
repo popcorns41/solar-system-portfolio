@@ -53,46 +53,61 @@ export function planetDataRightBox(info,rightBox){
       rightBox.appendChild(wrapper);
     });
 
+  
     // VIDEOS
-    info.videoKeys.forEach((key, index) => {
-      const wrapper = document.createElement("div");
-      wrapper.id = `video${index + 1}`;
-      wrapper.style.marginBottom = "1.5rem";
+    info.videos.forEach((video, index) => {
+    const wrapper = document.createElement("div");
+    wrapper.id = `video${index + 1}`;
+    wrapper.style.marginBottom = "1.5rem";
 
-      let video = assetCache.get(key)?.cloneNode(true);
+    let element;
 
-      // Fallback if not in cache
-      if (!video) {
-        video = document.createElement("video");
+    if (video.type === "iframe") {
+      element = document.createElement("iframe");
+      element.src = video.url;
+      element.width = "100%"; 
+      element.height = "445px";
+      element.controls = true;
+      element.style.border = "none";
+      element.style.overflow = "hidden";
+      element.style.borderRadius = "10px";
+      element.setAttribute("scrolling", "no");
+      element.setAttribute("frameborder", "0");
+      element.setAttribute("allowfullscreen", "true");
+      element.setAttribute("allow", "autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share");
+    } else {
+      element = assetCache.get(video.key)?.cloneNode(true);
+      if (!element) {
+        element = document.createElement("video");
         const source = document.createElement("source");
-        source.src = info.videoURLs?.[index] || '';
+        source.src = video.url;
         source.type = "video/mp4";
-        video.appendChild(source);
-        video.preload = "auto";
+        element.appendChild(source);
+        element.preload = "auto";
       }
+      element.controls = true;
+      element.style.width = "100%";
+      element.style.borderRadius = "10px";
+    }
 
-      video.controls = true;
-      video.style.width = "100%";
-      video.style.borderRadius = "10px";
-      wrapper.appendChild(video);
+    wrapper.appendChild(element);
 
-      const caption = document.createElement("p");
-      caption.style.margin = "0.5rem 0";
-      caption.style.fontSize = "0.9rem";
+    const caption = document.createElement("p");
+    caption.style.margin = "0.5rem 0";
+    caption.style.fontSize = "0.9rem";
+    caption.innerHTML = `Video ${index + 1}: ${video.description || ''}`;
+    wrapper.appendChild(caption);
 
-      caption.innerHTML = `Video ${index + 1}: ${info.videoDescription?.[index] || ''}`;
-      wrapper.appendChild(caption);
+    if (index < info.videos.length - 1) {
+      const hr = document.createElement("hr");
+      hr.style.border = "none";
+      hr.style.borderTop = "1px solid #ccc";
+      hr.style.marginTop = "1rem";
+      wrapper.appendChild(hr);
+    }
 
-      if (index < info.videoKeys.length - 1) {
-        const hr = document.createElement("hr");
-        hr.style.border = "none";
-        hr.style.borderTop = "1px solid #ccc";
-        hr.style.marginTop = "1rem";
-        wrapper.appendChild(hr);
-      }
-
-      rightBox.appendChild(wrapper);
-    });
+    rightBox.appendChild(wrapper);
+  });
 }
 
 export function planetLinkHandler(){

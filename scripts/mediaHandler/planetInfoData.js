@@ -9,37 +9,38 @@ export const planetData = [
     imageURLs: ["",""],
     imageKeys: ["", ""],
     imageDescription: ["",""],
-    videoURLs: [""],
-    videoKeys: [""],
-    videoDescription: ["",""]
+    videos:[]
   },
   {
-    title: "Resume",
-    subtitles: [""],
-    paragraphs: [
-      "Mercury is the closest planet to the Sun.",
-      "It has a very thin atmosphere and extreme temperature fluctuations."
-    ],
-    imageURLs: ["",""],
-    imageKeys: ["", ""],
-    imageDescription: ["",""],
-    videoURLs: [""],
-    videoKeys: [""],
-    videoDescription: ["",""]
-  },
-  {
-    title: "Skill sets",
-    subtitles: [""],
+    title: "Experience",
+    subtitles: ["Salex LTD","Utmost International"],
     paragraphs: [
       "Venus is the second planet from the Sun and has a thick, toxic atmosphere.",
       "Its surface temperature is hotter than Mercury's despite being farther from the Sun."
     ],
-    imageURLs: ["",""],
+    imageURLs: ["./info_images/stepProgramme.jpeg", "./info_images/SalexLTD.jpeg"],
     imageKeys: ["", ""],
+    imageDescription: ["Photo of all members of the step programme-2023",""],
+    videos:[
+      {
+        key: 'Video 1',
+        type: 'iframe',
+        url: 'https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2F3FMradio%2Fvideos%2F746133027320019%2F&show_text=false&width=476&t=0',
+        description: 'STEP programme interview with me 2023'
+      }
+    ]
+  },
+  {
+    title: "I am blank",
+    subtitles: [],
+    paragraphs: [
+      "Hi if you're seeing this, I appreciate you reading the documentation :)",
+      "Have a great day, love <3"
+    ],
+    imageURLs: [""],
+    imageKeys: [""],
     imageDescription: ["",""],
-    videoURLs: [""],
-    videoKeys: [""],
-    videoDescription: ["",""]
+    videos:[]
   },
   {
     title: "Robotics",
@@ -51,9 +52,14 @@ export const planetData = [
     imageURLs: ["./info_images/poolpallRobot.jpeg", "./info_images/cv_model.jpeg"],
     imageKeys: ["ppRobot", "cvModel"],
     imageDescription: ["Pool Pal in idle position","OpenCV Model utilised in tracking and determining cue ball position"],
-    videoURLs: ["./info_images/poolpal_shot.mp4"],
-    videoKeys: ["poolpalShot"],
-    videoDescription: ["Pool Pal in operation"]
+    videos:[
+      {
+        key: 'poolpalShot',
+        type: 'video',
+        url: './info_images/poolpal_shot.mp4',
+        description: 'Pool Pal in operation'
+      }
+    ]
   },
   {
     title: "Extracurricular",
@@ -65,9 +71,7 @@ export const planetData = [
     imageURLs: ["./info_images/floorGeneral.jpeg", "./info_images/kaPaoTeam.jpeg"],
     imageKeys: ["floorGeneral", ".kpTeam"],
     imageDescription: ["Basketball scrimmage at Pleasance Gym, Edinburgh","Photo of the team at Ka Pao Edinburgh"],
-    videoURLs: [],
-    videoKeys: [],
-    videoDescription: []
+    videos:[]
   },
   {
     title: "Childhood",
@@ -79,9 +83,7 @@ export const planetData = [
     imageURLs: ["./info_images/childhoodRobot.jpeg", "./info_images/robotAssemblyChildhood.jpg"],
     imageKeys: ["cRobot", ".rAssemblyChildhood"],
     imageDescription: ["Home appliance robot for WRO competition","Assembly of Robot with peers"],
-    videoURLs:[],
-    videoKeys: [],
-    videoDescription: []
+    videos:[]
   },
   {
     title: "About me",
@@ -93,8 +95,6 @@ export const planetData = [
     imageURLs: ["./info_images/stepHandShake.jpg", "./info_images/poolPalGroup.jpg"],
     imageKeys: ["stepHandShake", "ppGroup"],
     imageDescription: ["Award ceremony for internship programme (further details see<a href='#' class='planet-link' data-index='1'>here</a>)","Group photo during robotics fair (further details see <a href='#' class='planet-link' data-index='3'>here</a>)"],
-    videoURLs: [],
-    videoKeys: [],
-    videoDescription: []
+    videos:[]
   }
 ];

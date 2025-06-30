@@ -41,5 +41,4 @@ export function preloadAssets() {
   preloadPDF('cvPDF','./pdfs/ohResume.pdf');
 
   console.log("images and videoes loaded")
-  // etc...
 }
