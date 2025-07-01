@@ -47,3 +47,55 @@ a:focus {
   color: white;
   text-decoration: underline;
 }
+
+a.contact-icon {
+  all: unset;
+  display: inline-block;
+  cursor: pointer;
+  color: white;
+  text-align: center;
+}
+
+a.contact-icon:hover i {
+  transform: scale(1.1);
+  transition: transform 0.2s, color 0.2s;
+}
+
+a#linkedin-icon:hover i {
+  color: #0072b1;
+}
+
+a#github-icon:hover i {
+  color: #6e5494;
+}
+
+.formButton {
+  background-color: rgba(255, 255, 255, 0.1);
+  margin-top: 0.9rem;
+  width: 50%;
+  align-self: center;
+  color: white;
+  border: 2px solid white;
+  border-radius: 30px;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+  font-family: 'Orbitron', sans-serif;
+  user-select: none;
+  caret-color: transparent;
+  font-weight: 500;
+}
+
+.formButton:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
+}
+
+.formButton:active {
+  transform: scale(0.98);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+}

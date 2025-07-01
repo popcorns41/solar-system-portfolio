@@ -1,5 +1,6 @@
 import { assetCache } from './mediaCache';
 import { languages,platforms,roboticsItems } from './iconDirectories';
+import { emailHandler } from './emailHandler';
 
 export function planetDataLeftBox(info,leftBox){
   leftBox.style.overflowY = "auto";
@@ -132,37 +133,51 @@ export function contactMeSection(box) {
     <hr style="border: none; border-top: 1px solid #ccc; margin-top: 1rem; padding-bottom: 2rem" />
     <div class="contact-icons" style="display: flex; justify-content: center; gap: 3rem; margin-bottom: 2rem;">
       <div style="text-align: center;">
-        <a href="https://www.linkedin.com/in/your-profile" target="_blank" rel="noopener noreferrer" style="color: white;">
+        <a href="https://www.linkedin.com/in/oliver-hill-7143b3110/" id="linkedin-icon" class="contact-icon" target="_blank" rel="noopener noreferrer" style="color: white;">
           <i class="devicon-linkedin-plain" style="font-size: 2.5rem;"></i>
         </a>
-        <p style="margin-top: 0.5rem;">LinkedIn</p>
       </div>
       <div style="text-align: center;">
-        <a href="https://github.com/your-username" target="_blank" rel="noopener noreferrer" style="color: white;">
+        <a href="https://github.com/popcorns41" id="github-icon" class="contact-icon" target="_blank" rel="noopener noreferrer" style="color: white;">
           <i class="devicon-github-original" style="font-size: 2.5rem;"></i>
         </a>
-        <p style="margin-top: 0.5rem;">GitHub</p>
       </div>
     </div>
 
     <hr style="border: none; border-top: 1px solid #ccc; margin: 2rem 0;" />
 
-    <form id="contactForm" style="display: flex; flex-direction: column; gap: 1rem;">
-      <input type="text" id="name" name="name" placeholder="Your Name" required
-        style="padding: 0.75rem; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem;" />
-      
-      <input type="email" id="email" name="email" placeholder="Your Email" required
-        style="padding: 0.75rem; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem;" />
-      
-      <textarea id="message" name="message" placeholder="Your Message" rows="5" required
-        style="padding: 0.75rem; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem; resize: vertical;"></textarea>
-      
-      <button type="submit"
-        style="padding: 0.75rem; border-radius: 8px; background-color: #222; color: #fff; font-size: 1rem; border: none; cursor: pointer;">
-        Send Message
-      </button>
-    </form>
+    <form id="contactForm" name="contact_form" style="display: flex; flex-direction: column; gap: 1rem;">
+  <input 
+    type="text" 
+    name="user_name" 
+    placeholder="Your Name" 
+    required
+    style="padding: 0.75rem; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem;" 
+  />
+  
+  <input 
+    type="email" 
+    name="user_email" 
+    placeholder="Your Email" 
+    required
+    style="padding: 0.75rem; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem;" 
+  />
+  
+  <textarea 
+    name="message" 
+    placeholder="Your Message" 
+    rows="5" 
+    required
+    style="padding: 0.75rem; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem; resize: vertical;">
+  </textarea>
+  
+  <button class="formButton" type="submit">
+    Send Message
+  </button>
+</form>
   `;
+
+  emailHandler();
 }
 
 export function SkillSetList(box) {
