@@ -55,7 +55,13 @@ export function planetChange({event,sun,planets,controls,camera,offsets,canvas})
     }, 500);
   }
 
-  export function handleResize({renderer,camera,fxaaPass,composer}) {
+  export function handleResize({canvas,renderer,camera,fxaaPass,composer}) {
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = window.innerWidth * dpr;
+    canvas.height = window.innerHeight * dpr;
+    canvas.style.width = '100vw';
+    canvas.style.height = '100vh';
+
     console.log("resize triggered!")
     const pixelRatio = window.devicePixelRatio || 1;
 

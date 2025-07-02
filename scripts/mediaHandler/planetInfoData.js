@@ -13,20 +13,21 @@ export const planetData = [
   },
   {
     title: "Experience",
-    subtitles: ["Salex LTD","Utmost International"],
+    subtitles: ["Step Programme Overview","Salex LTD","",""],
     paragraphs: [
-      "Venus is the second planet from the Sun and has a thick, toxic atmosphere.",
-      "Its surface temperature is hotter than Mercury's despite being farther from the Sun."
-    ],
+      "The Step Programme (<a href='https://www.iomdfenterprise.im/enterprise-support/all-schemes/step-programme/' target='_blank'>Listed here</a>) is an eight-week paid placement scheme, organised by the Isle of Man Department for Enterprise, designed for university undergraduates—typically in their second or penultimate year. Students partner with local host organisations over the summer to complete meaningful, project-based work, benefiting from both professional development and a Living Wage stipend. In addition to valuable on-the-job learning and potential job opportunities, the programme culminates in a final event where participants submit a project report and deliver a presentation to a panel of judges. Winners earn awards based on the quality of their work and presentations. The Step Programme assigned me to Salex LTD based in Castletown, Isle of Man, my work earned the award for best presentation (shown:<a href='#image2'>here</a>)",
+      "Salex LTD (<a href='https://www.salexltd.com/' target='_blank'>listed here</a>)  handles West African commodity trading across regions from Tanzania to Zimbabwe. The organisation and its sister companies previously relied on a legacy process involving Excel spreadsheets and phone calls to track logistics, a system that was error-prone and inefficient. To modernise operations, a web application called FUATA was developed as a centralised platform for managing all shipments handled by Salex LTD.",
+      "During my 2023 summer internship, my contributions included: Leading user training sessions to onboard staff onto the new system. Designing wireframes for key modules based on user and stakeholder needs, and engineering automated file workflows using Microsoft Power Automate.",
+      "This experience marked my first exposure to software maintenance, including attending developer meetings, engaging with ticket-based workflows, and aligning my deliverables with developer sprint cycles."],
     imageURLs: ["./info_images/stepProgramme.jpeg", "./info_images/SalexLTD.jpeg"],
     imageKeys: ["", ""],
-    imageDescription: ["Photo of all members of the step programme-2023",""],
+    imageDescription: ["Photo of all members of Step Programme 2023","Award ceremony - receiving the best presentation award"],
     videos:[
       {
         key: 'Video 1',
         type: 'iframe',
         url: 'https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2F3FMradio%2Fvideos%2F746133027320019%2F&show_text=false&width=476&t=0',
-        description: 'STEP programme interview with me 2023'
+        description: '2023 STEP programme interview with me'
       }
     ]
   },

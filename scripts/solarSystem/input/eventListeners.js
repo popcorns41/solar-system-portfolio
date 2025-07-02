@@ -17,7 +17,7 @@ export function initEventListeners({canvas, renderer, camera, fxaaPass,sun,plane
 
     window.addEventListener('solarTransformDownZoomOutCue', () => {solarTransformDownZoomOut(sun);});
     window.addEventListener('revealPlanets', (e) => {sequentialReveal(planets, state.hoverEnabled, e.detail.delay);});
-    window.addEventListener('resize', handleResize({renderer,camera,fxaaPass,composer}));
+    window.addEventListener('resize', handleResize({canvas,renderer,camera,fxaaPass,composer}));
     window.addEventListener("planetChange", (event) => {
     planetChange({event,sun,planets,controls,camera,offsets,canvas});
     });
@@ -25,7 +25,7 @@ export function initEventListeners({canvas, renderer, camera, fxaaPass,sun,plane
     const observer = new ResizeObserver(() => {
         console.log('Element resized!');
         // Your resize logic (camera.aspect, renderer.setSize, etc.)
-        handleResize({renderer,camera,fxaaPass,composer});
+        handleResize({canvas,renderer,camera,fxaaPass,composer});
     });
 
     observer.observe(document.getElementById('threeCanvas'));

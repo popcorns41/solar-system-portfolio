@@ -1,17 +1,3 @@
-window.addEventListener("fadeToBlack", (event) => {
-  const { key, value } = event.detail;
-  if (value === true) {
-    window.fadeToBlack()
-  }
-});
-
-window.addEventListener("fadeFromBlack", (event) => {
-  const { key, value } = event.detail;
-  if (value === false) {
-    window.fadeFromBlack()
-  }
-});
-
 window.addEventListener("beginTutorial", () => {
   setTimeout(() => {
     const card = document.getElementById("tutorialCard");

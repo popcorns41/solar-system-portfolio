@@ -91,7 +91,6 @@ function displayRightBoxManagement(rightBox,index){
     rightBox.style.opacity = "0";
     rightBox.style.pointerEvents = "none";
   } else {
-    rightBox.scrollTop = 0;
     // Show both for other planets
     rightBox.style.display = "block";
     rightBox.style.opacity = "1";
@@ -104,6 +103,9 @@ function updateInfoDisplay() {
   const rightBox = document.getElementById("infoBoxRight");
   const infoSection = document.getElementById("infoSection");
   const index = window.planetIndex;
+
+  leftBox.scrollTop = 0;
+  rightBox.scrollTop = 0;
 
   displayRightBoxManagement(rightBox,index);
   // Reveal section (if hidden)
