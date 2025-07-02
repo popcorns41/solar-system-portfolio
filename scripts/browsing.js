@@ -15,11 +15,11 @@ function transformCanvasToHomeButton() {
 
   window.addEventListener("beginPlanetTransform",()=>{
     // Total vertical movement (relative to center of original canvas)
-    const translateY = window.innerHeight / 2 - 100;
+    const translateY = 37.5;
 
     // New transform: scale + move
     canvas.style.transition = "transform 3s ease";
-    canvas.style.transform = `translate(calc(50vw - 50%), ${translateY}px) scale(${scale})`;
+    canvas.style.transform = `translate(calc(50vw - 50%), ${translateY}vh) scale(${scale})`;
     setTimeout(()=>{canvas.style.transition = "transform 0s ease";},3000);
   });
 }
