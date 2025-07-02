@@ -7,7 +7,10 @@ function transformCanvasToHomeButton() {
   card.style.display = "none";
 
   // First: scale and round the canvas
-  const scale = 200 / window.innerWidth; // target width is 150px
+  const originalWidth = canvas.getBoundingClientRect().width;
+  const targetWidth = window.innerWidth * 0.15; // 10vw
+  const scale = targetWidth / originalWidth;
+
   canvas.style.transition = "transform 6s ease, border-radius 4s ease";
   canvas.style.transform = `scale(${scale})`;
   canvas.style.borderRadius = "50%";
