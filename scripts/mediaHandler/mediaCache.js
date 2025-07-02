@@ -36,6 +36,8 @@ export function preloadAssets() {
   preloadImage('ppRobot', './info_images/poolpallRobot.jpeg');
   preloadImage('rAssemblyChildhood', './info_images/robotAssemblyChildhood.jpg');
   preloadImage('stepHandShake', './info_images/stepHandShake.jpg');
+  preloadImage('stepProgramme','./info_images/stepProgramme.jpeg');
+  preloadImage('salexLTD','./info_images/SalexLTD.jpeg');
   preloadVideo('poolpalShot', './info_images/poolpal_shot.mp4');
 
   preloadPDF('cvPDF','./pdfs/ohResume.pdf');
