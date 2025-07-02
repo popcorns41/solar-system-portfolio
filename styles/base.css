@@ -72,3 +72,9 @@ p {
 *::-webkit-scrollbar-thumb:hover {
   background: transparent;
 }
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
