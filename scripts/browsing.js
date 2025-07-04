@@ -237,6 +237,11 @@ window.addEventListener("circularBorder",() => {
 });
 
 window.addEventListener("updateArrows",(e)=>{
+  const leftBox = document.getElementById("infoBoxLeft");
+  const rightBox = document.getElementById("infoBoxRight");
+  leftBox.scrollTop = 0;
+  rightBox.scrollTop = 0;
+
   window.planetIndex = e.detail.index;
   updateArrows();
 });
