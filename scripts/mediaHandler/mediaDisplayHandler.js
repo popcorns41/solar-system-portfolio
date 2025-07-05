@@ -177,7 +177,7 @@ export function contactMeSection(box) {
 </form>
   `;
 
-  emailHandler();
+  emailHandler(true);
 }
 
 export function SkillSetList(box) {

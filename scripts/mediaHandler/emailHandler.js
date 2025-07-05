@@ -1,5 +1,7 @@
 import emailjs from '@emailjs/browser';
 
+emailjs.init("ACoKUgfKR7FJkFXTT");
+
 export function emailHandler(live = false) {
   const form = document.getElementById("contactForm");
   const button = form.querySelector(".formButton");
@@ -11,7 +13,7 @@ export function emailHandler(live = false) {
     button.textContent = "Sending...";
 
     if (!live) {
-      showToast("✅ Fake Message sent!");
+      showToast("✅ Fake Message sent! I will get back to you soon.");
       button.textContent = "Sent 🚀";
       setTimeout(() => {
         form.reset();
@@ -28,7 +30,7 @@ export function emailHandler(live = false) {
         "template_wpa42ci",
         form
       );
-      showToast("✅ Message sent!");
+      showToast("✅ Message sent! I will get back to you soon.");
       form.reset();
     } catch (error) {
       console.error("FAILED...", error);
@@ -44,5 +46,5 @@ function showToast(message) {
   const toast = document.getElementById("toast");
   toast.textContent = message;
   toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 3000);
+  setTimeout(() => toast.classList.remove("show"), 4000);
 }
