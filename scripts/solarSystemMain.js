@@ -6,16 +6,7 @@ import { initEventListeners } from './solarSystem/input/eventListeners.js';
 import {offsets} from '/scripts/solarSystem/core/const.js';
 import {animate} from '/scripts/solarSystem/animation/animate.js'
 
-export async function initHomepageSolarSystem() {
-  initSolarSystem(false);
-}
-
-export async function initDevSolarSystem() {
-  initSolarSystem(true);
-}
-
-
-async function initSolarSystem(isDev){
+export async function initSolarSystem(isDev){
   // ******  SETUP  ******
   const { scene, camera, renderer, controls, canvas } = initSetup();
   const { composer,outlinePass,fxaaPass } = postProcessSetup(renderer, scene, camera);

@@ -4,6 +4,20 @@ import {state,settings} from '/scripts/solarSystem/core/state.js';
 import { offsets } from '/scripts/solarSystem/core/const.js';
 
 export function initEventListeners({canvas, renderer, camera, fxaaPass,sun,planets,controls,composer}){
+
+    window.addEventListener("beginTutorial", () => {
+        setTimeout(() => {
+            const card = document.getElementById("tutorialCard");
+            card.classList.add("show");
+        }, 500);
+    });
+
+    document.getElementById("closeTutorial").addEventListener("click", () => {
+        const card = document.getElementById("tutorialCard");
+        card.style.display="none";
+    });
+
+
     canvas.addEventListener('changeSunOpacity',(e) =>fadeSunOpacity(sun.material,e.detail.opacity,e.detail.duration));
     canvas.addEventListener('hideOutofViewPlanets',(e)=>sequentialHideUnselected(e.detail.selectedPlanet,planets,e.detail.delay));
 
