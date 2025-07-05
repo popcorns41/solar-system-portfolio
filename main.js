@@ -3,7 +3,6 @@
 import './scripts/boot.js';
 import './scripts/browsing.js';
 import './scripts/dynamicInfoBox.js';
-import './scripts/navigationButtons.js';
 import './modelLoader/loadingHandler.js';
 
 
