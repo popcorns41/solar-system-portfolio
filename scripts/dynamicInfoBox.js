@@ -8,6 +8,9 @@ function updateInfoBoxes(index) {
   const leftBox = document.getElementById("infoBoxLeft");
   const rightBox = document.getElementById("infoBoxRight");
 
+  leftBox.scrollTop = 0;
+  rightBox.scrollTop = 0;
+
   if (index == 0){
     HANDLER.contactMeSection(leftBox);
   }else if (index == 2){

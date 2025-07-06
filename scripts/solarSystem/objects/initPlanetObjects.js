@@ -63,13 +63,13 @@ export async function initPlanetObjects() {
   //   const jupiter = await createglbPlanet("jupiter",170,15);
   //   const saturn = await createglbPlanet("saturn",240,1);
 
-    const mercury = await createglbPlanet("mercury",40,0.20);
+    const mercury = await createglbPlanet("mercury",40,0.25);
     mercury.planet.rotation.x = -90 * Math.PI / 180;
-    const venus = await createglbPlanet("venus",65,6.1);
-    const earth = new createPlanet('Earth', 6.4, 90, 0, poolBallTexture);
-    const mars = await createglbPlanet("mars",110,4);
-    const jupiter = await createglbPlanet("jupiter",140,15);
-    const saturn = await createglbPlanet("saturn",200,1);
+    const venus = await createglbPlanet("venus",65,6.8);
+    const earth = new createPlanet('Earth', 9, 90, 0, poolBallTexture);
+    const mars = await createglbPlanet("mars",125,6.5);
+    const jupiter = await createglbPlanet("jupiter",160,15);
+    const saturn = await createglbPlanet("saturn",210,1);
 
     earth.planet.castShadow = true;
     earth.planet.receiveShadow = true;
@@ -137,7 +137,7 @@ export async function initPlanetObjects() {
         planet3d: jupiter.planet3d,
         meshes: jupiter.meshes,
         rotationSpeed: 0.005,
-        orbitSpeed: 0.0003,
+        orbitSpeed: 0.0006,
         orbit: jupiter.orbit,
         label: "Childhood",
         rotateSelf: (mesh, speed, accel) => mesh.rotateY(speed * accel),

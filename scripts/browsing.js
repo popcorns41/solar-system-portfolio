@@ -102,13 +102,9 @@ function displayRightBoxManagement(rightBox,index){
 }
 
 function updateInfoDisplay() {
-  const leftBox = document.getElementById("infoBoxLeft");
   const rightBox = document.getElementById("infoBoxRight");
   const infoSection = document.getElementById("infoSection");
   const index = window.planetIndex;
-
-  leftBox.scrollTop = 0;
-  rightBox.scrollTop = 0;
 
   displayRightBoxManagement(rightBox,index);
   // Reveal section (if hidden)

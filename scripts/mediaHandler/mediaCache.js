@@ -1,46 +1,91 @@
 export const assetCache = new Map();
 
+const assets = {
+    images: [
+      { id: 'cRobot', url: './info_images/childhoodRobot.jpeg' },
+      { id: 'cvModel', url: './info_images/cv_model.jpeg' },
+      { id: 'floorGeneral', url: './info_images/floorGeneral.jpeg' },
+      { id: 'kpTeam', url: './info_images/kaPaoTeam.jpeg' },
+      { id: 'ppGroup', url: './info_images/poolPalGroup.jpg' },
+      { id: 'ppRobot', url: './info_images/poolpallRobot.jpeg' },
+      { id: 'rAssemblyChildhood', url: './info_images/robotAssemblyChildhood.jpg' },
+      { id: 'poolPalApp', url: './info_images/poolPalApp.png' }, 
+      { id: 'stepHandShake', url: './info_images/stepHandShake.jpg' },
+      { id: 'stepProgramme', url: './info_images/stepProgramme.jpeg' },
+      { id: 'salexLTD', url: './info_images/SalexLTD.jpeg' },
+    ],
+    videos: [
+      { id: 'poolpalShot', url: './info_images/poolpal_shot.mp4' },
+    ],
+    pdfs: [
+      { id: 'cvPDF', url: './pdfs/ohResume.pdf' },
+    ]
+  };
+
 // Preload images
 const preloadImage = (key, url) => {
-  const img = new Image();
-  img.src = url;
-  assetCache.set(key, img);
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      assetCache.set(key, img);
+      resolve();
+    };
+    img.onerror = (err) => {
+      console.error(`Failed to preload image: ${url}`, err);
+      reject(err);
+    };
+    img.src = url;
+  });
 };
 
-// Preload videos
 const preloadVideo = (key, url) => {
-  const video = document.createElement('video');
-  video.src = url;
-  video.preload = 'auto';
-  video.muted = true; // avoid autoplay issues
-  assetCache.set(key, video);
+  return new Promise((resolve, reject) => {
+    const video = document.createElement('video');
+    video.preload = 'auto';
+    video.muted = true;
+    video.src = url;
+
+    video.oncanplaythrough = () => {
+      assetCache.set(key, video);
+      resolve();
+    };
+    video.onerror = (err) => {
+      console.error(`Failed to preload video: ${url}`, err);
+      reject(err);
+    };
+  });
 };
 
 const preloadPDF = async (key, url) => {
   try {
     const response = await fetch(url);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const blob = await response.blob();
     const objectURL = URL.createObjectURL(blob);
     assetCache.set(key, objectURL);
   } catch (error) {
-    console.error(`Failed to preload PDF ${url}:`, error);
+    console.error(`Failed to preload PDF: ${url}`, error);
+    throw error;
   }
 };
 
-export function preloadAssets() {
-  preloadImage('cRobot', './info_images/childhoodRobot.jpeg');
-  preloadImage('cvModel', './info_images/cv_model.jpeg');
-  preloadImage('floorGeneral', './info_images/floorGeneral.jpeg');
-  preloadImage('kpTeam', './info_images/kaPaoTeam.jpeg');
-  preloadImage('ppGroup', './info_images/poolPalGroup.jpg');
-  preloadImage('ppRobot', './info_images/poolpallRobot.jpeg');
-  preloadImage('rAssemblyChildhood', './info_images/robotAssemblyChildhood.jpg');
-  preloadImage('stepHandShake', './info_images/stepHandShake.jpg');
-  preloadImage('stepProgramme','./info_images/stepProgramme.jpeg');
-  preloadImage('salexLTD','./info_images/SalexLTD.jpeg');
-  preloadVideo('poolpalShot', './info_images/poolpal_shot.mp4');
+export async function preloadAssets() {
+  const loaders = [];
 
-  preloadPDF('cvPDF','./pdfs/ohResume.pdf');
+  for (const { id, url } of assets.images) {
+    loaders.push(preloadImage(id, url));
+  }
+  for (const { id, url } of assets.videos) {
+    loaders.push(preloadVideo(id, url));
+  }
+  for (const { id, url } of assets.pdfs) {
+    loaders.push(preloadPDF(id, url));
+  }
 
-  console.log("images and videoes loaded")
+  const results = await Promise.allSettled(loaders);
+  results.forEach((res, i) => {
+    if (res.status === 'rejected') {
+      console.warn(`Asset ${i} failed to load`, res.reason);
+    }
+  });
 }
