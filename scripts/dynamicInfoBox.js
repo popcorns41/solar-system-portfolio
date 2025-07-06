@@ -32,3 +32,4 @@ window.addEventListener("planetChange", (event) => {
   updateInfoBoxes(index);
 });
 
+

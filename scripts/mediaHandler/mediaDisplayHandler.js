@@ -171,13 +171,13 @@ export function contactMeSection(box) {
     style="padding: 0.75rem; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem; resize: vertical;">
   </textarea>
   
-  <button class="formButton" type="submit">
+  <button class="infoButton" type="submit">
     Send Message
   </button>
 </form>
   `;
 
-  emailHandler(true);
+  emailHandler(false);
 }
 
 export function SkillSetList(box) {
@@ -237,13 +237,42 @@ export function pdfResumeSection(box) {
 
   box.style.overflowY = "hidden";
   box.innerHTML = `
-    <h2>PDF Resume</h2>
+    <div class="top-bar">
+      <h2>PDF Resume</h2>
+      <div class="tooltip-container">
+        <button id="fullscreenTrigger" class="fullscreen-button">
+          <i class="fa-solid fa-expand"></i>
+        </button>
+        <div class="tooltip">PDF to fullscreen</div>
+      </div>
+    </div>
     <hr style="border: none; border-top: 1px solid #ccc; margin: 1rem 0;" />
     <iframe 
+      id="resumeFrame"
       src="${pdfURL}" 
       width="100%" 
       height="100%" 
+      allowfullscreen
       style="border: none;">
     </iframe>
   `;
+  var fullscreen = false;
+  document.getElementById("fullscreenTrigger").addEventListener("click", () => {
+    makeIframeFullscreen();
+  });
+}
+
+ function makeIframeFullscreen() {
+  const iframe = document.getElementById('resumeFrame');
+  if (iframe.requestFullscreen) {
+    iframe.requestFullscreen();
+  } else if (iframe.webkitRequestFullscreen) {
+    iframe.webkitRequestFullscreen(); // Safari
+  } else if (iframe.mozRequestFullScreen) {
+    iframe.mozRequestFullScreen(); // Firefox
+  } else if (iframe.msRequestFullscreen) {
+    iframe.msRequestFullscreen(); // IE/Edge
+  } else {
+    alert("Fullscreen not supported");
+  }
 }
