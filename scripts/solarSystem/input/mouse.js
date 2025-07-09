@@ -111,13 +111,16 @@ export class MouseHandler {
 
     this.raycaster.setFromCamera(state.mouse, this.camera);
     if (this.intersects.length > 0) {
-        const object = this.intersects[0].object;
-
-        // Position the card near the cursor
+        // Position first (off-screen, still invisible)
         this.card.style.left = `${event.clientX + 10}px`;
         this.card.style.top = `${event.clientY + 10}px`;
-        this.card.style.display = 'block';
-    }else{
+        if (this.card.style.display != "block"){
+          requestAnimationFrame(() => {
+            this.card.style.display = 'block';
+          });
+        }
+        
+    } else {
         this.card.innerText = "";
         this.card.style.display = "none";
     }
@@ -128,7 +131,6 @@ export class MouseHandler {
     // Check sun first (not in planets array)
     if (object === this.sun) {
       this.card.innerText = "Contact me";
-      this.card.style.display = 'block';
       return;
     }
 
@@ -136,7 +138,6 @@ export class MouseHandler {
     for (const planet of this.planets) {
       if (planet.meshes.includes(object)) {
         this.card.innerText = planet.label;
-        this.card.style.display = "block";
         return;
       }
     }

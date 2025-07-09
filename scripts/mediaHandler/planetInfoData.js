@@ -52,7 +52,7 @@ export const planetData = [
     ],
     imageURLs: ["./info_images/poolpallRobot.jpeg", "./info_images/cv_model.jpeg","./info_image/poolPalApp.png"],
     imageKeys: ["ppRobot", "cvModel","poolPalApp"],
-    imageDescription: ["Pool Pal in idle position","OpenCV Model utilised in tracking and determining cue ball position","Pool Pal web application UI (hosted on HTTP:<a href='http://poolpal.joshn.uk/app/index.html' target='_blank'>here</a>)"],
+    imageDescription: ["Pool Pal in idle position","OpenCV Model utilised in tracking and determining cue ball position","Pool Pal web application UI'"],
     videos:[
       {
         key: 'poolpalShot',

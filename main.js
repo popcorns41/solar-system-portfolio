@@ -4,6 +4,7 @@ import './scripts/boot.js';
 import './scripts/browsing.js';
 import './scripts/dynamicInfoBox.js';
 import './modelLoader/loadingHandler.js';
+import './scripts/uiDynamics.js'
 
 
 const params = new URLSearchParams(window.location.search);
