@@ -12,10 +12,11 @@
   padding: 1rem;
   z-index: 999;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 .tutorial-card.show {
+  pointer-events: auto;
   opacity: 1;
 }
 
