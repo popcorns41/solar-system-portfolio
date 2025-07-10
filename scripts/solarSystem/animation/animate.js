@@ -3,31 +3,30 @@ import {zoomOutTargetPosition} from '/scripts/solarSystem/core/const.js'
 
 export const animate = (sun,planets,mouseHandler,outlinePass,camera,controls,composer) =>{
      //rotating planets around the sun and itself
-    sun.rotateY(0.0015);
+    sun.rotateY(0.0015 * settings.acceleration);
 
 
     for (const p of planets) {
       p.rotateSelf(p.planet, p.rotationSpeed, settings.acceleration);
       p.planet3d.rotateY(p.orbitSpeed * settings.accelerationOrbit);
     }
-
-  if (state.hasMouseMove){
-    mouseHandler.raycaster.setFromCamera(state.mouse, camera);
+     mouseHandler.raycaster.setFromCamera(state.mouse, camera);
 
     // Check for intersections
     var intersects = mouseHandler.raycaster.intersectObjects(mouseHandler.raycastTargets);
-    mouseHandler.intersects = intersects;
+    //mouseHandler.intersects = intersects;
     // Reset all outlines
     outlinePass.selectedObjects = [];
-
-    if (intersects.length > 0) {
-      const intersectedObject = intersects[0].object;
-      mouseHandler.updateCardForHoveredObject(intersectedObject);
-      outlinePass.selectedObjects = [intersectedObject];      
-    }else{
-      document.getElementById('hoverCard').style.display = 'none';
+    if (state.hasMouseMove){
+      if ((intersects.length > 0) && (state.hoverEnabled == true)) {
+        const intersectedObject = intersects[0].object;
+        outlinePass.selectedObjects = [intersectedObject];   
+    }else {
+        document.getElementById('hoverCard').innerText = "";
+        document.getElementById('hoverCard').style.display = "none";
     }
   }
+    
 
   // ******  ZOOM IN/OUT  ******
   if (state.isMovingTowardsPlanet) {

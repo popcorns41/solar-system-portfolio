@@ -22,7 +22,6 @@ export class MouseHandler {
     this.canvas = canvas;
     this.raycastTargets = this.planets.flatMap(p => p.meshes);
     this.raycastTargets.unshift(this.sun);
-    this.intersects = [];
     this.card = document.getElementById('hoverCard');
 
     // Bind event handlers
@@ -102,24 +101,24 @@ export class MouseHandler {
   }
 
   onMouseMove(event) {
-     if (!state.hoverEnabled) return;
-
-    state.hasMouseMove = true;
-    event.preventDefault();
     state.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     state.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-
+        
+    if (!state.hoverEnabled) return;
+    event.preventDefault();
+    state.hasMouseMove = true;
     this.raycaster.setFromCamera(state.mouse, this.camera);
-    if (this.intersects.length > 0) {
+    const intersects = this.raycaster.intersectObjects(this.raycastTargets);
+
+    if (intersects.length > 0) {
+        const intersectedObject = intersects[0].object;
+        this.updateCardForHoveredObject(intersectedObject);
         // Position first (off-screen, still invisible)
         this.card.style.left = `${event.clientX + 10}px`;
         this.card.style.top = `${event.clientY + 10}px`;
         if (this.card.style.display != "block"){
-          requestAnimationFrame(() => {
-            this.card.style.display = 'block';
-          });
+          this.card.style.display = 'block';
         }
-        
     } else {
         this.card.innerText = "";
         this.card.style.display = "none";

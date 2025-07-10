@@ -18,7 +18,7 @@ const assets = {
       { id: 'poolpalShot', url: './info_images/poolpal_shot.mp4' },
     ],
     pdfs: [
-      { id: 'cvPDF', url: './pdfs/ohResume.pdf' },
+      { id: 'cvPDF', url: './pdfs/ohResume.pdf#zoom=150' },
     ]
   };
 

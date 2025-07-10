@@ -82,7 +82,7 @@ export function hideAllExceptSelected(selected,sun,planets) {
     sun.material.transparent = true;
     sun.material.opacity = isSunSelected ? 1 : 0;
 
-    planets.forEach((planetObj, index) => {
+    planets.forEach((planetObj) => {
       const mesh = planetObj.planet;
 
       if (!mesh) return;
@@ -141,7 +141,7 @@ export function sequentialHideUnselected(selectedPlanet, planets, delay = 300,du
     }
   }
 
-  export function sequentialReveal(planets, hoverEnabled, delay = 1000) {
+  export function sequentialReveal(planets, delay = 1000,onComplete = () => {}) {
     planets.forEach((planet, index) => {
       setTimeout(() => {
         revealPlanet(planet.planet3d);
@@ -150,7 +150,7 @@ export function sequentialHideUnselected(selectedPlanet, planets, delay = 300,du
         if (index === planets.length - 1) {
           setTimeout(() => {
             window.dispatchEvent(new CustomEvent("planetsInView"));
-            hoverEnabled = true;
+            onComplete();
           }, delay); // wait for the final reveal animation
         }
 

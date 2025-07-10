@@ -127,7 +127,7 @@ export function planetLinkHandler(){
 }
 
 export function contactMeSection(box) {
-  box.style.overflowY = "hidden";
+  box.style.overflowY = "auto";
   box.innerHTML = `
     <h2>Contact Me</h2>
     <hr style="border: none; border-top: 1px solid #ccc; margin-top: 1rem; padding-bottom: 2rem" />

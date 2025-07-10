@@ -157,6 +157,10 @@ export async function initPlanetObjects() {
 
     preparePlanetTransparency(planets);
 
+    for (const p of planets){
+      p.planet3d.rotateY(-0.5);
+    }
+
     return planets;
 }
 

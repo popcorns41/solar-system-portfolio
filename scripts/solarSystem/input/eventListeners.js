@@ -29,8 +29,14 @@ export function initEventListeners({canvas, renderer, camera, fxaaPass,sun,plane
     solarStartSunrise(sun);
     });
 
-    window.addEventListener('solarTransformDownZoomOutCue', () => {solarTransformDownZoomOut(sun);});
-    window.addEventListener('revealPlanets', (e) => {sequentialReveal(planets, state.hoverEnabled, e.detail.delay);});
+    window.addEventListener('solarTransformDownZoomOutCue', () => {
+        solarTransformDownZoomOut(sun);
+        settings.accelerationOrbit = 1;
+    });
+    window.addEventListener('revealPlanets', (e) => {sequentialReveal(planets,
+        e.detail.delay,
+        () => {state.hoverEnabled = true;});
+    });
     window.addEventListener('resize', handleResize({canvas,renderer,camera,fxaaPass,composer}));
     window.addEventListener("planetChange", (event) => {
     planetChange({event,sun,planets,controls,camera,offsets,canvas});
