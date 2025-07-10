@@ -21,15 +21,20 @@ export const animate = (sun,planets,mouseHandler,outlinePass,camera,controls,com
     if (state.hasMouseMove){
       if ((intersects.length > 0) && (state.hoverEnabled == true)) {
         const intersectedObject = intersects[0].object;
+
+        document.body.style.cursor = 'pointer';
+
         outlinePass.selectedObjects = [intersectedObject];
         mouseHandler.updateCardForHoveredObject(intersectedObject,card);  
+
 
         card.style.left = `${mouseHandler.clientMouse.x + 10}px`;
         card.style.top = `${mouseHandler.clientMouse.y + 10}px`;
         card.style.display = 'block';
     }else {
       card.innerText = "";
-       card.style.display = "none";
+      card.style.display = "none";
+      document.body.style.cursor = 'default';
     }
   }
     
@@ -45,7 +50,6 @@ export const animate = (sun,planets,mouseHandler,outlinePass,camera,controls,com
 
     if (camera.position.distanceTo(zoomOutTargetPosition) < 1) {
         state.isZoomingOut = false;
-        state.hoverEnabled = true;
     }
   }
 

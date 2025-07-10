@@ -32,13 +32,14 @@ export class MouseHandler {
   onClick(event) {
     event.preventDefault();
   
-      state.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      state.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+      state.ndcRange.x = (event.clientX / window.innerWidth) * 2 - 1;
+      state.ndcRange.y = - (event.clientY / window.innerHeight) * 2 + 1;
   
-      this.raycaster.setFromCamera(state.mouse, this.camera);
+      this.raycaster.setFromCamera(state.ndcRange, this.camera);
+      var intersects = this.raycaster.intersectObjects(this.raycastTargets);
   
-      if (this.intersects.length > 0) {
-        const clickedObject = this.intersects[0].object;
+      if (intersects.length > 0) {
+        const clickedObject = intersects[0].object;
         const selectedPlanetIndex = identifyPlanet(clickedObject,this.sunMat, this.planets);
         let selectedPlanet = null;
         if (selectedPlanetIndex === 0) {
@@ -91,7 +92,8 @@ export class MouseHandler {
           setTimeout(()=>{
             window.dispatchEvent(new CustomEvent("beginPlanetTransform"));
           },1000)
-  
+          
+          document.body.style.cursor = 'default';
           state.hoverEnabled = false;
           state.hasMouseMove = false;
           document.getElementById('hoverCard').style.display = 'none';
@@ -101,6 +103,8 @@ export class MouseHandler {
   }
 
   onMouseMove(event) {
+    if (!(state.hoverEnabled)) return;
+
     event.preventDefault();
     state.hasMouseMove = true;
     this.clientMouse.x = event.clientX;
