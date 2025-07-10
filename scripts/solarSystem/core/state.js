@@ -7,7 +7,7 @@ export const state = {
   hoverEnabled: false,
   hasMouseMove: false,
   offset: 0,
-  mouse: new Vector2()
+  ndcRange: new Vector2()
   // you can add more shared flags here later
 };
 

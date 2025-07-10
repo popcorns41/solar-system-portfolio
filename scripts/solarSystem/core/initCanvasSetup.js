@@ -6,7 +6,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js';
-import {state} from '/scripts/solarSystem/core/state.js';
+import {state,settings} from '/scripts/solarSystem/core/state.js';
 
 export function initSetup(){
     console.log("Create the scene");
@@ -114,4 +114,5 @@ export function initPlanetsToScene(scene,sun,planets){
 
 export function devStateSetup(){
     state.hoverEnabled = true;
+    settings.accelerationOrbit = 1;
 }

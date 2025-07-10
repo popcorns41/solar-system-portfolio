@@ -10,20 +10,26 @@ export const animate = (sun,planets,mouseHandler,outlinePass,camera,controls,com
       p.rotateSelf(p.planet, p.rotationSpeed, settings.acceleration);
       p.planet3d.rotateY(p.orbitSpeed * settings.accelerationOrbit);
     }
-     mouseHandler.raycaster.setFromCamera(state.mouse, camera);
+     mouseHandler.raycaster.setFromCamera(state.ndcRange, camera);
 
     // Check for intersections
     var intersects = mouseHandler.raycaster.intersectObjects(mouseHandler.raycastTargets);
-    //mouseHandler.intersects = intersects;
-    // Reset all outlines
+    const card = document.getElementById('hoverCard');
+
     outlinePass.selectedObjects = [];
+
     if (state.hasMouseMove){
       if ((intersects.length > 0) && (state.hoverEnabled == true)) {
         const intersectedObject = intersects[0].object;
-        outlinePass.selectedObjects = [intersectedObject];   
+        outlinePass.selectedObjects = [intersectedObject];
+        mouseHandler.updateCardForHoveredObject(intersectedObject,card);  
+
+        card.style.left = `${mouseHandler.clientMouse.x + 10}px`;
+        card.style.top = `${mouseHandler.clientMouse.y + 10}px`;
+        card.style.display = 'block';
     }else {
-        document.getElementById('hoverCard').innerText = "";
-        document.getElementById('hoverCard').style.display = "none";
+      card.innerText = "";
+       card.style.display = "none";
     }
   }
     

@@ -1,4 +1,4 @@
-import {Raycaster,Vector3} from 'three';
+import {Raycaster,Vector2,Vector3} from 'three';
 import {state,settings} from '/scripts/solarSystem/core/state.js';
 
 export class MouseHandler {
@@ -22,7 +22,7 @@ export class MouseHandler {
     this.canvas = canvas;
     this.raycastTargets = this.planets.flatMap(p => p.meshes);
     this.raycastTargets.unshift(this.sun);
-    this.card = document.getElementById('hoverCard');
+    this.clientMouse = new Vector2();
 
     // Bind event handlers
     this.onClick = this.onClick.bind(this);
@@ -87,7 +87,7 @@ export class MouseHandler {
                 }
             );
             this.canvas.dispatchEvent(sequentialHideEvent);
-          //sequentialHideUnselected(selectedPlanet, planets);
+
           setTimeout(()=>{
             window.dispatchEvent(new CustomEvent("beginPlanetTransform"));
           },1000)
@@ -101,50 +101,35 @@ export class MouseHandler {
   }
 
   onMouseMove(event) {
-    state.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    state.mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-        
-    if (!state.hoverEnabled) return;
     event.preventDefault();
     state.hasMouseMove = true;
-    this.raycaster.setFromCamera(state.mouse, this.camera);
-    const intersects = this.raycaster.intersectObjects(this.raycastTargets);
-
-    if (intersects.length > 0) {
-        const intersectedObject = intersects[0].object;
-        this.updateCardForHoveredObject(intersectedObject);
-        // Position first (off-screen, still invisible)
-        this.card.style.left = `${event.clientX + 10}px`;
-        this.card.style.top = `${event.clientY + 10}px`;
-        if (this.card.style.display != "block"){
-          this.card.style.display = 'block';
-        }
-    } else {
-        this.card.innerText = "";
-        this.card.style.display = "none";
-    }
+    this.clientMouse.x = event.clientX;
+    this.clientMouse.y = event.clientY;
+    
+    state.ndcRange.x = (event.clientX / window.innerWidth) * 2 - 1;
+    state.ndcRange.y = - (event.clientY / window.innerHeight) * 2 + 1;
   }
 
 
-  updateCardForHoveredObject(object) {
+  updateCardForHoveredObject(object,card) {
     // Check sun first (not in planets array)
     if (object === this.sun) {
-      this.card.innerText = "Contact me";
+      card.innerText = "Contact me";
       return;
     }
 
     // Check planets array
     for (const planet of this.planets) {
       if (planet.meshes.includes(object)) {
-        this.card.innerText = planet.label;
+        card.innerText = planet.label;
         return;
       }
     }
 
     console.log(object,"not found!");
     // Default fallback if nothing matches
-    this.card.innerText = "";
-    this.card.style.display = "none";
+    card.innerText = "";
+    card.style.display = "none";
 }
 
   attach() {
