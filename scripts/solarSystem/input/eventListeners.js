@@ -38,6 +38,7 @@ export function initEventListeners({canvas, renderer, camera, fxaaPass,sun,plane
         () => {state.hoverEnabled = true;});
     });
     window.addEventListener('resize', handleResize({canvas,renderer,camera,fxaaPass,composer}));
+    window.addEventListener('orientationchange',  handleResize({canvas,renderer,camera,fxaaPass,composer}));
     window.addEventListener("planetChange", (event) => {
     planetChange({event,sun,planets,controls,camera,offsets,canvas});
     });

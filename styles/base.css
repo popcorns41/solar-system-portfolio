@@ -33,7 +33,7 @@ section h1,
 article h1,
 nav h1,
 aside h1 {
-  font-size: 2.5rem;
+  font-size: 2rem;
 }
 
 p {
@@ -84,4 +84,19 @@ p {
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  /* Styles for small screens (phones) */
+  section h1,
+  article h1,
+  nav h1,
+  aside h1 {
+  font-size: 1.2rem;
+}
+
+  #instruction{
+    text-align: center;
+    font-size:15px;
+  }
 }

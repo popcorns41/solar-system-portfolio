@@ -40,7 +40,7 @@
   z-index: 10;
   position: absolute;
   width: 100vw;
-  top: 48%;
+  top: 46.5%;
 }
 
 #instruction {
@@ -81,4 +81,10 @@
 #enterSystem:active {
   transform: scale(0.98);
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+}
+
+@media (max-width: 600px) {
+  #title{
+    top: 48%
+  }
 }
