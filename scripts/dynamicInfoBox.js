@@ -2,14 +2,14 @@ import {planetData} from './mediaHandler/planetInfoData.js'
 import * as HANDLER from './mediaHandler/mediaDisplayHandler.js'
 
 
-function updateInfoBoxes(index) {
+export function updateInfoBoxes(index,leftBox,rightBox = null) {
 
   const info = planetData[index];
-  const leftBox = document.getElementById("infoBoxLeft");
-  const rightBox = document.getElementById("infoBoxRight");
 
   leftBox.scrollTop = 0;
-  rightBox.scrollTop = 0;
+  if (rightBox){
+    rightBox.scrollTop = 0;
+  }
 
   if (index == 0){
     HANDLER.contactMeSection(leftBox);
@@ -26,13 +26,17 @@ function updateInfoBoxes(index) {
 window.addEventListener("solarSystemToInfoSection", (event) =>{
     const index = event.detail.index;
     console.log("We in a planet!",index);
-    updateInfoBoxes(index);
+    const leftBox = document.getElementById("infoBoxLeft");
+    const rightBox = document.getElementById("infoBoxRight");
+    updateInfoBoxes(index,leftBox,rightBox);
 });
 
 window.addEventListener("planetChange", (event) => {
   const index = event.detail.index;
   console.log("We in a planet!",index);
-  updateInfoBoxes(index);
+  const leftBox = document.getElementById("infoBoxLeft");
+  const rightBox = document.getElementById("infoBoxRight");
+  updateInfoBoxes(index,leftBox,rightBox);
 });
 
 

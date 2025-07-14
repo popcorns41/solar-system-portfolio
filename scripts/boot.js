@@ -1,4 +1,5 @@
 import {preloadAssets} from "./mediaHandler/mediaCache.js";
+import {generateStaticPage,populateStaticPage} from './staticPage.js'
 
 window.onbeforeunload = function () {
         window.scrollTo(0, 0);
@@ -6,6 +7,15 @@ window.onbeforeunload = function () {
 
 window.addEventListener("DOMContentLoaded", ()=>{
   preloadAssets();
+  
+  document.getElementById("generateStaticPage").addEventListener("click",()=>{
+    generateStaticPage();
+    populateStaticPage();
+
+    document.documentElement.style.overflowY = 'auto'; 
+    document.body.style.overflowY = 'auto';  
+  });
+
   document.getElementById("enterSystem").addEventListener("click", () => {
     console.log("button pressed!")
 
