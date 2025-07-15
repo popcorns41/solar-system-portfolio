@@ -4,7 +4,7 @@ emailjs.init("ACoKUgfKR7FJkFXTT");
 
 export function emailHandler(live = false) {
   const form = document.getElementById("contactForm");
-  const button = form.querySelector(".formButton");
+  const button = form.querySelector(".infoButton");
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
