@@ -24,3 +24,5 @@ Welcome to my personal 3D portofolio website! Current platform support is deskto
 | Intelligence Briefcase        | [Intelligence Briefcase](https://sketchfab.com/3d-models/intelligence-briefcase-5f51375a5fef49a39f646f7690657242) | Sketchfab              |
 
 > Most models are used under Creative Commons licenses or are publicly available for educational/non-commercial use. Please verify licenses individually if redistributing or commercializing.
+>
+> Website icon by [Icon](https://www.flaticon.com/free-icon/venus_3594270?term=planet&page=1&position=9&origin=search&related_id=3594270) by Eucalyp from Flaticon
