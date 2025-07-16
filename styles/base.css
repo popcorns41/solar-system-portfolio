@@ -14,6 +14,35 @@
   box-sizing: border-box;
 }
 
+.button-style{
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 2px solid white;
+  border-radius: 30px;
+  padding: 0.8rem 2rem;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: opacity 4s ease;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+  font-family: 'Orbitron', sans-serif;
+  user-select: none;
+  caret-color: transparent;
+  font-weight: 500;
+}
+
+.button-style:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
+}
+
+.button-style:active {
+  transform: scale(0.98);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+}
+
 html, body {
   height: 100%;
   background-color: #161616;
@@ -36,11 +65,20 @@ aside h1 {
   font-size: 2rem;
 }
 
+h2,
+section h2,
+article h2,
+nav h2,
+aside h2 {
+  font-size: 1rem;
+}
+
 p {
   color: white;
   line-height: 1.5;
   user-select: none;
   caret-color: transparent;
+  font-size: 16px;
 }
 
 /* Buttons & Interactive */
