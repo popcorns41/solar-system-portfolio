@@ -1,7 +1,25 @@
-import {state,settings} from '/scripts/solarSystem/core/state.js';
+import {state,settings,sunZoomState} from '/scripts/solarSystem/core/state.js';
 import {zoomOutTargetPosition} from '/scripts/solarSystem/core/const.js'
 
 export const animate = (sun,planets,mouseHandler,outlinePass,camera,controls,composer) =>{
+  // ******  sequenceAnimations  ******
+  if (sunZoomState.active) {
+    const elapsed = time - sunZoomState.startTime;
+    const t = Math.min(elapsed / sunZoomState.duration, 1);
+    const easedT = t * t * (3 - 2 * t); // smoothstep
+
+    // Update position and scale
+    sun.position.y = sunZoomState.startY + (sunZoomState.targetY - sunZoomState.startY) * easedT;
+    const scale = sunZoomState.startScale + (sunZoomState.targetScale - sunZoomState.startScale) * easedT;
+    sun.scale.set(scale, scale, scale);
+
+    if (t >= 1) {
+      sunZoomState.active = false;
+      window.dispatchEvent(new CustomEvent("sunZoomComplete"));
+    }
+  }
+  
+  // ******  ROTATION  ******
      //rotating planets around the sun and itself
     sun.rotateY(0.0015 * settings.acceleration);
 

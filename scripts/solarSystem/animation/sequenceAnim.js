@@ -1,3 +1,5 @@
+import { sunZoomState } from "../core/state";
+
 export function solarStartSunrise(sun) {
     const startY = sun.position.y;
     const targetY = 45;
@@ -23,37 +25,44 @@ export function solarStartSunrise(sun) {
     requestAnimationFrame(rise);
 }
 
+// export function solarTransformDownZoomOut(sun) {
+//     const startY = sun.position.y;
+//     const targetY = 0;
+
+//     const startScale = sun.scale.x; // assumed uniform scale
+//     const targetScale = 1;
+
+//     const duration = 2500; // ms
+//     const startTime = performance.now();
+
+//     function animate(time) {
+//       const elapsed = time - startTime;
+//       const t = Math.min(elapsed / duration, 1);
+//       const easedT = t * t * (3 - 2 * t); // smoothstep easing
+
+//       // Position
+//       sun.position.y = startY + (targetY - startY) * easedT;
+
+//       // Scale
+//       const scale = startScale + (targetScale - startScale) * easedT;
+//       sun.scale.set(scale, scale, scale);
+
+//       if (t < 1) {
+//         requestAnimationFrame(animate);
+//       }else{
+//         window.dispatchEvent(new CustomEvent("sunZoomComplete"));
+//       }
+//     }
+
+//     requestAnimationFrame(animate);
+//   }
+
 export function solarTransformDownZoomOut(sun) {
-    const startY = sun.position.y;
-    const targetY = 0;
-
-    const startScale = sun.scale.x; // assumed uniform scale
-    const targetScale = 1;
-
-    const duration = 2500; // ms
-    const startTime = performance.now();
-
-    function animate(time) {
-      const elapsed = time - startTime;
-      const t = Math.min(elapsed / duration, 1);
-      const easedT = t * t * (3 - 2 * t); // smoothstep easing
-
-      // Position
-      sun.position.y = startY + (targetY - startY) * easedT;
-
-      // Scale
-      const scale = startScale + (targetScale - startScale) * easedT;
-      sun.scale.set(scale, scale, scale);
-
-      if (t < 1) {
-        requestAnimationFrame(animate);
-      }else{
-        window.dispatchEvent(new CustomEvent("sunZoomComplete"));
-      }
-    }
-
-    requestAnimationFrame(animate);
-  }
+  sunZoomState.active = true;
+  sunZoomState.startTime = performance.now();
+  sunZoomState.startY = sun.position.y;
+  sunZoomState.startScale = sun.scale.x;
+}
 
 export  function fadeSunOpacity(sunMat,targetOpacity, duration = 1000) {
     if (!sunMat) return;

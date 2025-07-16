@@ -74,7 +74,82 @@
 #enterSystem {
   opacity: 0;
   pointer-events: none;
-  margin-top: 7rem;
+  margin-top: 3rem;
+}
+
+.mode-toggle {
+  margin-top: 5rem;
+  position: relative;
+  display: inline-block;
+  width: 100px;
+  height: 40px;
+}
+
+.mode-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #e74c3c;
+  border-radius: 20px;
+  transition: background-color 0.4s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  color: white;
+  box-sizing: border-box;
+}
+
+.slider::before {
+  content: "";
+  position: absolute;
+  height: 32px;
+  width: 32px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.4s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.mode-toggle input:checked + .slider {
+  background-color: #2ecc71;
+}
+
+.mode-toggle input:checked + .slider::before {
+  transform: translateX(60px);
+}
+
+.label {
+  z-index: 1;
+  pointer-events: none;
+}
+
+.on {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.off {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.mode-toggle input:checked + .slider .on {
+  opacity: 1;
+}
+
+.mode-toggle input:checked + .slider .off {
+  opacity: 0;
 }
 
 /* @media (max-width: 600px) {

@@ -15,3 +15,13 @@ export const settings = {
     accelerationOrbit: 0,
     acceleration: 1
   };
+
+export const sunZoomState = {
+  active: false,
+  startY: null,
+  targetY: 0,
+  startScale: null,
+  targetScale: 1,
+  startTime: null,
+  duration: 2500,
+};
