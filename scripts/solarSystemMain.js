@@ -4,7 +4,7 @@ import {initSun,initPlanetObjects,bootupPlanetConditions,rePositionSun} from '/s
 import {MouseHandler} from '/scripts/solarSystem/input/mouse.js';
 import { initEventListeners } from './solarSystem/input/eventListeners.js';
 import {offsets} from '/scripts/solarSystem/core/const.js';
-import {animate} from '/scripts/solarSystem/animation/animate.js'
+import {renderLoop} from '/scripts/solarSystem/animation/animate.js'
 
 export async function initSolarSystem(isDev){
   // ******  SETUP  ******
@@ -30,7 +30,7 @@ export async function initSolarSystem(isDev){
 
   //attach click events to canvas
   mouseHandler.attach(); 
-  animate(sun,planets,mouseHandler,outlinePass,camera,controls,composer);
+  renderLoop(sun,planets,mouseHandler,outlinePass,camera,controls,composer);
   initEventListeners({canvas, renderer, camera, fxaaPass,sun,planets,controls,composer});
 }
 

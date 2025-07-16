@@ -1,107 +1,75 @@
+import { sunZoomState,sunOpacityState } from "../core/state";
+
 export function solarStartSunrise(sun) {
-    const startY = sun.position.y;
-    const targetY = 45;
-    const duration = 8000;
-    const startTime = performance.now();
+  sunZoomState.active = true;
+  sunZoomState.mode = "sunrise";
+  sunZoomState.progress = 0;
+  sunZoomState.duration = 8;
 
-    function rise(currentTime) {
-      const elapsed = currentTime - startTime;
-      const t = Math.min(elapsed / duration, 1);
+  sunZoomState.startY = sun.position.y;
+  sunZoomState.targetY = 45;
 
-      // Eased movement (cubic ease-out)
-      const easedT = 1 - Math.pow(1 - t, 2);
-      
-      sun.position.y = startY + (targetY - startY) * easedT;
+  sunZoomState.startScale = sun.scale.x;
+  sunZoomState.targetScale = sun.scale.x; // no scaling in sunrise
 
-      if (t < 1) {
-        requestAnimationFrame(rise);
-      }else{
-        window.dispatchEvent(new CustomEvent("sunRose"));
-      }
-    }
-
-    requestAnimationFrame(rise);
+  sunZoomState.easingFn = (t) => 1 - Math.pow(1 - t, 2); // ease-out
 }
 
 export function solarTransformDownZoomOut(sun) {
-    const startY = sun.position.y;
-    const targetY = 0;
+  sunZoomState.active = true;
+  sunZoomState.mode = "downZoom";
+  sunZoomState.progress = 0;
+  sunZoomState.duration = 2.5;
 
-    const startScale = sun.scale.x; // assumed uniform scale
-    const targetScale = 1;
+  sunZoomState.startY = sun.position.y;
+  sunZoomState.targetY = 0;
 
-    const duration = 2500; // ms
-    const startTime = performance.now();
+  sunZoomState.startScale = sun.scale.x;
+  sunZoomState.targetScale = 1;
 
-    function animate(time) {
-      const elapsed = time - startTime;
-      const t = Math.min(elapsed / duration, 1);
-      const easedT = t * t * (3 - 2 * t); // smoothstep easing
+  sunZoomState.easingFn = (t) => t * t * (3 - 2 * t); // smoothstep
+}
 
-      // Position
-      sun.position.y = startY + (targetY - startY) * easedT;
+export function fadeSunOpacity(material, targetOpacity, duration = 1) {
+  if (!material) return;
 
-      // Scale
-      const scale = startScale + (targetScale - startScale) * easedT;
-      sun.scale.set(scale, scale, scale);
+  material.transparent = true;
 
-      if (t < 1) {
-        requestAnimationFrame(animate);
-      }else{
-        window.dispatchEvent(new CustomEvent("sunZoomComplete"));
-      }
-    }
-
-    requestAnimationFrame(animate);
-  }
-
-export  function fadeSunOpacity(sunMat,targetOpacity, duration = 1000) {
-    if (!sunMat) return;
-
-    sunMat.transparent = true;
-    const startOpacity = sunMat.opacity;
-    const startTime = performance.now();
-
-    function fadeStep(currentTime) {
-      const elapsed = currentTime - startTime;
-      const t = Math.min(elapsed / duration, 1);
-      const easedT = t * t * (3 - 2 * t); // smoothstep easing
-
-      sunMat.opacity = startOpacity + (targetOpacity - startOpacity) * easedT;
-
-      if (t < 1) {
-        requestAnimationFrame(fadeStep);
-      }
-    }
-
-    requestAnimationFrame(fadeStep);
-  }
+  sunOpacityState.active = true;
+  sunOpacityState.progress = 0;
+  sunOpacityState.duration = duration; // in seconds
+  sunOpacityState.startOpacity = material.opacity;
+  sunOpacityState.targetOpacity = targetOpacity;
+  sunOpacityState.material = material;
+}
 
 export function hideAllExceptSelected(selected,sun,planets) {
-    const isSunSelected = selected === sun;
-    sun.material.transparent = true;
-    sun.material.opacity = isSunSelected ? 1 : 0;
+  const isSunSelected = selected === sun;
+  sun.material.transparent = true;
+  sun.material.opacity = isSunSelected ? 1 : 0;
 
-    planets.forEach((planetObj) => {
-      const mesh = planetObj.planet;
+  planets.forEach((planetObj) => {
+    const mesh = planetObj.planet;
 
-      if (!mesh) return;
+    if (!mesh) return;
 
-      const isSelected = planetObj === selected;
+    const isSelected = planetObj === selected;
 
-      mesh.traverse(child => {
-        if ((child.isMesh || child.isLine) && child.material) {
-          const materials = Array.isArray(child.material) ? child.material : [child.material];
-          materials.forEach(mat => {
-            mat.transparent = true;
-            mat.opacity = isSelected ? 1 : 0;
-          });
+    mesh.traverse(child => {
+      if ((child.isMesh || child.isLine) && child.material) {
+        const materials = Array.isArray(child.material) ? child.material : [child.material];
+        materials.forEach(mat => {
+          mat.transparent = true;
+          mat.opacity = isSelected ? 1 : 0;
+        });
 
-          child.visible = true; // Always keep children visible to prevent render bugs
-        }
-      });
+        child.visible = true; // Always keep children visible to prevent render bugs
+      }
     });
-  }
+  });
+}
+
+
 
 export function sequentialHideUnselected(selectedPlanet, planets, delay = 300,duration=1000) {
   console.log("selectedPlanet",selectedPlanet);
@@ -141,23 +109,6 @@ export function sequentialHideUnselected(selectedPlanet, planets, delay = 300,du
     }
   }
 
-  export function sequentialReveal(planets, delay = 1000,onComplete = () => {}) {
-    planets.forEach((planet, index) => {
-      setTimeout(() => {
-        revealPlanet(planet.planet3d);
-
-        // After the last planet, fire the event
-        if (index === planets.length - 1) {
-          setTimeout(() => {
-            window.dispatchEvent(new CustomEvent("planetsInView"));
-            onComplete();
-          }, delay); // wait for the final reveal animation
-        }
-
-      }, index * delay);
-    });
-  }
-
   //helper functions
 
 function hidePlanet(planetGroup) {
@@ -188,6 +139,22 @@ return new Promise((resolve) => {
 });
 }
 
+export function sequentialReveal(planets, delay = 1000,onComplete = () => {}) {
+    planets.forEach((planet, index) => {
+      setTimeout(() => {
+        revealPlanet(planet.planet3d);
+
+        // After the last planet, fire the event
+        if (index === planets.length - 1) {
+          setTimeout(() => {
+            window.dispatchEvent(new CustomEvent("planetsInView"));
+            onComplete();
+          }, delay); // wait for the final reveal animation
+        }
+
+      }, index * delay);
+    });
+  }
 
 function revealPlanet(planetGroup) {
 planetGroup.visible = true;
