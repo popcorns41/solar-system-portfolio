@@ -21,7 +21,21 @@ export function initSetup(){
     camera.position.set(-175, 115, 5);
 
     const canvas = document.getElementById('threeCanvas');
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
+
+    let renderer;
+
+    try {
+        renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
+    } catch (e) {
+    console.error("WebGL initialization failed:", e);
+    document.body.innerHTML = `
+        <div style="color:white;text-align:center;padding:2rem;">
+        <h1>⚠️ WebGL Not Supported</h1>
+        <p>Your device or browser does not support WebGL rendering.</p>
+        <p>Try updating your browser,using a different device</p>
+        <P>or enabling hardware acceleration on your browser.</p>
+        </div>`;
+    }
 
     console.log("Create the renderer");
 
