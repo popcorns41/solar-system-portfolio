@@ -6,7 +6,7 @@ export function planetDataLeftBox(info,leftBox){
   leftBox.style.overflowY = "auto";
   // Update Left Box
   leftBox.innerHTML = `
-    <h2>${info.title}</h2>
+    <h1>${info.title}</h1>
     <hr style="border: none; border-top: 1px solid #ccc; margin-top: 1rem;" />
     ${info.paragraphs.map((text, index) => `
       <h3 style="padding: 1rem 0 0.5rem 0;">${info.subtitles[index]}</h3>
@@ -129,7 +129,7 @@ export function planetLinkHandler(){
 export function contactMeSection(box) {
   box.style.overflowY = "auto";
   box.innerHTML = `
-    <h2>Contact Me</h2>
+    <h1>Contact Me</h1>
     <hr style="border: none; border-top: 1px solid #ccc; margin-top: 1rem; padding-bottom: 2rem" />
     <div class="contact-icons" style="display: flex; justify-content: center; gap: 3rem; margin-bottom: 2rem;">
       <div style="text-align: center;">
@@ -183,7 +183,7 @@ export function contactMeSection(box) {
 export function SkillSetList(box) {
   box.style.overflowY = "auto";
   box.innerHTML = `
-    <h2>Skill Sets</h2>
+    <h1>Skill Sets</h1>
     <hr style="border: none; border-top: 1px solid #ccc; margin: 1rem 0;" />
     <h3 style="padding: 0.5rem 0 1rem 0;">Programming Languages</h3>
     <ul style="list-style: none; padding: 0;">
@@ -240,10 +240,11 @@ export function pdfResumeSection(box) {
     <div class="top-bar">
       <h2>PDF Resume</h2>
       <div class="tooltip-container">
-        <button id="fullscreenTrigger" class="fullscreen-button">
-          <i class="fa-solid fa-expand"></i>
+
+        <button id="downloadPDF" class="download-button">
+          <i class="fa-solid fa-download"></i>
         </button>
-        <div class="tooltip">PDF to fullscreen</div>
+        <div class="tooltip">Download PDF</div>
       </div>
     </div>
     <hr style="border: none; border-top: 1px solid #ccc; margin: 1rem 0;" />
@@ -257,22 +258,21 @@ export function pdfResumeSection(box) {
     </iframe>
   `;
   var fullscreen = false;
-  document.getElementById("fullscreenTrigger").addEventListener("click", () => {
-    makeIframeFullscreen();
+  document.getElementById("downloadPDF").addEventListener("click", () => {
+    downloadPDF();
   });
 }
 
- function makeIframeFullscreen() {
-  const iframe = document.getElementById('resumeFrame');
-  if (iframe.requestFullscreen) {
-    iframe.requestFullscreen();
-  } else if (iframe.webkitRequestFullscreen) {
-    iframe.webkitRequestFullscreen(); // Safari
-  } else if (iframe.mozRequestFullScreen) {
-    iframe.mozRequestFullScreen(); // Firefox
-  } else if (iframe.msRequestFullscreen) {
-    iframe.msRequestFullscreen(); // IE/Edge
-  } else {
-    alert("Fullscreen not supported");
+function downloadPDF() {
+  const pdfURL = assetCache.get('cvPDF');
+  if (!pdfURL) {
+    console.error("PDF not preloaded or missing from assetCache.");
+    return;
   }
+  const link = document.createElement('a');
+  link.href = pdfURL;
+  link.download = 'oliverHillResume.pdf';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }

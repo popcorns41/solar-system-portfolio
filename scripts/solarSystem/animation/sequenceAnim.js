@@ -1,4 +1,4 @@
-import { sunZoomState,sunOpacityState } from "../core/state";
+import { sunZoomState } from "../core/state";
 
 export function solarStartSunrise(sun) {
   sunZoomState.active = true;
@@ -30,18 +30,27 @@ export function solarTransformDownZoomOut(sun) {
   sunZoomState.easingFn = (t) => t * t * (3 - 2 * t); // smoothstep
 }
 
-export function fadeSunOpacity(material, targetOpacity, duration = 1) {
-  if (!material) return;
+export  function fadeSunOpacity(sunMat,targetOpacity, duration = 1000) {
+    if (!sunMat) return;
 
-  material.transparent = true;
+    sunMat.transparent = true;
+    const startOpacity = sunMat.opacity;
+    const startTime = performance.now();
 
-  sunOpacityState.active = true;
-  sunOpacityState.progress = 0;
-  sunOpacityState.duration = duration; // in seconds
-  sunOpacityState.startOpacity = material.opacity;
-  sunOpacityState.targetOpacity = targetOpacity;
-  sunOpacityState.material = material;
-}
+    function fadeStep(currentTime) {
+      const elapsed = currentTime - startTime;
+      const t = Math.min(elapsed / duration, 1);
+      const easedT = t * t * (3 - 2 * t); // smoothstep easing
+
+      sunMat.opacity = startOpacity + (targetOpacity - startOpacity) * easedT;
+
+      if (t < 1) {
+        requestAnimationFrame(fadeStep);
+      }
+    }
+
+    requestAnimationFrame(fadeStep);
+  }
 
 export function hideAllExceptSelected(selected,sun,planets) {
   const isSunSelected = selected === sun;

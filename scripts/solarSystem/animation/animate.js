@@ -1,4 +1,4 @@
-import {state,settings,sunZoomState,sunOpacityState} from '/scripts/solarSystem/core/state.js';
+import {state,settings,sunZoomState} from '/scripts/solarSystem/core/state.js';
 import {zoomOutTargetPosition} from '/scripts/solarSystem/core/const.js'
 import * as THREE from 'three';
 
@@ -17,20 +17,6 @@ export function renderLoop(sun, planets, mouseHandler, outlinePass, camera, cont
 
 const animate = (sun,planets,mouseHandler,outlinePass,camera,controls,composer,delta) =>{
   // ******  sequence Animations  ******
-  if (sunOpacityState.active && sunOpacityState.material) {
-    sunOpacityState.progress += delta / sunOpacityState.duration;
-    const t = Math.min(sunOpacityState.progress, 1);
-    const easedT = sunOpacityState.easingFn(t);
-
-    sunOpacityState.material.opacity =
-      sunOpacityState.startOpacity +
-      (sunOpacityState.targetOpacity - sunOpacityState.startOpacity) * easedT;
-
-    if (t >= 1) {
-      sunOpacityState.active = false;
-    }
-  }
-
   if (sunZoomState.active) {
     sunZoomState.progress += delta / sunZoomState.duration;
     const t = Math.min(sunZoomState.progress, 1);

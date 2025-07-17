@@ -139,7 +139,7 @@ a#github-icon:hover i {
   font-size: 1.5rem;
 }
 
-.fullscreen-button {
+.download-button {
   background: none;
   border: none;
   color: white;
@@ -149,7 +149,7 @@ a#github-icon:hover i {
   transition: transform 0.2s ease;
 }
 
-.fullscreen-button:hover {
+.download-button:hover {
   transform: scale(1.1);
 }
 

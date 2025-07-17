@@ -28,12 +28,3 @@ export const sunZoomState = {
   easingFn: (t) => t, // placeholder
 };
 
-export const sunOpacityState = {
-  active: false,
-  progress: 0,
-  duration: 1, // seconds
-  startOpacity: 1,
-  targetOpacity: 1,
-  material: null,
-  easingFn: (t) => t * t * (3 - 2 * t), // smoothstep
-};
