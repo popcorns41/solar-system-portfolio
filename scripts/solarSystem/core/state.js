@@ -18,10 +18,13 @@ export const settings = {
 
 export const sunZoomState = {
   active: false,
-  startY: null,
+  mode: null, // 'downZoom' | 'sunrise'
+  progress: 0,
+  duration: 2.5, // in seconds, can override per mode
+  startY: 0,
   targetY: 0,
-  startScale: null,
+  startScale: 1,
   targetScale: 1,
-  startTime: null,
-  duration: 2500,
+  easingFn: (t) => t, // placeholder
 };
+
