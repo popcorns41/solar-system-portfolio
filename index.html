@@ -42,6 +42,8 @@
     <link rel="stylesheet" href="/styles/solarSystem.css">
     <link rel="stylesheet" href="/styles/tutorialCard.css">
     <link rel="stylesheet" href="/styles/loadingScreen.css">
+    <link rel="stylesheet" href="/styles/mobileAlert.css">
+
     <meta name="font-display" content="swap">
     <script type="module" src="/main.js"></script></head>
 <body>
@@ -75,6 +77,15 @@
     </section>
     
     <section id="overlay">
+        <div id="mobileOverlay">
+            <div class="mobile-message-box">
+                <h2>Heads up!</h2>
+                 <hr style="border: none; border-top: 1px solid #ccc; margin: 1rem;" />
+                <p style="margin: 1rem 0;">🏗️ Native Phone support is <strong>not fully implemented</strong>.</p>
+                <p>This experience is best viewed on a desktop or larger screen.</p>
+                <button style="color: white;" id="continueAnywayBtn">Continue Anyway</button>
+            </div>
+        </div>
         <div id="toast" class="toast">✅ Message sent!</div>
          <div id="loading-screen">
             <div class="loading-bar-container">

@@ -4,7 +4,35 @@ window.onbeforeunload = function () {
         window.scrollTo(0, 0);
     };
 
-window.addEventListener("DOMContentLoaded", ()=>{
+function isMobile() {
+  return window.innerWidth <= 768;
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('solarSystemReady', () => {
+      if (isMobile()) {
+        const overlay = document.getElementById('mobileOverlay');
+        const btn = document.getElementById('continueAnywayBtn');
+        overlay.style.display = 'flex';
+
+        btn.addEventListener('click', () => {
+          overlay.style.display = 'none';
+          init();
+        });
+      }else{
+        init();
+      }
+    });
+});
+
+function init(){
+    const params = new URLSearchParams(window.location.search);
+    const isDevMode = params.has('dev');
+    if (!(isDevMode)){
+      initHomePage();
+    }else{
+      initDevHomePage();
+    }
   preloadAssets();
   document.getElementById("enterSystem").addEventListener("click", () => {
     console.log("button pressed!")
@@ -31,17 +59,7 @@ window.addEventListener("DOMContentLoaded", ()=>{
       });
     });
   });
-});
-
-window.addEventListener('solarSystemReady', () => {
-  const params = new URLSearchParams(window.location.search);
-  const isDevMode = params.has('dev');
-  if (!(isDevMode)){
-    initHomePage();
-  }else{
-    initDevHomePage();
-  }
-});
+}
 
 
 function initDevHomePage(){
