@@ -2,117 +2,78 @@ import { assetCache } from './mediaCache';
 import { languages,platforms,roboticsItems } from './iconDirectories';
 import { emailHandler } from './emailHandler';
 
-export function planetDataLeftBox(info,leftBox){
+export function planetDataLeftBox(info, leftBox) {
   leftBox.style.overflowY = "auto";
-  // Update Left Box
+
+  // Clear and build base structure
   leftBox.innerHTML = `
     <h1>${info.title}</h1>
     <hr style="border: none; border-top: 1px solid #ccc; margin-top: 1rem;" />
-    ${info.paragraphs.map((text, index) => `
-      <h3 style="padding: 1rem 0 0.5rem 0;">${info.subtitles[index]}</h3>
-      <p>${text}</p>
-    `).join('')}
   `;
-}
 
-export function planetDataRightBox(info,rightBox){
-  rightBox.style.overflowY = "auto";
-  rightBox.innerHTML = ""; // Clear previous content
-
-  // IMAGES
-    info.imageKeys.forEach((key, index) => {
-      const wrapper = document.createElement("div");
-      wrapper.id = `image${index + 1}`;
-      wrapper.style.marginBottom = "1.5rem";
-
-      let img = assetCache.get(key)?.cloneNode(true);
-
-      // Fallback if not in cache
-      if (!img) {
-        img = new Image();
-        img.src = info.imageURLs?.[index] || '';
-      }
-
-      img.alt = `${info.title} Image ${index + 1}`;
-      img.style.width = "100%";
-      img.style.borderRadius = "10px";
-      wrapper.appendChild(img);
-
-      const caption = document.createElement("p");
-      caption.style.margin = "2rem 0";
-      caption.style.fontSize = "0.9rem";
-
-      caption.innerHTML = `Image ${index + 1}: ${info.imageDescription?.[index] || ''}`;
-      wrapper.appendChild(caption);
-
-      const hr = document.createElement("hr");
-      hr.style.border = "none";
-      hr.style.borderTop = "1px solid #ccc";
-      hr.style.margin = "0.5rem 0";
-      wrapper.appendChild(hr);
-
-      rightBox.appendChild(wrapper);
-    });
-
-  
-    // VIDEOS
-    info.videos.forEach((video, index) => {
-    const wrapper = document.createElement("div");
-    wrapper.id = `video${index + 1}`;
-    wrapper.style.marginBottom = "1.5rem";
-
-    let element;
-
-    if (video.type === "iframe") {
-      element = document.createElement("iframe");
-      element.src = video.url;
-      element.width = "100%"; 
-      element.height = "445px";
-      element.controls = true;
-      element.style.border = "none";
-      element.style.overflow = "hidden";
-      element.style.borderRadius = "10px";
-      element.setAttribute("scrolling", "no");
-      element.setAttribute("frameborder", "0");
-      element.setAttribute("allowfullscreen", "true");
-      element.setAttribute("allow", "autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share");
-    } else {
-      element = assetCache.get(video.key)?.cloneNode(true);
-      if (!element) {
-        element = document.createElement("video");
-        const source = document.createElement("source");
-        source.src = video.url;
-        source.type = "video/mp4";
-        element.appendChild(source);
-        element.preload = "auto";
-      }
-      element.controls = true;
-      element.style.width = "100%";
-      element.style.borderRadius = "10px";
-    }
-
-    wrapper.appendChild(element);
-
-    const caption = document.createElement("p");
-    caption.style.margin = "0.5rem 0";
-    caption.style.fontSize = "0.9rem";
-    caption.innerHTML = `Video ${index + 1}: ${video.description || ''}`;
-    wrapper.appendChild(caption);
-
-    if (index < info.videos.length - 1) {
-      const hr = document.createElement("hr");
-      hr.style.border = "none";
-      hr.style.borderTop = "1px solid #ccc";
-      hr.style.marginTop = "1rem";
-      wrapper.appendChild(hr);
-    }
-
-    rightBox.appendChild(wrapper);
+  // Append all text blocks
+  info.paragraphs.forEach((text, index) => {
+    const block = createTextBlock(info.subtitles[index], text);
+    leftBox.appendChild(block);
   });
 }
 
-export function planetLinkHandler(){
-      document.querySelectorAll(".planet-link").forEach(link => {
+export function planetDataRightBox(info, rightBox) {
+  rightBox.style.overflowY = "auto";
+  rightBox.innerHTML = ""; // Clear previous content
+
+  // Add all images
+  info.imageKeys.forEach((key, index) => {
+    const block = createImageBlock(
+      key,
+      info.imageURLs?.[index],
+      info.imageDescription?.[index],
+      info.title,
+      index
+    );
+    rightBox.appendChild(block);
+  });
+
+  // Add all videos
+  info.videos.forEach((video, index) => {
+    const block = createVideoBlock(video, index);
+    rightBox.appendChild(block);
+  });
+}
+
+export function planetDataMobileBox(info, container) {
+  container.innerHTML = `<h1>${info.title}</h1>
+    <hr style="border: none; border-top: 1px solid #ccc; margin: 1rem;" />`;
+  container.style.overflowY = "auto";
+
+  const { title, subtitles, paragraphs, imageKeys, imageURLs, imageDescription, videos } = info;
+
+  // Build alternating content array
+  const blocks = [];
+
+  const maxLen = Math.max(paragraphs.length, imageKeys.length);
+  for (let i = 0; i < maxLen; i++) {
+
+    if (imageKeys[i]) {
+      const imageKey = imageKeys[i];
+      const imageURL = imageURLs?.[i] || assetCache.get(imageKey)?.src;
+      const imageDesc = imageDescription?.[i] || '';
+
+      blocks.push(createImageBlock(imageKey, imageURL, imageDesc, title,i));
+    }
+
+    if (paragraphs[i]) {
+      blocks.push(createTextBlock(subtitles[i], paragraphs[i]));
+    }
+  }
+
+  videos.forEach((video, index) => {blocks.push(createVideoBlock(video, index));});
+
+  blocks.forEach(block => container.appendChild(block));
+}
+
+export function planetLinkHandler() {
+  document.querySelectorAll(".planet-link").forEach(link => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
       const index = parseInt(e.currentTarget.dataset.index, 10);
@@ -275,4 +236,104 @@ function downloadPDF() {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+}
+
+function createTextBlock(title, text) {
+  const wrapper = document.createElement("div");
+  wrapper.style.marginBottom = "2rem";
+
+  const subtitle = document.createElement("h3");
+  subtitle.textContent = title;
+  subtitle.style.padding = "1rem 0 0.5rem 0";
+
+  const para = document.createElement("p");
+  para.innerHTML = text; 
+  wrapper.appendChild(subtitle);
+  wrapper.appendChild(para);
+
+  return wrapper;
+}
+
+function createImageBlock(key, url, description, title, index) {
+  const wrapper = document.createElement("div");
+  wrapper.id = `image${index + 1}`;  // use index for clarity
+  wrapper.style.marginBottom = "1.5rem";
+
+  let img = assetCache.get(key)?.cloneNode(true);
+  if (!img) {
+    img = new Image();
+    img.src = url || '';
+  }
+
+  img.alt = `${title} Image ${index + 1}`;
+  img.style.width = "100%";
+  img.style.borderRadius = "10px";
+
+  const caption = document.createElement("p");
+  caption.innerHTML = `Image ${index + 1}: ${description || ''}`;
+  caption.style.margin = "2rem 0";
+  caption.style.fontSize = "0.9rem";
+
+  const hr = document.createElement("hr");
+  hr.style.border = "none";
+  hr.style.borderTop = "1px solid #ccc";
+  hr.style.margin = "0.5rem 0";
+
+  wrapper.appendChild(img);
+  wrapper.appendChild(caption);
+  wrapper.appendChild(hr);
+
+  return wrapper;
+}
+
+function createVideoBlock(video, index, totalVideos) {
+  const wrapper = document.createElement("div");
+  wrapper.id = `video${index + 1}`;
+  wrapper.style.marginBottom = "1.5rem";
+
+  let element;
+
+  if (video.type === "iframe") {
+    element = document.createElement("iframe");
+    element.src = video.url;
+    element.width = "100%";
+    element.height = "445px";
+    element.style.border = "none";
+    element.style.borderRadius = "10px";
+    element.setAttribute("frameborder", "0");
+    element.setAttribute("scrolling", "no");
+    element.setAttribute("allowfullscreen", "true");
+    element.setAttribute("allow", "autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share");
+  } else {
+    element = assetCache.get(video.key)?.cloneNode(true);
+    if (!element) {
+      element = document.createElement("video");
+      const source = document.createElement("source");
+      source.src = video.url;
+      source.type = "video/mp4";
+      element.appendChild(source);
+      element.preload = "auto";
+    }
+    element.controls = true;
+    element.style.width = "100%";
+    element.style.borderRadius = "10px";
+  }
+
+  const caption = document.createElement("p");
+  caption.innerHTML = `Video ${index + 1}: ${video.description || ''}`;
+  caption.style.margin = "0.5rem 0";
+  caption.style.fontSize = "0.9rem";
+
+  wrapper.appendChild(element);
+  wrapper.appendChild(caption);
+
+  if (index < totalVideos - 1) {
+    const hr = document.createElement("hr");
+    hr.style.border = "none";
+    hr.style.borderTop = "1px solid #ccc";
+    hr.style.marginTop = "1rem";
+    wrapper.appendChild(hr);
+  }
+
+  return wrapper;
 }

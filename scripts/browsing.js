@@ -86,9 +86,12 @@ function updateArrows() {
   }, 10); // Small timeout to ensure animation can retrigger
 }
 
+function isMobile() {
+  return window.innerWidth <= 768;
+}
 
 function displayRightBoxManagement(rightBox,index){
-  if (index === 0) {
+  if ((index === 0) || (isMobile())) {
     // Only show left box for index 0 (Sun)
     rightBox.style.display = "none";
     rightBox.style.opacity = "0";
