@@ -7,7 +7,7 @@
   opacity: 0;
   transition: transform 0.6s ease-out, opacity 0.6s ease-out;
 
-  width: calc(100% - 4rem);
+  width: calc(100% - 2rem);
   max-width: 900px;
   height: 70px;
 

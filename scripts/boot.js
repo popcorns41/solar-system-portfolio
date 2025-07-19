@@ -7,51 +7,64 @@ window.onbeforeunload = function () {
 
 window.addEventListener("DOMContentLoaded", ()=>{
   preloadAssets();
-  
-  // document.getElementById("generateStaticPage").addEventListener("click",()=>{
-  //   generateStaticPage();
-  //   populateStaticPage();
-
-  //   document.documentElement.style.overflowY = 'auto'; 
-  //   document.body.style.overflowY = 'auto';  
-  // });
-
-//   document.getElementById("enterSystem").addEventListener("click", () => {
-//     console.log("button pressed!")
-
-//     const introText = document.getElementById('introText');
-//     const intro_content = document.getElementById('intro-content');
-
-//     introText.style.display = 'none';
-//     intro_content.style.display = 'none';
-
-//     window.dispatchEvent(new CustomEvent("solarTransformDownZoomOutCue"));
-
-//     window.addEventListener("sunZoomComplete", () => {
-//       console.log("Sun transform complete! Starting next sequence...");
-//       //intro.style.opacity='0';
-//       const revealEvent = new  CustomEvent("revealPlanets",{
-//         detail: {delay:1000}
-//       });
-//       setTimeout(()=>{window.dispatchEvent(revealEvent)},500);
-
-//       window.addEventListener("planetsInView", () => {
-//         document.getElementById('threeCanvas').style.pointerEvents = 'auto';
-//         window.dispatchEvent(new CustomEvent("beginTutorial"));
-//       });
-//     });
-//   });
-
-
   document.getElementById("enterSystem").addEventListener("click", () => {
-      document.getElementById("staticPageNav").classList.add("show");
+
+    const introText = document.getElementById('introText');
+    const intro_content = document.getElementById('intro-content');
+    
+    const checked = document.getElementById("modeSwitch")?.checked;
+
+    if (checked){
       generateStaticPage();
       populateStaticPage();
+      document.getElementById("staticPageNav").classList.add("show");
+
+      const checkBox = document.getElementById("slider");
+      const generateButton = document.getElementById("enterSystem");
+
+      checkBox.style.transition = "opacity 2s ease, transform 2s ease";
+      checkBox.style.transform = "translateY(-20px)";
+      checkBox.style.opacity = "0";
+      introText.style.transition = "opacity 2s ease, transform 2s ease";
+      introText.style.transform = "translateY(-20px)";
+      introText.style.opacity = "0";
+      
+      intro_content.style.transition = "opacity 2s ease, transform 2s ease";
+      intro_content.style.transform = "translateY(-20px)";
+      intro_content.style.opacity = "0";
 
       document.documentElement.style.overflowY = 'auto'; 
       document.body.style.overflowY = 'auto';  
+      setTimeout(() => {
+          introText.style.display = 'none';
+          intro_content.style.display = 'none';
+      },1500);
+    }else{
+      solarPlanetInit();
+      introText.style.display = 'none';
+      intro_content.style.display = 'none';
+      }
   });
 });
+
+
+function solarPlanetInit(){
+   window.dispatchEvent(new CustomEvent("solarTransformDownZoomOutCue"));
+    window.addEventListener("sunZoomComplete", () => {
+      console.log("Sun transform complete! Starting next sequence...");
+      //intro.style.opacity='0';
+      const revealEvent = new  CustomEvent("revealPlanets",{
+        detail: {delay:1000}
+      });
+      setTimeout(()=>{window.dispatchEvent(revealEvent)},500);
+
+      window.addEventListener("planetsInView", () => {
+        document.getElementById('threeCanvas').style.pointerEvents = 'auto';
+        window.dispatchEvent(new CustomEvent("beginTutorial"));
+      });
+    });
+
+}
 
 
 window.addEventListener('solarSystemReady', () => {
@@ -73,8 +86,6 @@ function initDevHomePage(){
 
 function initHomePage(){
   console.log("DOM fully loaded and parsed, starting boot process");
-
-    window.addEventListener('sunLoaded', () => {console.log("sun loaded, starting animation");});
 
     const introText = document.getElementById('introText');
     const introInstructions = document.getElementById('instruction');
@@ -99,9 +110,12 @@ function initHomePage(){
 
     window.addEventListener("sunRose", () => {
       console.log("sun has arisen B-)")
+      const checkBox = document.getElementById("slider");
       const generateButton = document.getElementById("enterSystem");
+      checkBox.style.opacity = "1";
       generateButton.style.opacity = "1";
       generateButton.style.pointerEvents = "auto";
+      checkBox.style.pointerEvents = "auto";
     });
 }
 
