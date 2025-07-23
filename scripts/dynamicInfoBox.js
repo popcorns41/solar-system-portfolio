@@ -14,7 +14,7 @@ function updateMobileBox(index){
     HANDLER.contactMeSection(leftBox);
   }else if (index == 2){
     HANDLER.SkillSetList(leftBox);
-    HANDLER.pdfResumeSection(rightBox);
+    //HANDLER.pdfResumeSection(rightBox);
   }else{
     HANDLER.planetDataMobileBox(info,leftBox);
   }
@@ -61,5 +61,4 @@ window.addEventListener("planetChange", (event) => {
   console.log("We in a planet!",index);
   resSupportGate(index);
 });
-
 

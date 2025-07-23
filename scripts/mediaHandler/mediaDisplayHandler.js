@@ -70,6 +70,8 @@ export function planetDataMobileBox(info, container) {
   videos.forEach((video, index) => {blocks.push(createVideoBlock(video, index));});
 
   blocks.forEach(block => container.appendChild(block));
+  //set all p eelements to text align: center
+  container.style.textAlign = "center";
 }
 
 export function planetLinkHandler() {
@@ -297,7 +299,7 @@ function createVideoBlock(video, index, totalVideos) {
     element = document.createElement("iframe");
     element.src = video.url;
     element.width = "100%";
-    element.height = "445px";
+    element.height = "280px";
     element.style.border = "none";
     element.style.borderRadius = "10px";
     element.setAttribute("frameborder", "0");

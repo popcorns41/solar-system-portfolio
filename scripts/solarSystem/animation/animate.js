@@ -103,23 +103,3 @@ const animate = (sun,planets,mouseHandler,outlinePass,camera,controls,composer,d
 
   //helper
 
- function fadeInPlanet(planetGroup) {
-  planetGroup.visible = true;
-  const materials = [];
-  planetGroup.traverse(child => {
-    child.visible = true;
-    if (child.material) {
-      child.material.transparent = true;
-      child.material.opacity = 0;
-      materials.push(child.material);
-    }
-  });
-  if (materials.length > 0) {
-    fadeInDurations.set(planetGroup.uuid, {
-      progress: 0,
-      duration: 1.5,
-      easing: t => t * t * (3 - 2 * t),
-      materials
-    });
-  }
-}
