@@ -6,17 +6,21 @@ import { initEventListeners } from './solarSystem/input/eventListeners.js';
 import {offsets} from '/scripts/solarSystem/core/const.js';
 import {renderLoop} from '/scripts/solarSystem/animation/animate.js'
 
-export async function initSolarSystem(isDev){
+export async function initSolarSystem(isDev,isStatic){
   // ******  SETUP  ******
   const { scene, camera, renderer, controls, canvas } = initSetup();
   const { composer,outlinePass,fxaaPass } = postProcessSetup(renderer, scene, camera);
   lightingSetup(scene);
 
   // ******  SUN  ******
+
   const sun = initSun();
-
-
-  const planets = await initPlanetObjects();
+  let planets;
+  if ((isStatic)){
+    planets = [];
+  }else{
+    planets = await initPlanetObjects();
+  }
 
   initPlanetsToScene(scene,sun,planets);
   if (!(isDev)){

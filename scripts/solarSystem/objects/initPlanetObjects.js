@@ -22,6 +22,7 @@ export function rePositionSun(sun){
 }
 
 export function initSun(){
+
     const sunSize = 697/40; // 40 is the scale factor to make it fit in the scene, 697 is the real diameter of the sun in km
     let sunMat;
     const sunGeom = new THREE.SphereGeometry(sunSize, 64, 64);

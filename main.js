@@ -1,21 +1,37 @@
 // src/main.js
 
-import './scripts/boot.js';
+
 import './scripts/browsing.js';
 import './scripts/dynamicInfoBox.js';
-import './modelLoader/loadingHandler.js';
-import './scripts/uiDynamics.js'
-
-
+import './scripts/uiDynamics.js';
 const params = new URLSearchParams(window.location.search);
 const isDevMode = params.has('dev');
+const isStaticMode = params.has('static');
 
-window.addEventListener("modelLoaded", async () => {
-  console.log("dev mode?", isDevMode);
-  const {initSolarSystem} = await import('/scripts/solarSystemMain.js');
-  initSolarSystem(isDevMode);
-  window.dispatchEvent(new CustomEvent('solarSystemReady'));
+window.onbeforeunload = function () {
+  window.scrollTo(0, 0);
+};
+
+window.addEventListener("DOMContentLoaded", async () => {
+  const {initBoot} = await import('./scripts/boot.js');
+  initBoot(isDevMode,isStaticMode);
+  // ✅ Register listener before calling load functions
+  window.addEventListener("modelLoaded", async () => {
+    console.log("dev mode?", isDevMode);
+    const { initSolarSystem } = await import('/scripts/solarSystemMain.js');
+    initSolarSystem(isDevMode, isStaticMode);
+    window.dispatchEvent(new CustomEvent('solarSystemReady'));
+  });
+
+  if (!isStaticMode) {
+    const { loadPlanetObjects } = await import('./modelLoader/loadingHandler.js');
+    loadPlanetObjects();
+  } else {
+    const { loadSunOnly } = await import('./modelLoader/loadingHandler.js');
+    loadSunOnly();
+  }
 });
+
 
 
 

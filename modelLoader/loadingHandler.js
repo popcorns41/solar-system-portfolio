@@ -1,7 +1,7 @@
 import { preloadAllModels } from './preloadModels';
 import { modelCache } from './modelCache.js';
 
-async function init() {
+export async function loadPlanetObjects() {
   const bar = document.getElementById('loading-bar');
   const text = document.getElementById('loading-text');
   const screen = document.getElementById('loading-screen');
@@ -21,4 +21,18 @@ async function init() {
   }, 500);
 }
 
-init();
+export function loadSunOnly() {
+  const bar = document.getElementById('loading-bar');
+  const text = document.getElementById('loading-text');
+  const screen = document.getElementById('loading-screen');
+
+  // Simulate loading the sun model
+  setTimeout(() => {
+    bar.style.width = '100%';
+    text.textContent = 'Loading 100%';
+    screen.style.opacity = 0;
+    screen.style.pointerEvents = 'none';
+    const event = new CustomEvent('modelLoaded', { detail: { modelCache } });
+    window.dispatchEvent(event);
+  }, 500); // Simulated delay for loading
+}

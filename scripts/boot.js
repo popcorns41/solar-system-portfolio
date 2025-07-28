@@ -1,39 +1,39 @@
 import {preloadAssets} from "./mediaHandler/mediaCache.js";
 
-window.onbeforeunload = function () {
-        window.scrollTo(0, 0);
-    };
 
 function isMobile() {
   return window.innerWidth <= 768;
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-    window.addEventListener('solarSystemReady', () => {
-      if (isMobile()) {
-        const overlay = document.getElementById('mobileOverlay');
-        const btn = document.getElementById('continueAnywayBtn');
-        overlay.style.display = 'flex';
+export function initBoot(isDev,isStatic){
+  if (isMobile()) {
+    const overlay = document.getElementById('mobileOverlay');
+    const btn = document.getElementById('continueAnywayBtn');
+    overlay.style.display = 'flex';
 
-        btn.addEventListener('click', () => {
-          overlay.style.display = 'none';
-          init();
-        });
-      }else{
-        init();
-      }
+    btn.addEventListener('click', () => {
+      overlay.style.display = 'none';
     });
-});
+  }
 
-function init(){
-    const params = new URLSearchParams(window.location.search);
-    const isDevMode = params.has('dev');
+  init(isDev,isStatic);
+}
+
+function init(isDevMode,isStaticMode){
     if (!(isDevMode)){
       initHomePage();
     }else{
       initDevHomePage();
     }
   preloadAssets();
+  if (isStaticMode){
+    console.log("cool we static");
+  }else{
+    enterSystemFunctionality();
+  }
+}
+
+function enterSystemFunctionality(){
   document.getElementById("enterSystem").addEventListener("click", () => {
     console.log("button pressed!")
 
