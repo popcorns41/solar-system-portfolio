@@ -90,7 +90,11 @@ export class MouseHandler {
             this.canvas.dispatchEvent(sequentialHideEvent);
 
           setTimeout(()=>{
-            window.dispatchEvent(new CustomEvent("beginPlanetTransform"));
+            window.dispatchEvent(new CustomEvent("beginPlanetTransform",
+              {
+                detail: {translateY: 37.5}
+              }
+            ));
           },1000)
           
           document.body.style.cursor = 'default';

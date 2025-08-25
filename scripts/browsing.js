@@ -16,9 +16,9 @@ function transformCanvasToHomeButton() {
   canvas.style.borderRadius = "50%";
   canvas.style.pointerEvents = "none";
 
-  window.addEventListener("beginPlanetTransform",()=>{
+  window.addEventListener("beginPlanetTransform",(e)=>{
     // Total vertical movement (relative to center of original canvas)
-    const translateY = 37.5;
+    const translateY = e.detail.translateY;
 
     // New transform: scale + move
     canvas.style.transition = "transform 3s ease";

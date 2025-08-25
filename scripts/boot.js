@@ -38,18 +38,21 @@ function enterStaticPageFunctionality(){
   document.getElementById("enterSystem").addEventListener("click", () => {
     const title = document.getElementById('title');
     const intro_content = document.getElementById('intro-content');
-    const canvas = document.getElementById('threeCanvas');
+    const planetUI = document.getElementById('planetCenter');
+
+    planetUI.style.pointerEvents = "none";
 
     title.style.transition = "0.5s opacity ease";
     intro_content.style.transition = "0.5s opacity ease";
-    
-
 
     title.style.opacity = "0";
     intro_content.style.opacity = "0";
 
     window.dispatchEvent(new CustomEvent("circularBorder"));
-    
+    window.dispatchEvent(new CustomEvent("beginPlanetTransform", {
+      detail: { translateY: 41 }
+    }));
+
     const startIndex = 6;
     window.dispatchEvent(new CustomEvent("solarSystemToInfoSection",{
       detail:{index:startIndex}
