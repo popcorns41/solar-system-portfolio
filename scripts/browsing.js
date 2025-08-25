@@ -177,13 +177,11 @@ function removeUI(){
   },2000);
 }
 
-function revealInfoBoxes() {
+function revealInfoBoxes(index) {
   const infoSection = document.getElementById("infoSection");
   infoSection.style.display = "flex";
   const leftBox = document.getElementById("infoBoxLeft");
   const rightBox = document.getElementById("infoBoxRight");
-
-  const index = window.planetIndex;
 
   // Always reveal the left box
   leftBox.style.pointerEvents = "auto";
@@ -196,6 +194,11 @@ function revealInfoBoxes() {
     uiFinished = true;
   }, 500);
 }
+
+window.addEventListener("staticContextRevealInfoBoxes",(e)=>{
+  const index = e.detail.index;
+  revealInfoBoxes(index);
+})
 
 function hideInfoBoxes(){
   const leftBox = document.getElementById("infoBoxLeft");
@@ -220,12 +223,13 @@ function hideInfoBoxes(){
 let uiFinished = false;
 
 window.addEventListener("circularBorder",() => {
+    const index = window.planetIndex;
     transformCanvasToHomeButton();
     setTimeout(()=>{
       showPlanetSelector();
       triggerUIReveal();
       setTimeout(()=>{
-        revealInfoBoxes();
+        revealInfoBoxes(index);
       },2000);
       
     },5000);

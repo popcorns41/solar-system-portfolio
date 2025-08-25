@@ -11,6 +11,7 @@
 }
 
 #threeCanvas {
+  position: absolute;
   display: block;
   top: 0;
   left: calc((50vw - 50%)*-1);

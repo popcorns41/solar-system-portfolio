@@ -13,10 +13,11 @@ export function initBoot(isDev,isStatic){
 
     btn.addEventListener('click', () => {
       overlay.style.display = 'none';
+      init(isDev,isStatic);
     });
+  }else{
+    init(isDev,isStatic);
   }
-
-  init(isDev,isStatic);
 }
 
 function init(isDevMode,isStaticMode){
@@ -27,10 +28,33 @@ function init(isDevMode,isStaticMode){
     }
   preloadAssets();
   if (isStaticMode){
-    console.log("cool we static");
+    enterStaticPageFunctionality();
   }else{
     enterSystemFunctionality();
   }
+}
+
+function enterStaticPageFunctionality(){
+  document.getElementById("enterSystem").addEventListener("click", () => {
+    const title = document.getElementById('title');
+    const intro_content = document.getElementById('intro-content');
+    const canvas = document.getElementById('threeCanvas');
+
+    title.style.transition = "0.5s opacity ease";
+    intro_content.style.transition = "0.5s opacity ease";
+    
+
+
+    title.style.opacity = "0";
+    intro_content.style.opacity = "0";
+
+    window.dispatchEvent(new CustomEvent("circularBorder"));
+    
+    const startIndex = 6;
+    window.dispatchEvent(new CustomEvent("solarSystemToInfoSection",{
+      detail:{index:startIndex}
+    }));
+  });
 }
 
 function enterSystemFunctionality(){

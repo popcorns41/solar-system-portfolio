@@ -13,23 +13,23 @@ window.onbeforeunload = function () {
 };
 
 window.addEventListener("DOMContentLoaded", async () => {
-  const {initBoot} = await import('./scripts/boot.js');
-  initBoot(isDevMode,isStaticMode);
-  // ✅ Register listener before calling load functions
-  window.addEventListener("modelLoaded", async () => {
-    console.log("dev mode?", isDevMode);
-    const { initSolarSystem } = await import('/scripts/solarSystemMain.js');
-    initSolarSystem(isDevMode, isStaticMode);
-    window.dispatchEvent(new CustomEvent('solarSystemReady'));
-  });
-
-  if (!isStaticMode) {
+   if (!isStaticMode) {
     const { loadPlanetObjects } = await import('./modelLoader/loadingHandler.js');
     loadPlanetObjects();
   } else {
     const { loadSunOnly } = await import('./modelLoader/loadingHandler.js');
     loadSunOnly();
   }
+  
+  // ✅ Register listener before calling load functions
+  window.addEventListener("modelLoaded", async () => {
+    console.log("dev mode?", isDevMode);
+    const { initSolarSystem } = await import('/scripts/solarSystemMain.js');
+    initSolarSystem(isDevMode, isStaticMode);
+
+    const { initBoot } = await import('./scripts/boot.js');
+    initBoot(isDevMode, isStaticMode);
+  });
 });
 
 
