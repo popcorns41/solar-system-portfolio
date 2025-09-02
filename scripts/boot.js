@@ -5,15 +5,20 @@ function isMobile() {
   return window.innerWidth <= 768;
 }
 
+function addStaticParam() {
+  const url = new URL(window.location.href);
+  url.searchParams.set("static", ""); // value-less param
+  window.location.href = url.toString();
+}
+
 export function initBoot(isDev,isStatic){
-  if (isMobile()) {
+  if (isMobile() && !(isStatic)) {
     const overlay = document.getElementById('mobileOverlay');
     const btn = document.getElementById('continueAnywayBtn');
     overlay.style.display = 'flex';
 
     btn.addEventListener('click', () => {
-      overlay.style.display = 'none';
-      init(isDev,isStatic);
+      addStaticParam();
     });
   }else{
     init(isDev,isStatic);
@@ -54,9 +59,11 @@ function enterStaticPageFunctionality(){
     }));
 
     const startIndex = 6;
-    window.dispatchEvent(new CustomEvent("solarSystemToInfoSection",{
+    window.dispatchEvent(new CustomEvent("infoChange",{
       detail:{index:startIndex}
     }));
+
+    window.planetIndex = startIndex;
   });
 }
 

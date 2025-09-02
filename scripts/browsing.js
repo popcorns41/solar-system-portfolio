@@ -114,7 +114,7 @@ function updateInfoDisplay() {
 document.getElementById("leftArrow").addEventListener("click", () => {
   if (window.planetIndex < 6) {
     window.planetIndex++;
-    dispatchPlanetChange();
+    dispatchInfoChange();
     updateInfoDisplay();
     updateArrows();
   }
@@ -123,18 +123,18 @@ document.getElementById("leftArrow").addEventListener("click", () => {
 document.getElementById("rightArrow").addEventListener("click", () => {
   if (window.planetIndex > 0) { // 6 is Saturn's index
     window.planetIndex--;
-    dispatchPlanetChange();
+
+    dispatchInfoChange();
     updateInfoDisplay();
     updateArrows();
   }
 });
 
-function dispatchPlanetChange() {
-  const planetChangedEvent = new CustomEvent("planetChange", {
+function dispatchInfoChange() {
+  const infoChangedEvent = new CustomEvent("infoChange", {
     detail: { index: window.planetIndex }
   });
-  console.log("Arrow Pressed!")
-  window.dispatchEvent(planetChangedEvent);
+  window.dispatchEvent(infoChangedEvent);
 }
 
 function triggerUIReveal() {

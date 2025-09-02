@@ -23,13 +23,7 @@ function updateInfoBoxes(index) {
   HANDLER.planetLinkHandler();
 }
 
-window.addEventListener("solarSystemToInfoSection", (event) =>{
-    const index = event.detail.index;
-    console.log("We in a planet!",index);
-    updateInfoBoxes(index);
-});
-
-window.addEventListener("planetChange", (event) => {
+window.addEventListener("infoChange", (event) => {
   const index = event.detail.index;
   console.log("We in a planet!",index);
   updateInfoBoxes(index);
