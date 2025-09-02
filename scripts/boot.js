@@ -53,7 +53,7 @@ function enterStaticPageFunctionality(){
     title.style.opacity = "0";
     intro_content.style.opacity = "0";
 
-    window.dispatchEvent(new CustomEvent("circularBorder"));
+    window.dispatchEvent(new CustomEvent("circularBorder"), { detail: { delay: 0 } });
     window.dispatchEvent(new CustomEvent("beginPlanetTransform", {
       detail: { translateY: 41 }
     }));

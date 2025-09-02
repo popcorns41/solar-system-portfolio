@@ -111,9 +111,17 @@ function updateInfoDisplay() {
   infoSection.style.display = "flex";
 }
 
+function dispatchPlanetChange(){
+  const planetChangedEvent = new CustomEvent("planetChange", {
+    detail: { index: window.planetIndex }
+  });
+  window.dispatchEvent(planetChangedEvent);
+}
+
 document.getElementById("leftArrow").addEventListener("click", () => {
   if (window.planetIndex < 6) {
     window.planetIndex++;
+    dispatchPlanetChange();
     dispatchInfoChange();
     updateInfoDisplay();
     updateArrows();
@@ -124,6 +132,7 @@ document.getElementById("rightArrow").addEventListener("click", () => {
   if (window.planetIndex > 0) { // 6 is Saturn's index
     window.planetIndex--;
 
+    dispatchPlanetChange();
     dispatchInfoChange();
     updateInfoDisplay();
     updateArrows();
@@ -215,14 +224,11 @@ function hideInfoBoxes(){
   rightBox.style.opacity = "0";
 }
 
-// window.addEventListener('resize', function(event) {
-//     const canvas = document.getElementById("threeCanvas");
-//     canvas.style.transform = `transform: translateX(calc(50vw - 50%));`;
-// }, true);
 
 let uiFinished = false;
 
-window.addEventListener("circularBorder",() => {
+window.addEventListener("circularBorder",(e) => {
+    const delay = e.detail?.delay || 2000;
     const index = window.planetIndex;
     transformCanvasToHomeButton();
     setTimeout(()=>{
@@ -230,7 +236,7 @@ window.addEventListener("circularBorder",() => {
       triggerUIReveal();
       setTimeout(()=>{
         revealInfoBoxes(index);
-      },2000);
+      },delay);
       
     },5000);
 

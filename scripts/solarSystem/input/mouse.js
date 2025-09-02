@@ -51,7 +51,7 @@ export class MouseHandler {
         if (selectedPlanet) {
           window.planetIndex = selectedPlanetIndex;
           state.offset = this.offsets[selectedPlanetIndex];
-          const indexAnnouncementEvent = new CustomEvent("solarSystemToInfoSection",
+          const indexAnnouncementEvent = new CustomEvent("infoChange",
             {
               detail: {index: window.planetIndex}
             }
@@ -96,6 +96,8 @@ export class MouseHandler {
               }
             ));
           },1000)
+
+
           
           document.body.style.cursor = 'default';
           state.hoverEnabled = false;
