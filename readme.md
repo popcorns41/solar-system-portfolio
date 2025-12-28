@@ -1,4 +1,4 @@
-#Hosted page
+# Hosted page
 
 Link: https://popcorns41.github.io/solar-system-portfolio/
 
