@@ -2,7 +2,7 @@
 
 Link: https://popcorns41.github.io/solar-system-portfolio/
 
-Static Link: https://popcorns41.github.io/solar-system-portfolio/?static
+Static self-hosted Link: https://oliverhill.dev
 # Welcome
 
 Welcome to my personal 3D portofolio website! Current platform support is desktop and tablet. Please note this is not a final product yet, current implementing a static version of the website and working on bugs.
